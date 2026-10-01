@@ -56,8 +56,10 @@ Report that SVN has no staging area; reject explicitly requested `staged` or
 `unstaged` scopes without silently substituting another selection.
 
 Before the message, give a scope report in the conversation's language,
-normally in one or two sentences. State the requested and resolved scope,
-the comparison, any narrower boundary, and material exclusions.
+normally in one or two sentences. State the requested scope, including whether
+`auto` was the default, the resolved scope, and the reason for automatic
+selection when applicable. Include the comparison, any narrower boundary,
+and material exclusions.
 
 Whenever staged changes coexist with unstaged edits or eligible untracked
 files, explicitly report the detected states, the selected scope, whether
@@ -65,8 +67,9 @@ any paths overlap, and which categories are excluded. Keep this report
 outside the commit message.
 
 Example report:
-> Scope: auto → staged (HEAD → index). Both staged and unstaged edits exist,
-> including overlapping paths; exclude unstaged edits and untracked files.
+> Scope: auto (default) → staged (HEAD → index), because staged changes exist.
+> Both staged and unstaged edits exist, including overlapping paths; exclude
+> unstaged edits and untracked files.
 
 Use only facts actually detected. For multiple repositories, provide a
 separate report and message for each.
@@ -204,6 +207,15 @@ uncommitted; do not stage, revert working changes, create or modify commits,
 rewrite history, or push without explicit authorization. Permission to commit
 does not imply permission to amend, rebase, or push.
 
-Before output, verify scope fidelity, evidence, material-change coverage,
-type ordering, and format. Keep scope reports and inspection limitations
-outside the commit-message block.
+## 6. Check before output
+
+1. Confirm the baseline, target, and boundary match the reported scope;
+   explain automatic selection and material exclusions.
+2. Verify that the complete selected diff and new files were inspected and
+   every claim has evidence applicable to the selected snapshot.
+3. Cover each material logical change once; check grouping and whether
+   independent goals warrant a separate-commit recommendation.
+4. Verify type classification and ordering, nesting, summary, punctuation,
+   references, trailers, and code-block format.
+5. Keep scope reports, inspection limitations, split recommendations, and
+   task status outside the commit-message block.
