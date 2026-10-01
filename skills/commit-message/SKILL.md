@@ -144,14 +144,19 @@ Correct the installation heading
   Aim for about 50 characters in the summary and wrap body lines around 72
   when helpful. Preserve clarity and intact identifiers, paths, and URLs.
 
-Prefer flat bullets. When related supporting details are easier to scan
-separately, allow one level of `+` sub-bullets indented by two spaces.
+Prefer flat bullets. Use a `+` sub-list only when it contains at least two
+distinct, related supporting details of the same main bullet and makes
+them easier to scan. With only one supporting detail, include it in the
+main bullet. Wrap long sentences as aligned continuation lines; never
+use a single-item sub-list or split one idea to meet the minimum.
+Do not invent details to create a sub-list.
+
+Allow only one nested level, with `+` sub-bullets indented by two spaces.
 Do not repeat type prefixes on children. Keep independent material changes
 as main bullets; never hide unrelated changes beneath a vague parent such
 as `fix: Fix several issues.`
 
-Wrap a long sentence as an aligned continuation line, not an artificial
-sub-bullet. Example of useful supporting details:
+Example of useful supporting details:
 
 ```text
 Support per-job retry limits
