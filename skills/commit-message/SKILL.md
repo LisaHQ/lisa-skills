@@ -2,10 +2,11 @@
 name: commit-message
 description: >-
   Write accurate, concise commit descriptions for Git or SVN projects.
-  Use after file changes or when asked for a commit message. Support explicit
-  change-scope selection, default to staged changes in Git, and report scope
-  separately from the message. Use a plain summary and typed bullets in a
-  fixed order. Never commit unless explicitly authorized.
+  Use after file changes or when asked for a commit message. Select the
+  change scope automatically unless specified, preferring staged changes
+  when present. Report scope separately from the message. Use a plain
+  summary and typed bullets in a fixed order. Never commit unless
+  explicitly authorized.
 ---
 
 # Commit Message
@@ -19,30 +20,48 @@ to the conversation.
 Read `scope` from the user's request or skill invocation arguments.
 Accept equivalent, unambiguous natural-language instructions.
 
+Default to `scope=auto` when no scope is specified.
+
 For Git working changes, support:
 
 | Option | Comparison | Include |
 | --- | --- | --- |
+| `scope=auto` | Resolve using the rules below | The automatically selected scope |
 | `scope=staged` | HEAD → index | Staged changes only |
 | `scope=unstaged` | Index → working tree | Unstaged changes and untracked files within the requested boundary |
 | `scope=working-tree` | HEAD → working tree | Final combined changes and untracked files within the requested boundary |
 
-- Default to `scope=staged` when no scope is specified for Git working changes.
-- Treat this option as a snapshot selector, distinct from the optional
-  component scope in a bullet such as `fix(parser):`.
-- Apply any explicit file or task boundary within the selected scope.
-  Otherwise, cover the repository's changes in that scope.
-- Honor an explicitly selected commit, revision range, or supplied diff instead
-  of applying the working-changes default.
-- Do not silently switch scopes, combine incompatible comparisons, or fall back
-  to another scope when the selected one is empty.
-- If the selection is contradictory or materially ambiguous, request only the
-  clarification needed to establish it.
+Treat this option as a snapshot selector, distinct from the optional
+component scope in a bullet such as `fix(parser):`.
+
+Apply any explicit repository, file, or task boundary before resolving
+`auto`. Changes outside that boundary must not affect automatic selection.
+Without an explicit narrower boundary, inspect the selected repository.
+
+Resolve `scope=auto` as follows:
+
+| Changes detected within the boundary | Resolved scope |
+| --- | --- |
+| Staged changes only | `staged` |
+| Unstaged changes or untracked files only | `unstaged` |
+| Both staged and unstaged changes or untracked files | `staged` |
+| No changes | No scope to summarize; report that no changes were found |
+
+For automatic selection, treat eligible untracked files as part of the
+unstaged side. Do not count ignored or excluded files unless explicitly
+included in the requested boundary.
+
+- Honor an explicitly selected `staged`, `unstaged`, or `working-tree` scope
+  without applying automatic selection.
+- Never switch an explicit scope merely because it is empty.
+- When both staged and unstaged changes exist, `auto` selects `staged`,
+  not `working-tree`.
+- Honor an explicitly selected commit, revision range, or supplied diff
+  instead of applying automatic working-change selection.
+- Do not silently combine incompatible selections. Request clarification
+  only when a material ambiguity cannot be resolved from the request.
 - For Git repositories without HEAD, use an empty baseline where appropriate.
   Do not create a commit to establish a baseline.
-- For SVN, default to working-copy changes against BASE and explicitly report
-  that SVN has no staging area. If a Git-only scope is explicitly requested,
-  explain that it is unavailable instead of silently substituting another scope.
 
 Inspect repository status before composing the message. Determine whether
 staged changes, unstaged changes, and untracked files are present, including
@@ -55,35 +74,53 @@ Read changed files and necessary supporting context from the selected target
 snapshot. Do not use unstaged file contents to justify claims about staged
 changes.
 
+For SVN:
+
+- Resolve `scope=auto` to working-copy changes against BASE.
+- Accept `scope=working-tree` for that same comparison.
+- Report that SVN has no staging area.
+- If `staged` or `unstaged` is explicitly requested, explain that the option
+  is unavailable for SVN instead of silently substituting another scope.
+
 ## Report the scope separately
 
-Before the commit description, provide a brief scope report in the conversation's
-language. Keep it outside the commit-message code block.
+Before the commit description, provide a brief scope report in the
+conversation's language. Keep it outside the commit-message code block.
 
 State:
 
-- The selected scope and whether it was explicit or the default.
+- The requested scope, including whether `auto` was the default.
+- The resolved scope and the reason for automatic selection, if applicable.
 - The baseline and target being compared.
 - Any requested file or task boundary.
 - Material changes excluded by the selection.
 
-Whenever both staged and unstaged changes exist:
+Whenever both staged and unstaged changes exist within the boundary:
 
 - Explicitly report that both were detected.
 - Mention whether any files contain both kinds of edits.
 - State which scope was selected and what that selection covers.
-- Do not imply that a staged-only message also describes unstaged work.
+- Identify excluded unstaged changes or untracked files when selecting staged.
+- Do not imply that a staged-only message describes all working changes.
 
-For example, when both states exist and the default applies, report that
-`scope=staged` was selected, the message covers HEAD → index, and unstaged
-changes are excluded.
+Examples of scope reporting:
 
-Never put scope-selection notes, mixed-state warnings, or inspection limitations
-inside the commit message.
+- Auto, only unstaged changes: report that `auto → unstaged` was selected
+  because no staged changes exist, and that the message covers index →
+  working tree plus eligible untracked files.
+- Auto, both states: report that `auto → staged` was selected, the message
+  covers HEAD → index, and unstaged changes and untracked files are excluded.
+- Explicit working-tree scope: report that `working-tree` was requested and
+  the message covers the final combined difference against HEAD.
+- Explicit staged scope, no staged changes: report that the selected scope
+  is empty. Do not switch to unstaged or generate a commit description.
 
-If the selected scope has no changes, report that fact and omit the commit
-description. Identify available alternative scopes when useful, without
-selecting them automatically.
+Never put scope-selection notes, mixed-state warnings, or inspection
+limitations inside the commit message.
+
+If automatic selection finds no changes, or the selected comparison is empty,
+report that fact and omit the commit description. Identify available
+alternative scopes when useful, without selecting them automatically.
 
 ## Required output
 
