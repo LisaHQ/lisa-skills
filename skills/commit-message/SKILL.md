@@ -132,6 +132,9 @@ Use the following display order; it is not classification priority.
 | 10 | `ci` | Change continuous integration or delivery workflows |
 
 Use `docs`, `test`, or `ci` when the purpose is confined to those concerns.
+Use `chore` for value-only adjustments or initial scaffolding unless evidence
+establishes a more specific purpose. A larger constant or a new file alone
+does not establish an added capability.
 Do not infer a defect or vulnerability from a dependency version change alone.
 Functional changes implemented through restructuring remain `fix` or `feat`.
 
