@@ -98,18 +98,25 @@ substituting another scope.
   configuration, and surrounding code from compatible versions. Never justify
   selected behavior with an excluded view or reintroduce excluded changes
   through contextual code.
-- Describe demonstrated effects, not merely intended outcomes. Claim completed
-  integration, successful tests, measured performance gains, deployment, or
-  safety guarantees only with evidence applicable to the selection. Mixed
-  `auto` selections need not form an existing or tested snapshot; current
-  working-tree tests alone cannot verify different selected staged content.
+- Ground both the summary and body in demonstrated effects, not intended
+  outcomes. A configuration value alone does not prove runtime activation.
+  Claim completed integration, successful tests, measured performance
+  gains, deployment, or safety guarantees only with evidence applicable to
+  the selection. Mixed `auto` selections need not form an existing or
+  tested snapshot; current working-tree tests alone cannot verify
+  different selected staged content.
 - Explain supported, non-obvious reasons, constraints, or trade-offs. Do not
   invent intent or manufacture a rationale for an obvious change.
-- Preserve material behavior limits, compatibility breaks, migration
-  requirements, and necessary user actions in the message.
-- Group by purpose, not by file; describe each logical change once. Keep its
-  supporting code, tests, docs, and configuration together unless separately
-  material. Exclude plans and out-of-scope claims; describe partial work honestly.
+- Preserve material behavior limits, compatibility breaks, new runtime
+  dependencies, migration requirements, and necessary user actions in the
+  message, even when omitting supporting docs or file inventory. State
+  integration gaps, such as new code nothing calls or new settings nothing
+  reads, when the change could otherwise look active.
+- Group by purpose, not by file; describe each material logical change once.
+  Keep supporting code, tests, docs, and configuration with their change.
+  State the outcome or limit directly; do not inventory supporting edits
+  unless they are independently material. Exclude plans and out-of-scope
+  claims; describe partial work honestly.
 - Recommend separate commits for independent goals when useful, while still
   covering the requested scope. Different types alone do not justify a split.
 - Use identifiers and paths only when useful; never expose secrets or private data.
@@ -203,30 +210,34 @@ Correct the installation heading
   logical change. A single change still requires both summary and bullet.
 - Use `- type:` or `- type(component):`. Reuse meaningful component scopes;
   omit them when unhelpful.
-- Write concise, active, imperative action phrases. Express supporting facts
-  naturally. Avoid process narration and vague wording such as
-  `Update files` or `Address feedback`.
-- Avoid needless repetition, but allow limited overlap between summary and
-  bullet for a simple change. Never invent details to make them different.
+- Lead each bullet with its changed behavior or outcome in a concise,
+  active, imperative phrase. Default to one short sentence per logical
+  change. Keep a detail only if removing it would obscure a material
+  outcome, constraint, non-obvious reason, or required action. Avoid
+  process narration and vague wording such as `Update files` or
+  `Address feedback`.
+- Avoid needless repetition across the summary, bullets, children, and
+  trailers. Allow limited summary/bullet overlap for a simple change;
+  never invent details to make them different.
 - Omit the summary's trailing period; end bullet descriptions with a period.
   Aim for about 50 characters in the summary and wrap body lines around 72
   when helpful. Preserve clarity and intact identifiers, paths, and URLs.
 
-Prefer flat bullets. Use one level of `+` sub-bullets, indented two spaces,
-only for at least two distinct, related supporting details of the same main
-bullet that are easier to scan. Put a single detail in its parent; wrap prose
-as aligned continuation lines. Do not repeat types on children, invent or
+Prefer flat bullets; merge related details into a concise parent when readable.
+Use one level of `+` sub-bullets, indented two spaces, only when combining
+at least two distinct, related behavior details or constraints would make
+the parent hard to read. Put a single detail in its parent; wrap prose as
+aligned continuation lines. Do not repeat types on children, invent or
 split details to justify nesting, or hide independent changes under vague
 parents; keep them as main bullets.
 
-Example of useful supporting details:
+Example of keeping related behavior in one bullet:
 
 ```text
 Support per-job retry limits
 
-- feat(retries): Allow each job to override its retry limit.
-  + Treat zero as an explicit request to disable retries.
-  + Preserve the configured default when no override is provided.
+- feat(retries): Honor per-job retry limits, including zero to disable
+  retries, and use the configured default for null or omitted overrides.
 ```
 
 Append relevant, verified references or required trailers after the bullets,
@@ -238,9 +249,10 @@ Never invent issue references, identities, approvals, or sign-off attestations.
 
 1. Verify the boundary, per-file baselines and targets, scope or priority,
    empty/unavailable handling, stopping, fallback, and reported exclusions.
-2. Confirm every selected diff and new file was inspected, with no duplicate
-   views or claims unsupported by the selected versions.
-3. Cover each material logical change once; check grouping and split advice.
+2. Confirm every selected diff and new file was inspected; reject duplicate
+   views or claims in the summary or body unsupported by the selected versions.
+3. Cover each material logical change once; remove incidental detail and
+   check focus, grouping, and split advice.
 4. Check classification, order, summary, nesting, punctuation, references,
    trailers, and code-block format.
 5. Keep the report and other commentary outside the commit-message block.
