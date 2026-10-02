@@ -12,9 +12,12 @@ dist
 coverage
 *.lcov
 
-# logs
+# logs & archive
 **/logs/
 *.log
+_archive/
+AGENTS.vi.md
+CLAUDE.vi.md
 
 # Secrets and local environment
 .env

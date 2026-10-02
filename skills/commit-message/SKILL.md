@@ -2,10 +2,12 @@
 name: commit-message
 description: >-
   Write accurate, concise commit descriptions for Git or SVN projects after
-  file changes or when requested. Select scope automatically unless specified,
-  prefer staged changes when present, and report scope separately. Use a plain
-  summary and typed bullets in a fixed order. Never commit without explicit
-  authorization.
+  file changes or when requested. Honor an explicit scope or select diffs per
+  file using configurable auto-priority, and report selection separately.
+  Use a plain summary and typed bullets in a fixed order. Never commit
+  without explicit authorization.
+metadata:
+  allow_implicit_invocation: true
 ---
 
 # Commit Message
@@ -13,81 +15,111 @@ description: >-
 Describe what the selected changes accomplish and preserve the context needed
 by future readers.
 
-## 1. Select and report the scope
+## 1. Select and report the diffs
 
 Detect Git or SVN from repository metadata, configuration, or the established
-workflow. Read `scope` from the request or invocation arguments; accept
-unambiguous equivalent wording. Default to `scope=auto`.
+workflow. Read these options from the request or invocation arguments; accept
+unambiguous equivalent wording:
 
-Apply any requested repository, file, or task boundary before selecting changes.
-Otherwise, use the selected repository. Changes outside the boundary must not
-influence automatic selection.
+| Option | Default | Meaning |
+| --- | --- | --- |
+| `scope` | `auto` | Select per file automatically, or enforce `staged`, `unstaged`, or `working-tree` across the requested boundary |
+| `auto-priority` | `staged,unstaged,working-tree` | In `auto` only, rank candidate views from highest to lowest priority for each file |
+
+When used, require `auto-priority` to list all three views once, in the desired
+order; it ranks alternatives, never filters files. A concrete `scope` overrides it.
+These options are independent of component scopes such as `fix(parser):`.
+
+Apply any requested repository, file, or task boundary before selection.
+Otherwise, use the selected repository. Out-of-boundary changes must not
+influence selection. Explicit commits, revision ranges, or a designated
+supplied diff take precedence over working-change selection; do not blend
+other views into them. Apply `auto` to supplied alternatives only when their
+file identities and comparisons are established. Never infer missing states
+or label a supplied diff as staged without evidence.
 
 For Git working changes:
 
-| Scope | Comparison | Contents |
+| View | Comparison | Contents |
 | --- | --- | --- |
 | `staged` | HEAD → index | Staged changes only |
 | `unstaged` | Index → working tree | Unstaged edits plus eligible untracked files |
 | `working-tree` | HEAD → working tree | Final combined changes plus eligible untracked files |
 
-Eligible untracked files are within the requested boundary and are not ignored
-or excluded unless explicitly included. They count as part of the unstaged
-side for both selection and reporting.
+Eligible untracked files are within the boundary and are not ignored or
+excluded unless explicitly included. Inspect their full contents as additions;
+ordinary Git diffs omit them. Count them on the unstaged side for selection
+and reporting, and include them in `unstaged` or `working-tree` as applicable.
 
-Honor a concrete scope when explicitly requested. Otherwise, resolve `auto`:
+`working-tree` is a combined view, not a third independent set of edits.
+Never append it to another view of the same file or count equivalent views
+as additional changes. Use an empty baseline where appropriate if Git has
+no HEAD; do not create a commit to establish one.
 
-1. If staged changes exist, select `staged`.
-2. Otherwise, if unstaged edits or eligible untracked files exist, select
-   `unstaged`.
-3. Otherwise, report no changes and omit the commit description.
+Select as follows:
 
-An empty selected comparison produces a report only. Never switch an explicit
-scope because it is empty. Use an empty baseline where appropriate when Git
-has no HEAD; do not create a commit to establish one.
+1. **Concrete scope:** Use that comparison for every file in the boundary.
+   Omit files with no change in it. Never fall back to another comparison,
+   even when the entire selection is empty.
+2. **Auto:** For each file independently, identify the available, nonempty
+   candidate diffs. Select the sole candidate directly; otherwise select
+   the first candidate in `auto-priority`. Skip files with no candidates.
+   A staged file must never suppress an unstaged-only file elsewhere.
+3. Select one complete view per file, not different views for different
+   hunks. Preserve proven rename identities and their old/new path pairing.
+   Combine the selected per-file diffs into the message's evidence set;
+   never add excluded edits back through another view or surrounding code.
 
-Explicit commits, revision ranges, or supplied diffs take precedence over
-automatic working-change selection. Do not mix incompatible selections.
-Ask only when a material ambiguity cannot be resolved from available context.
-The selection option is independent of component scopes such as `fix(parser):`.
+An empty net `working-tree` diff does not erase nonempty staged or unstaged
+candidates in `auto`. Distinguish empty comparisons from unavailable evidence:
+an inspection failure is not permission to fall back silently. A sole supplied
+view may be used without claiming other states are empty. Ask only when a
+material ambiguity cannot be resolved from available context. If nothing is
+selected, report that and omit the commit description.
 
 For SVN, `auto` and `working-tree` select working-copy changes against BASE.
-Report that SVN has no staging area; reject explicitly requested `staged` or
-`unstaged` scopes without silently substituting another selection.
+Report that SVN has no staging area and `auto-priority` is inapplicable;
+reject explicit `staged` or `unstaged` without substituting another scope.
 
-Before the message, give a scope report in the conversation's language,
-normally in one or two sentences. State the requested scope, including whether
-`auto` was the default, the resolved scope, and the reason for automatic
-selection when applicable. Include the comparison, any narrower boundary,
-and material exclusions.
+Before the message, report selection in the conversation's language, normally
+in one or two sentences. State the requested scope (including default `auto`),
+resolved comparison(s), boundary, and material exclusions. For `auto`, include
+the priority and group selected files by view; use counts when clearer, but
+identify files whose competing views were excluded. Do not label a mixed
+selection as globally staged or as one existing repository snapshot.
 
-Whenever staged changes coexist with unstaged edits or eligible untracked
-files, explicitly report the detected states, the selected scope, whether
-any paths overlap, and which categories are excluded. Keep this report
-outside the commit message.
+Whenever staged and unstaged changes coexist within the boundary, report
+whether they overlap on any files and what was selected or excluded for
+those files. Do not claim all unstaged changes were excluded when unstaged-only
+files were selected. Keep this report outside the commit message.
 
-Example report:
-> Scope: auto (default) → staged (HEAD → index), because staged changes exist.
-> Both staged and unstaged edits exist, including overlapping paths; exclude
-> unstaged edits and untracked files.
+Example with default priority:
+> Scope: auto (default), priority staged → unstaged → working-tree.
+> Select staged diffs for A and C (HEAD → index), and unstaged changes for B
+> and untracked D (index → working tree). C has both staged and unstaged
+> changes; exclude only C's unstaged diff.
 
 Use only facts actually detected. For multiple repositories, provide a
 separate report and message for each.
 
 ## 2. Ground the content in evidence
 
-- Inspect the selected diff and new files, including intentional generated
-  or configuration changes. Inspect other states only as needed to resolve
-  scope and report exclusions.
-- Describe the net difference between the selected baseline and target;
+- Inspect every selected per-file diff and new file, including intentional
+  generated or configuration changes. Inspect other states only as needed
+  for selection, exclusions, or necessary context.
+- Describe each net difference between its selected baseline and target;
   omit intermediate edits that cancel out in that comparison.
-- Read changed files and necessary surrounding code, callers, configuration,
-  or tests from the selected target snapshot. Never use unstaged contents
-  to justify claims about staged behavior.
+- Read each changed file from its selected target: the index for `staged`,
+  the working tree for `unstaged` or `working-tree`, or the designated revision
+  or supplied evidence for fixed selections. Read necessary callers, tests,
+  configuration, and surrounding code from compatible versions. Never use
+  an excluded view to justify behavior attributed to a selected diff.
 - Describe demonstrated implementation effects, not merely intended outcomes.
   Claim completed integration, successful tests, measured performance gains,
   deployment, or safety guarantees only with evidence applicable to the
-  selected snapshot.
+  selected evidence set. A mixed `auto` selection is not necessarily an
+  existing or tested snapshot; current working-tree tests alone cannot
+  verify selected staged content that differs from the working tree.
 - Explain non-obvious reasons, constraints, or trade-offs when supported.
   Do not invent intent or manufacture a rationale for an obvious change.
 - Preserve material behavior limits, compatibility breaks, migration
@@ -105,8 +137,8 @@ separate report and message for each.
   private data.
 
 When repository access is unavailable, use supplied evidence and disclose
-inspection limits in the separate report. Do not label a supplied diff as
-staged without evidence. If no reliable change is evidenced, omit the message.
+inspection limits in the separate report. If no reliable change is evidenced,
+omit the message.
 
 ## 3. Write the message
 
@@ -214,10 +246,11 @@ does not imply permission to amend, rebase, or push.
 
 ## 6. Check before output
 
-1. Confirm the baseline, target, and boundary match the reported scope;
-   explain automatic selection and material exclusions.
-2. Verify that the complete selected diff and new files were inspected and
-   every claim has evidence applicable to the selected snapshot.
+1. Verify the boundary and each file's selected baseline and target; enforce
+   concrete scope globally or auto-priority per file. Check fallback,
+   overlaps, exclusions, and the report against the actual selection.
+2. Verify that every selected diff and new file was inspected, with no
+   double-counted views or claims unsupported by the selected versions.
 3. Cover each material logical change once; check grouping and whether
    independent goals warrant a separate-commit recommendation.
 4. Verify type classification and ordering, nesting, summary, punctuation,
