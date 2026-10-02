@@ -52,7 +52,7 @@ unless explicitly included. Inspect their full contents; ordinary Git diffs
 omit them. For `unstaged`, compare against the index as additions; for
 `working-tree`, compare against HEAD, treating an absent HEAD path as an
 addition. Reconcile staged deletion and same-path untracked recreation into
-one net change. Count untracked files on the unstaged side for reporting.
+one net change.
 
 An **empty** comparison verifies no difference in file existence, content, or
 tracked metadata; an empty new file is still an addition. **Unavailable**
@@ -80,8 +80,9 @@ never append it to another view of the same file. Ask only when a material
 ambiguity cannot be resolved from context.
 
 For SVN, `auto` and `working-tree` select working-copy changes against BASE.
-Report that SVN has no staging area and `auto-priority` is inapplicable;
-reject explicit `staged` or `unstaged` without substituting another scope.
+When the request names `auto-priority`, `staged`, or `unstaged`, report that
+SVN has no staging area; reject explicit `staged` or `unstaged` without
+substituting another scope.
 
 ## 2. Ground the content in evidence
 
@@ -133,7 +134,7 @@ Use the following display order; it is not classification priority.
 
 Use `docs`, `test`, or `ci` when the purpose is confined to those concerns.
 Use `chore` for value-only adjustments or initial scaffolding unless evidence
-establishes a more specific purpose. A larger constant or a new file alone
+establishes a more specific purpose. A changed value or a new file alone
 does not establish an added capability.
 Do not infer a defect or vulnerability from a dependency version change alone.
 Functional changes implemented through restructuring remain `fix` or `feat`.
