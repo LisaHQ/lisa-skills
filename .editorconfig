@@ -10,6 +10,10 @@ indent_size = 2
 insert_final_newline = true
 trim_trailing_whitespace = true
 
+# Python follows PEP 8.
+[*.py]
+indent_size = 4
+
 # Two trailing spaces are a Markdown line break.
 [*.md]
 trim_trailing_whitespace = false

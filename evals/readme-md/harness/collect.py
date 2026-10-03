@@ -1,0 +1,65 @@
+"""Unblind one judged iteration and summarize it per scenario and per arm.
+
+Usage: python collect.py <iter> [--tag NAME] [--judgments <name>]
+
+Reads <work>/runs/<iter>/mapping[-<tag>].json and the verdicts in
+<work>/judgments/<name>/ (default <iter> or <iter>-<tag>). Prints each
+scenario's weighted score per arm with dimension scores [ABCDEF] and error
+counts (major/minor), then per-arm means, first places, and rank points.
+"""
+import json
+import sys
+from collections import defaultdict
+
+from evalenv import WORK, positional, split_flag
+
+WEIGHTS = {"A": 3, "B": 2, "C": 2, "D": 1.5, "E": 1, "F": 1.5}
+
+
+def weighted(scores: dict) -> float:
+    return sum(WEIGHTS[k] * scores[k] for k in WEIGHTS) / sum(WEIGHTS.values())
+
+
+def main() -> None:
+    args = sys.argv[1:]
+    tag, args = split_flag(args, "--tag")
+    jname, args = split_flag(args, "--judgments")
+    it = positional(args, __doc__, exactly=1)[0]
+    jname = jname or (f"{it}-{tag}" if tag else it)
+    mapping = json.loads((WORK / "runs" / it / f"mapping{'-' + tag if tag else ''}.json").read_text(encoding="utf-8"))
+    per_arm, dims = defaultdict(list), defaultdict(lambda: defaultdict(list))
+    firsts, points = defaultdict(int), defaultdict(int)
+    for scen, labels in sorted(mapping.items()):
+        path = WORK / "judgments" / jname / f"{scen}.json"
+        if not path.exists():
+            print(f"{scen:24} (no judgment)")
+            continue
+        verdict = json.loads(path.read_text(encoding="utf-8"))
+        parts = [f"{scen:24}"]
+        for label, arm in sorted(labels.items(), key=lambda kv: kv[1]):
+            scores = verdict[label]["scores"]
+            w = weighted(scores)
+            per_arm[arm].append(w)
+            for k, v in scores.items():
+                dims[arm][k].append(v)
+            errors = verdict[label].get("errors", [])
+            major = sum(e.get("severity") == "major" for e in errors)
+            minor = sum(e.get("severity") == "minor" for e in errors)
+            parts.append(f"{arm}={w:.2f}[{''.join(str(scores[k]) for k in WEIGHTS)}]e{major}/{minor}")
+        ranking = [labels[label] for label in verdict.get("ranking", [])]
+        if ranking:
+            firsts[ranking[0]] += 1
+            for pos, arm in enumerate(ranking):
+                points[arm] += len(ranking) - 1 - pos
+        parts.append("rank=" + ">".join(ranking) + f" ({verdict.get('confidence')})")
+        print("  ".join(parts))
+    print()
+    for arm in sorted(per_arm):
+        ws = per_arm[arm]
+        dim = " ".join(f"{k}{sum(v) / len(v):.2f}" for k, v in sorted(dims[arm].items()))
+        print(f"{arm}: mean {sum(ws) / len(ws):.2f} (n={len(ws)})  firsts={firsts[arm]}  "
+              f"rank_pts={points[arm]}  {dim}")
+
+
+if __name__ == "__main__":
+    main()

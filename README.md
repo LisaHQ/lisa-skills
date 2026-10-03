@@ -42,6 +42,7 @@ other agents.
 | Skill | What it does |
 | --- | --- |
 | 📝 [**commit-message**](skills/commit-message/SKILL.md) | Writes accurate, concise commit messages from your actual Git or SVN changes. |
+| 📖 [**readme-md**](skills/readme-md/SKILL.md) | Writes, improves, or reviews READMEs for projects, folders, datasets, and other materials, grounded in your actual files. |
 
 > [!TIP]
 > Run `npx skills add LisaHQ/lisa-skills --list` to see the current catalog
@@ -162,6 +163,8 @@ lisa-skills/
 │       ├── references/    # Optional: detailed docs, loaded on demand
 │       ├── scripts/       # Optional: helper scripts
 │       └── assets/        # Optional: templates and other resources
+├── evals/
+│   └── <skill-name>/      # Optional: A/B test harness and results history
 ├── AGENTS.md              # Conventions for AI agents working on this repo
 ├── CLAUDE.md              # Claude Code–specific additions
 ├── LICENSE

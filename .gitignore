@@ -40,6 +40,10 @@ yarn.lock
 .claude/skills/
 skills-lock.json
 
+# Evaluation archives (kept in Dropbox, not Git) and Python bytecode
+evals/*/archive/
+__pycache__/
+
 # System Files
 .DS_Store
 Thumbs.db

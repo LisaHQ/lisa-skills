@@ -83,6 +83,10 @@ Reuse existing authorization within its approved scope.
 - When skill behavior changes, exercise representative valid, incomplete,
   out-of-scope, and failure cases. Syntax and discovery checks alone do not
   validate behavior.
+- When `evals/<skill-name>/` exists, compare the skill before and after a
+  change with that harness, following its README. Its runs spend model usage,
+  so get authorization before starting them. Keep generated work and archives
+  out of Git.
 - When scripts or tooling change, run relevant checks and fix failures
   introduced by the change.
 
