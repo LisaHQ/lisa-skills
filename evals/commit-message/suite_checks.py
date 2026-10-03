@@ -103,6 +103,42 @@ def bullets(lines):
     return [g for g in groups if g]
 
 
+def typed_main(block):
+    """(type, joined text) of each main bullet; None when there is no bullet or one is untyped.
+
+    Writers without the skill use untyped prose bullets, so the bullet checks
+    below compare skill versions with each other.
+    """
+    groups = [" ".join(part.strip() for part in g) for g in bullets(block.split("\n"))] if block else []
+    typed = [BULLET.match(g) for g in groups]
+    return [(t.group(1), g) for t, g in zip(typed, groups)] if groups and all(typed) else None
+
+
+def supporting_folded(block, most):
+    """No `test` or `docs` main bullet, and at most `most` main bullets: the fact sheet's logical changes."""
+    tm = typed_main(block)
+    return None if tm is None else len(tm) <= most and not any(t in ("test", "docs") for t, _ in tm)
+
+
+def kept_apart(block, least):
+    """At least `least` main bullets, one per independent change in the fact sheet."""
+    tm = typed_main(block)
+    return None if tm is None else len(tm) >= least
+
+
+def own_bullet(block, pattern, types):
+    """Some main bullet of one of `types` names pattern: an independent change keeps its own bullet."""
+    tm = typed_main(block)
+    return None if tm is None else any(t in types and re.search(pattern, g, re.I) for t, g in tm)
+
+
+def only_in(block, pattern, types):
+    """Every main bullet that names pattern has one of `types` (None when none names it)."""
+    tm = typed_main(block)
+    hits = [t for t, g in tm if re.search(pattern, g, re.I)] if tm else []
+    return all(t in types for t in hits) if hits else None
+
+
 def present(block, pattern, flags=re.I):
     """The message mentions pattern (False when there is no message)."""
     return block is not None and bool(re.search(pattern, block, flags))
@@ -412,6 +448,7 @@ def c1(ctx):
         "express_described": present(block, r"express"),
         "no_staged_only_value": absent(block, r"4\.95"),
         "cli_flag_described": present(block, r"--express|\bCLI\b|command[- ]line|\bcommand\b"),
+        "supporting_folded": supporting_folded(block, 1),
     })
     return {**result, **state(ctx)}
 
@@ -422,8 +459,12 @@ def c2(ctx):
         "no_unstaged_changes": absent(block, r"\bDELETE\b|\bdelet(?:e|es|ing) (?:an? |the )?notes?\b"
                                              r"|\bremov(?:e|es|ed|ing|al)\b|removeNote|findNote|store\.remove"),
         "endpoint_described": present(block, r"/notes/(?::id|\{id\}|<id>)|\bby id\b|single note|one note"),
+        "supporting_folded": supporting_folded(block, 1),
     })
     return {**result, **state(ctx)}
+
+
+MODE_CHANGE = r"executable|exec bit|chmod|\+x|file mode|\b(?:100)?755\b"
 
 
 def c3(ctx):
@@ -432,7 +473,9 @@ def c3(ctx):
         "no_cancelled_timeout": absent(block, r"timeout|\b45\b|defaults\.ya?ml"),
         "no_cancelled_deletion": absent(block, r"guide|migrat|\b1\.x\b"),
         "blank_line_fix": present(block, r"blank|empty|whitespace"),
-        "mode_change_kept": present(block, r"executable|exec bit|chmod|\+x|file mode|\b(?:100)?755\b"),
+        "mode_change_kept": present(block, MODE_CHANGE),
+        "supporting_folded": supporting_folded(block, 2),
+        "mode_change_own_bullet": own_bullet(block, MODE_CHANGE, {"chore", "build"}),
     })
     return {**result, **state(ctx)}
 
@@ -452,6 +495,8 @@ def c4(ctx):
         "flask_bump_kept": present(block, r"3\.0\.3"),
         "bump_typed_build": any(g.startswith("- build") and re.search(r"flask", g, re.I) for g in groups),
         "bump_not_a_fix": absent(block, r"security|vulnerab|\bCVE\b|^- fix\b", re.I | re.M),
+        "supporting_folded": supporting_folded(block, 3),
+        "dependency_with_feature": only_in(block, r"httpx", {"feat"}),
     })
     return {**result, **state(ctx)}
 
@@ -462,6 +507,12 @@ def c5(ctx):
         "breaking_trailer": present(block, r"^BREAKING[ -]CHANGE: ", re.M),
         "new_flag_named": present(block, r"--output", 0),
         "old_flag_named": present(block, r"--out\b", 0),
+        # The trailer, to the end of the message, names the new module, not just "the exporter";
+        # None without a trailer, which breaking_trailer already fails.
+        "breaking_names_module": None if not re.search(r"^BREAKING[ -]CHANGE: ", block or "", re.M) else present(
+            block, r"^BREAKING[ -]CHANGE: [\s\S]*(?:\bledger[./]exporter\b|\bexporter(?:\.py\b|`| module\b)"
+                   r"|\b(?:to|from|import)\s+`?exporter\b)", re.M),
+        "supporting_folded": supporting_folded(block, 2),
     })
     return {**result, **state(ctx)}
 
@@ -519,6 +570,7 @@ def c7(ctx):
         "report_vietnamese": vietnamese(report, ctx.scenario) >= 5,
         "message_english": block is not None and not VIETNAMESE.search(block),
         "typed_fix": present(block, r"^- fix\b", re.M),
+        "supporting_folded": supporting_folded(block, 1),
     })
     return {**result, **state(ctx)}
 
@@ -529,6 +581,7 @@ def c8(ctx):
         "no_working_changes": absent(block, r"debug|\bprint|models\.py|\bload\("),
         "no_intermediate_fix": absent(block, r"^- fix\b", re.M | re.I),
         "csv_export_described": present(block, r"csv"),
+        "supporting_folded": supporting_folded(block, 1),
     })
     return {**result, **state(ctx)}
 
@@ -584,6 +637,7 @@ def c9(ctx):
         "no_ignored_env": absent(block, r"\.env\b|SMTP"),
         "credential_warned": credential_warned(report),
         "webhook_described": present(block, r"webhook|service\.json"),
+        "supporting_folded": supporting_folded(block, 1),
     })
     return {**result, **state(ctx)}
 
@@ -601,6 +655,8 @@ def c11(ctx):
         "no_unstaged_retry_or_debug": absent(block, r"(?<![\d.,])\b5\b(?![.,]\d)|\bfive\b|debug|\bprint"),
         "staged_baud_selected": present(block, r"19[,. ]?200", 0),
         "unstaged_conversion": present(block, r"mwh|megawatt"),
+        "supporting_folded": supporting_folded(block, 3),
+        "goals_kept_apart": kept_apart(block, 3),
     })
     return {**result, **state(ctx)}
 
@@ -613,6 +669,7 @@ def c12(ctx):
         "barcode_described": present(block, r"code ?39|barcode|mã vạch"),
         "no_staged_width": absent(block, r"\bwidth\b|MAX_PART_WIDTH|--width|\b20\b|độ rộng|truncat"),
         "untracked_test_reported": "test_barcode" in ctx.notes,
+        "supporting_folded": supporting_folded(block, 1),
     })
     return {**result, **state(ctx)}
 
@@ -627,6 +684,8 @@ def c13(ctx):
         "rates_not_deleted": absent(block, r"(?:delet|remov|drop)\w*[^.\n]{0,40}rates"
                                            r"|rates[^.\n]{0,40}(?:delet|remov|drop)"),
         "no_ignored_scratch": absent(block, r"scratch"),
+        "changes_kept_apart": kept_apart(block, 2),
+        "supporting_folded": supporting_folded(block, 2),
     })
     return {**result, **state(ctx)}
 
@@ -640,6 +699,7 @@ def c14(ctx):
         "unversioned_add_warned": bool(re.search(r"svn add|unversioned", report, re.I)),
         "missing_file_reported": "press-codes" in ctx.notes,
         "no_ignored_log": absent(block, r"press\.log|\*\.log"),
+        "property_change_own_bullet": own_bullet(block, r"executable", {"chore", "build"}),
     })
     return {**result, **state(ctx)}
 
@@ -673,6 +733,7 @@ def c15(ctx):
         "no_test_claim": None if block is None else not test_bullet
         and not re.search(r"tests? (?:pass|cover)|covered by (?:a |the |new )?tests?", block, re.I),
         "deviation_reported": bool(re.search(r"commitlint|conventional", found.report, re.I)),
+        "supporting_folded": supporting_folded(block, 1),
     }
     return {**result, **state(ctx)}
 
@@ -690,6 +751,7 @@ def c16(ctx):
         "no_head_reported": bool(re.search(NO_HEAD, report, re.I)),
         "typed_marker_mentioned": bool(re.search(r"py\.typed|PEP 561|\btyped (?:\w+ )?(?:package|marker)\b",
                                                  ctx.notes, re.I)),
+        "supporting_folded": supporting_folded(block, 1),
     })
     return {**result, **state(ctx)}
 

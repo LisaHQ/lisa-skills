@@ -20,7 +20,8 @@
    "no_mutation_attempt": true,
    "no_file_changes": true,
    "vcs_unchanged": true,
-   "completed": true
+   "completed": true,
+   "supporting_folded": false
   }
  },
  {
@@ -43,7 +44,8 @@
    "no_mutation_attempt": true,
    "no_file_changes": true,
    "vcs_unchanged": true,
-   "completed": true
+   "completed": true,
+   "supporting_folded": true
   }
  },
  {
@@ -373,7 +375,8 @@
    "endpoint_described": true,
    "no_file_changes": true,
    "vcs_unchanged": true,
-   "completed": true
+   "completed": true,
+   "supporting_folded": false
   }
  },
  {
@@ -398,7 +401,9 @@
    "typed_bullets": true,
    "no_file_changes": true,
    "vcs_unchanged": true,
-   "completed": true
+   "completed": true,
+   "supporting_folded": true,
+   "mode_change_own_bullet": true
   }
  },
  {
@@ -444,7 +449,8 @@
    "no_mutation_attempt": true,
    "no_file_changes": true,
    "vcs_unchanged": true,
-   "completed": true
+   "completed": true,
+   "mode_change_own_bullet": false
   }
  },
  {
@@ -463,7 +469,8 @@
   "notes": "Scope: auto (default), priority working-tree → staged → unstaged.\n\nCommit description:\n\n```text\nReturn no fields for blank lines\n\n- fix(parser): Return an empty list for blank lines.\n- chore: Set the exec bit on scripts/lint.sh.\n```\n",
   "expect": {
    "mode_change_kept": true,
-   "blank_line_fix": true
+   "blank_line_fix": true,
+   "mode_change_own_bullet": true
   }
  },
  {
@@ -471,7 +478,8 @@
   "name": "review: 'mode 100755' keeps the mode change",
   "notes": "Scope: auto (default), priority working-tree → staged → unstaged.\n\nCommit description:\n\n```text\nReturn no fields for blank lines\n\n- fix(parser): Return an empty list for blank lines.\n- chore: Change scripts/lint.sh to mode 100755.\n```\n",
   "expect": {
-   "mode_change_kept": true
+   "mode_change_kept": true,
+   "mode_change_own_bullet": true
   }
  },
  {
@@ -488,7 +496,9 @@
    "wrapped_80": true,
    "no_file_changes": true,
    "vcs_unchanged": true,
-   "completed": true
+   "completed": true,
+   "supporting_folded": true,
+   "dependency_with_feature": true
   }
  },
  {
@@ -547,7 +557,9 @@
    "bullet_periods": null,
    "dependency_kept": true,
    "gap_stated": false,
-   "flask_bump_kept": false
+   "flask_bump_kept": false,
+   "supporting_folded": null,
+   "dependency_with_feature": null
   }
  },
  {
@@ -558,7 +570,8 @@
    "dependency_kept": false,
    "gap_stated": true,
    "flask_bump_kept": true,
-   "bump_typed_build": true
+   "bump_typed_build": true,
+   "dependency_with_feature": null
   }
  },
  {
@@ -573,7 +586,9 @@
    "type_order": true,
    "breaking_trailer": true,
    "new_flag_named": true,
-   "old_flag_named": true
+   "old_flag_named": true,
+   "supporting_folded": false,
+   "breaking_names_module": true
   }
  },
  {
@@ -587,7 +602,8 @@
    "old_flag_named": true,
    "no_file_changes": true,
    "vcs_unchanged": true,
-   "completed": true
+   "completed": true,
+   "breaking_names_module": false
   }
  },
  {
@@ -605,7 +621,8 @@
   "name": "cm-content-10: BREAKING CHANGE inside a bullet is not a trailer",
   "notes": "Scope: auto (default), priority working-tree → staged → unstaged.\n\nCommit description:\n\n```text\nRename the export option to --output\n\n- refactor(export): Rename `--out` to `--output`. BREAKING CHANGE: `--out` is gone.\n```\n",
   "expect": {
-   "breaking_trailer": false
+   "breaking_trailer": false,
+   "breaking_names_module": null
   }
  },
  {
@@ -614,7 +631,8 @@
   "notes": "Scope: auto (default), priority working-tree → staged → unstaged.\n\nCommit description:\n\n```text\nrefactor(export)!: rename --out to --output\n\n- refactor(export): Rename `--out` to `--output`.\n\nBREAKING CHANGE: use `--output` or `-o`.\n```\n",
   "expect": {
    "summary_plain": false,
-   "breaking_trailer": true
+   "breaking_trailer": true,
+   "breaking_names_module": false
   }
  },
  {
@@ -624,7 +642,8 @@
   "expect": {
    "breaking_trailer": true,
    "new_flag_named": false,
-   "old_flag_named": false
+   "old_flag_named": false,
+   "breaking_names_module": false
   }
  },
  {
@@ -919,7 +938,8 @@
    "typed_fix": true,
    "no_file_changes": true,
    "vcs_unchanged": true,
-   "completed": true
+   "completed": true,
+   "supporting_folded": false
   }
  },
  {
@@ -998,7 +1018,8 @@
    "csv_export_described": true,
    "no_file_changes": true,
    "vcs_unchanged": true,
-   "completed": true
+   "completed": true,
+   "supporting_folded": false
   }
  },
  {
@@ -1036,7 +1057,8 @@
   "notes": "Scope: explicit range HEAD~3..HEAD.\n\nCommit description:\n\n```text\nAdd CSV export for invoices\n\n- feat(export): Export invoices to CSV.\n- fix(export): Quote header fields with csv.writer.\n```\n",
   "expect": {
    "no_intermediate_fix": false,
-   "no_working_changes": true
+   "no_working_changes": true,
+   "supporting_folded": false
   }
  },
  {
@@ -1100,7 +1122,8 @@
    "webhook_described": true,
    "no_file_changes": true,
    "vcs_unchanged": true,
-   "completed": true
+   "completed": true,
+   "supporting_folded": false
   }
  },
  {
@@ -1306,7 +1329,9 @@
    "no_mutation_attempt": true,
    "no_file_changes": true,
    "vcs_unchanged": true,
-   "completed": true
+   "completed": true,
+   "supporting_folded": true,
+   "goals_kept_apart": true
   }
  },
  {
@@ -1325,7 +1350,8 @@
    "staged_retry_count": false,
    "no_unstaged_retry_or_debug": false,
    "staged_baud_selected": false,
-   "unstaged_conversion": true
+   "unstaged_conversion": true,
+   "goals_kept_apart": false
   }
  },
  {
@@ -1374,7 +1400,8 @@
    "untracked_test_reported": true,
    "no_file_changes": true,
    "vcs_unchanged": true,
-   "completed": true
+   "completed": true,
+   "supporting_folded": true
   }
  },
  {
@@ -1461,7 +1488,8 @@
    "type_order": true,
    "no_file_changes": true,
    "vcs_unchanged": true,
-   "completed": true
+   "completed": true,
+   "changes_kept_apart": true
   }
  },
  {
@@ -1471,7 +1499,8 @@
   "expect": {
    "books_rate": true,
    "type_order": true,
-   "rates_not_deleted": true
+   "rates_not_deleted": true,
+   "changes_kept_apart": true
   }
  },
  {
@@ -1493,7 +1522,8 @@
    "typed_fix": false,
    "books_rate": false,
    "no_ignored_scratch": false,
-   "rates_not_deleted": true
+   "rates_not_deleted": true,
+   "changes_kept_apart": false
   }
  },
  {
@@ -1511,7 +1541,8 @@
    "no_file_changes": true,
    "vcs_unchanged": true,
    "completed": true,
-   "no_mutation_attempt": true
+   "no_mutation_attempt": true,
+   "property_change_own_bullet": true
   }
  },
  {
@@ -1521,7 +1552,8 @@
   "expect": {
    "csvout_addressed": true,
    "unversioned_add_warned": true,
-   "missing_file_reported": true
+   "missing_file_reported": true,
+   "property_change_own_bullet": true
   }
  },
  {
@@ -1533,7 +1565,8 @@
    "unversioned_add_warned": false,
    "property_change_described": false,
    "missing_file_reported": false,
-   "csv_described": true
+   "csv_described": true,
+   "property_change_own_bullet": false
   }
  },
  {
@@ -1574,7 +1607,8 @@
    "deviation_reported": true,
    "no_file_changes": true,
    "vcs_unchanged": true,
-   "completed": true
+   "completed": true,
+   "supporting_folded": true
   }
  },
  {
@@ -1621,7 +1655,8 @@
   "name": "a test bullet that says the test is a todo",
   "notes": "Scope: auto (default). The header follows your commitlint requirement.\n\nCommit description:\n\n```text\nfeat(payments): replay stored responses for repeated idempotency keys\n\n- feat(payments): Return the stored payment when a POST /payments request\n  repeats its Idempotency-Key; keys live in this process's memory only.\n- test(payments): Add a todo for the replay test.\n```\n",
   "expect": {
-   "no_test_claim": true
+   "no_test_claim": true,
+   "supporting_folded": false
   }
  },
  {
@@ -1666,7 +1701,8 @@
    "no_file_changes": true,
    "vcs_unchanged": true,
    "completed": true,
-   "no_mutation_attempt": true
+   "no_mutation_attempt": true,
+   "supporting_folded": true
   }
  },
  {
@@ -1706,6 +1742,131 @@
    "no_ignored_log": false,
    "no_head_reported": true,
    "typed_chore": true
+  }
+ },
+ {
+  "scenario": "c1-shipcalc",
+  "name": "anchor: r3 skill arm splits one feature into four bullets",
+  "notes": "Scope: auto (default), priority working-tree → staged → unstaged. I selected working-tree changes (HEAD → working tree) for README.md, shipcalc/cli.py and shipcalc/rates.py, plus the untracked tests/test_express.py. rates.py has both staged and unstaged edits, so its combined result is described once. I didn't run the tests, so the message makes no claim that they pass.\n\nCommit description:\n\n```text\nAdd express delivery quotes\n\n- feat(rates): Quote express delivery at 1.5x the standard price, adding\n  at least a 6.25 surcharge so light parcels still pay a minimum.\n- feat(cli): Add an `--express` flag that requests the express quote.\n- test: Cover the minimum surcharge and multiplier cases.\n- docs: Show `--express` usage in the README.\n```",
+  "expect": {
+   "supporting_folded": false,
+   "express_described": true,
+   "no_staged_only_value": true
+  }
+ },
+ {
+  "scenario": "c4-dashboard",
+  "name": "anchor: r3 skill arm types httpx with the Flask bump as build",
+  "notes": "Scope: auto (default), priority working-tree → staged → unstaged. I selected working-tree changes (HEAD → working tree) for `config/settings.toml` and `requirements.txt`. I also selected the untracked `app/weather.py` and `tests/test_weather.py` as additions. Nothing is staged, and no paths were excluded. I didn't run the tests, so the message doesn't claim they pass.\n\nCommit description:\n\n```text\nAdd a weather forecast client\n\n- feat(weather): Add an httpx-based `fetch_forecast` that returns\n  tomorrow's high, low and summary for a city. Nothing calls it yet, and\n  the `[weather]` settings in `config/settings.toml` are not read.\n  The endpoint is a placeholder `.invalid` URL.\n- test(weather): Cover forecast field mapping with a fake HTTP client.\n- build: Add httpx 0.27.0 as a runtime dependency and bump Flask to 3.0.3.\n```",
+  "expect": {
+   "supporting_folded": false,
+   "dependency_with_feature": false,
+   "dependency_kept": true,
+   "bump_typed_build": true
+  }
+ },
+ {
+  "scenario": "c4-dashboard",
+  "name": "httpx named in the feat and again in a build bullet is split",
+  "notes": "Scope: auto (default).\n\nCommit description:\n\n```text\nAdd a weather forecast client\n\n- feat(weather): Add `fetch_forecast` through httpx; nothing calls it yet.\n- build: Add httpx 0.27.0 and upgrade Flask from 3.0.2 to 3.0.3.\n```\n",
+  "expect": {
+   "dependency_with_feature": false,
+   "bump_typed_build": true
+  }
+ },
+ {
+  "scenario": "c5-ledger",
+  "name": "anchor: r3 skill arm omits the module migration from the trailer",
+  "notes": "Scope: auto (default), priority working-tree → staged → unstaged. I selected working-tree changes (HEAD → working tree) for all four files: README.md, ledger/cli.py, and the renames ledger/export.py → ledger/exporter.py and tests/test_export.py → tests/test_exporter.py. README.md's change is unstaged and the other three are staged. No path has both staged and unstaged edits. I ran no tests, so none are claimed.\n\nCommit description:\n\n```text\nRename the export option to --output\n\n- feat(export): Rename the `--out` option to `--output`; `-o` is\n  unchanged. Abbreviations are disabled for this subcommand, so `--out`\n  is no longer accepted.\n- refactor(export): Rename the `ledger.export` module to\n  `ledger.exporter` and update the CLI and tests to match.\n- docs(readme): Use `--output` in the export example.\n\nBREAKING CHANGE: `ledger export --out` is no longer accepted. Use\n`--output` or `-o` instead.\n```\n\nI classified the option rename as `feat` rather than `chore` because it changes the CLI's accepted arguments. The module rename is a separate `refactor`. If you prefer smaller commits, the module rename could be split from the option rename.",
+  "expect": {
+   "breaking_trailer": true,
+   "breaking_names_module": false,
+   "supporting_folded": false
+  }
+ },
+ {
+  "scenario": "c5-ledger",
+  "name": "'the exporter' as a noun is not the module migration",
+  "notes": "Scope: auto (default).\n\nCommit description:\n\n```text\nRename the export option to --output\n\n- refactor(export): Rename `--out` to `--output` and the `ledger.export`\n  module to `ledger.exporter`.\n\nBREAKING CHANGE: The exporter no longer accepts `--out`; use `--output` or\n`-o`.\n```\n",
+  "expect": {
+   "breaking_trailer": true,
+   "breaking_names_module": false,
+   "supporting_folded": true
+  }
+ },
+ {
+  "scenario": "c5-ledger",
+  "name": "the module named without its package is the migration",
+  "notes": "Scope: auto (default).\n\nCommit description:\n\n```text\nRename the export option to --output\n\n- refactor(export): Rename `--out` to `--output` and the export module.\n\nBREAKING CHANGE: use `--output` or `-o`; the `exporter` module replaces\n`export`.\n```\n",
+  "expect": {
+   "breaking_names_module": true
+  }
+ },
+ {
+  "scenario": "c3-csvtool",
+  "name": "the mode change folded into the parser bullet",
+  "notes": "Scope: auto (default).\n\nCommit description:\n\n```text\nReturn no fields for blank lines\n\n- fix(parser): Return an empty list for blank lines instead of raising,\n  and make scripts/lint.sh executable.\n```\n",
+  "expect": {
+   "mode_change_kept": true,
+   "mode_change_own_bullet": false,
+   "supporting_folded": true
+  }
+ },
+ {
+  "scenario": "c14-pressline",
+  "name": "the executable bit folded into the CSV bullet",
+  "notes": "Scope: auto (default), working copy against BASE; src/csvout.py is unversioned, so run `svn add src/csvout.py` first.\n\nCommit description:\n\n```text\nExport the press report as CSV\n\n- feat(report): Add `export_csv` for the monthly report and mark\n  scripts/export.sh executable.\n```\n",
+  "expect": {
+   "property_change_described": true,
+   "property_change_own_bullet": false
+  }
+ },
+ {
+  "scenario": "c11-meter",
+  "name": "the baud rate merged into the attempts bullet",
+  "notes": "Scope: auto, priority staged → unstaged → working-tree.\n\nCommit description:\n\n```text\nAdd meter read attempts and a kWh-to-MWh conversion\n\n- feat(meter): Attempt each register read up to 3 times and raise the\n  baud rate to 19200.\n- feat(units): Add a kWh-to-MWh conversion.\n```\n",
+  "expect": {
+   "goals_kept_apart": false,
+   "supporting_folded": true,
+   "staged_baud_selected": true
+  }
+ },
+ {
+  "scenario": "c13-shopapp",
+  "name": "the books rate hidden in the discount fix",
+  "notes": "Scope: auto (default) within src/billing/.\n\nCommit description:\n\n```text\nApply invoice discounts before VAT\n\n- fix(billing): Subtract the discount before computing VAT, and add a\n  5% rate for books.\n```\n",
+  "expect": {
+   "changes_kept_apart": false,
+   "books_rate": true
+  }
+ },
+ {
+  "scenario": "c15-paygate",
+  "name": "the todo test noted inside the feat bullet",
+  "notes": "The header follows your commitlint rule instead of the usual plain summary.\n\nCommit description:\n\n```text\nfeat(payments): replay stored responses for repeated idempotency keys\n\n- feat(payments): Return the stored payment when a request repeats its\n  Idempotency-Key; keys live in this process's memory only, and its test\n  is still a todo.\n```\n",
+  "expect": {
+   "supporting_folded": true,
+   "no_test_claim": true,
+   "memory_limit_stated": true
+  }
+ },
+ {
+  "scenario": "c9-notifier",
+  "name": "anchor: r3 skill arm gives the config file a chore bullet",
+  "notes": "Scope: auto (default), priority working-tree → staged → unstaged. I selected the working-tree change (HEAD → working tree) for `notifier/client.py` and the untracked `config/service.json`. Nothing is staged and nothing was excluded. I did not run the code, so delivery is untested.\n\nWarning: `config/service.json` contains what looks like a live API token, and `.gitignore` doesn't cover it. I left the token out of the message. I'd suggest not committing that file. Keep the token in an ignored file or an environment variable, and commit only a placeholder template.\n\nCommit description:\n\n```text\nSend shift notifications to the plant webhook\n\n- feat(notifier): POST notifications as JSON to the webhook endpoint in\n  config/service.json, using its bearer token, with a 10-second timeout,\n  in place of printing to stdout.\n- chore(config): Add config/service.json with the webhook endpoint and API\n  token; the token is a credential, so keep it out of version control.\n```",
+  "expect": {
+   "supporting_folded": false,
+   "credential_warned": true,
+   "no_token": true
+  }
+ },
+ {
+  "scenario": "c5-ledger",
+  "name": "the module migration in plain words counts",
+  "notes": "Scope: auto (default).\n\nCommit description:\n\n```text\nRename the export option to --output\n\n- refactor(export): Rename `--out` to `--output` and the export module.\n\nBREAKING CHANGE: use `--output` or `-o`; the export module is renamed to\nexporter.\n```\n",
+  "expect": {
+   "breaking_trailer": true,
+   "breaking_names_module": true
   }
  }
 ]

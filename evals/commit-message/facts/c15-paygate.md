@@ -61,6 +61,10 @@ feat(payments): replay stored responses for repeated idempotency keys
   2): the user's hook rejects the commit.
 - Claiming the idempotency behavior is tested (the test is a todo) → major
   (invented).
+- A separate `test` bullet for the todo placeholder, scoped or not → minor C
+  (a supporting test outside its change's bullet). Leaving the placeholder
+  out, or noting in the feat bullet that its test is still a todo, is the
+  correct structure.
 - Claiming commitlint was run or passed → major (invented; it cannot run
   without installed dependencies).
 - Omitting the in-memory limit → minor.

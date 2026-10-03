@@ -73,7 +73,8 @@ reader-critical gap is a listed unknown.
   mislead a reader. A highlight previews a section; its details stay there.
   A small project may need none.
 - **First success:** the shortest verified path from zero to a visible
-  result: prerequisites, install, one command, and the expected output.
+  result: prerequisites, install, one command, and its expected output when
+  a run or a file records it.
 
 Done when a newcomer reading only these three could decide whether the
 project fits and try it.
@@ -96,10 +97,15 @@ deeper docs instead of copying them, and fold long optional detail into
 `<details>`.
 
 When improving, treat the existing README as the owner's design. Audit it
-first: check every claim, command, link, and example against the evidence;
-update a stale example from its current source. Then scale the edit to the
-request: an update fixes what is wrong, stale, or missing; a polish also
-sharpens the first screen and unclear wording; a rewrite may restructure.
+first: check every claim, command, link, and example against the evidence.
+Compare each sample output, line by line, with the format its producer (the
+code or rules that generate it) defines, including the producer's own
+examples; update a stale example from its current source. Then scale the
+edit to the request: an update fixes what is wrong, stale, or missing; a
+polish also sharpens the first screen and unclear wording; a rewrite may
+restructure. When the audit traces stale text to breaking changes in the
+changelog, add a short upgrade note that names each change existing users
+must act on and links the changelog.
 Keep correct, readable text and deliberate choices such as layout, badges,
 emoji, alerts, credits, and headings that others link to; remove one only
 when it is broken or misleading. Keep facts only the owner can know, such as
@@ -134,8 +140,8 @@ In improve mode, apply these rules to the text you add or change.
 - Write descriptive link text. Link repository files with relative paths; use
   absolute URLs when a package registry renders the README.
 - Give every image alt text that states what it shows.
-- Add a badge only for a live signal that exists, such as a CI workflow, a
-  published version, or a license file; keep five or fewer, each linking to
+- Add a badge only for a signal the evidence confirms, such as a CI workflow,
+  a published version, or a license file; keep five or fewer, each linking to
   its source.
 - Use emoji sparingly, never consecutively and never as the only signal;
   follow the project's existing tone.
@@ -158,25 +164,30 @@ and anchor rules, see [references/markdown.md](references/markdown.md).
    feature, example, and sample output matches the evidence; re-run the
    cheap checks. A claim about compatibility, reproducibility, or performance
    names the conditions you checked.
-2. **Unknowns:** keep them out of the README rather than guessing. Leave out
+2. **Examples:** build each code example from a call that the tests or
+   example files exercise, when one exists; trace every input you change
+   through the code, including how inputs combine. Show output only from a
+   run or a file that records it, such as a test assertion; leave out output
+   you worked out by hand.
+3. **Unknowns:** keep them out of the README rather than guessing. Leave out
    any license, badge, install channel, URL, maintainer, roadmap, benchmark,
    or screenshot that the evidence does not support. Use placeholders only for
    values each reader supplies, such as tokens and paths.
-3. **Links:** relative targets exist and in-page anchors match headings.
-4. **Rendering:** fences are closed and tagged, headings are in order, and
+4. **Links:** relative targets exist and in-page anchors match headings.
+5. **Rendering:** fences are closed and tagged, headings are in order, and
    tables and HTML are balanced.
-5. **First screen:** within about 25 lines, a newcomer learns what it is,
+6. **First screen:** within about 25 lines, a newcomer learns what it is,
    who it is for, why it matters, and the first command or step to take.
-6. **Cut pass:** reread as the newcomer and delete what they would skip:
+7. **Cut pass:** reread as the newcomer and delete what they would skip:
    repeated facts, hedges, sales talk, advice they did not need, and sections
    with nothing to say. In improve mode, cut only text you added or changed,
    plus stale or false content.
-7. **Safety:** no secrets or credentials; use placeholders such as
+8. **Safety:** no secrets or credentials; use placeholders such as
    `<password>` or `example.invalid`. Include internal hostnames or personal
    contact data only when the README stays internal and its readers need
    them. Keep content marked for a narrower audience, such as answer keys or
    confidential notes, out of a README its readers can open.
-8. **Improve mode:** nothing valuable dropped silently; translated READMEs
+9. **Improve mode:** nothing valuable dropped silently; translated READMEs
    such as `README.<lang>.md` updated or reported as stale.
 
 ## 7. Deliver

@@ -7,7 +7,7 @@ Kind: library (TypeScript, npm). Reader: JS/TS developers calling HTTP JSON APIs
 
 - Package name **`@example-org/fetchkit`** (scoped). The unscoped `fetchkit` is deprecated (CHANGELOG 2.0.0). Published per CHANGELOG ("Publish as @example-org/fetchkit").
 - API: **`createClient(options)`** returns `{ get, post, put, patch, delete }`; each returns a Promise of parsed JSON (`undefined` for 204). Generic type parameter for typed responses (`api.get<User[]>("users")`).
-- Options and defaults: `baseUrl` (relative paths resolve against it), `retries` = **2** extra attempts, `retryOn` = **408, 425, 429, 500, 502, 503, 504**, `retryNonIdempotent` = **false** (POST and PATCH are **not** retried unless enabled; GET/HEAD/PUT/DELETE/OPTIONS are), `timeoutMs` = **10000** per attempt, `headers`.
+- Options and defaults: `baseUrl` (relative paths resolve against it), `retries` = **2** extra attempts, `retryOn` = **408, 425, 429, 500, 502, 503, 504**, `retryNonIdempotent` = **false** (POST and PATCH are **not** retried unless enabled; GET, PUT, and DELETE are), `timeoutMs` = **10000** per attempt, `headers`.
 - Retries: exponential backoff with full jitter (random up to 200 ms x 2^attempt, capped 5 s); **honors `Retry-After` on 429 and 503** (capped 30 s); network errors and timeouts are retried for retryable methods.
 - Errors: throws **`FetchkitError`** with `status`, `url`, `body` for non-2xx after retries and for network failures/timeouts (status undefined then).
 - Node.js **>= 18** (native fetch). Ships ESM and CJS (`exports` import/require) with TypeScript types. Tests run only on Node 18/20/22 (GitHub Actions `test.yml`); **no evidence for browser or Deno support**.
@@ -33,6 +33,9 @@ Kind: library (TypeScript, npm). Reader: JS/TS developers calling HTTP JSON APIs
 - Keeping or showing `npm install fetchkit` / `fetchkit.get(...)` / `timeout` option / `cache` option / "Caching" feature -> major each.
 - Wrong defaults (retries 3, timeout 5000) -> major.
 - Claiming all requests (incl. POST) are retried -> major.
+- An example whose request URL drops the base path (a leading-slash path, or a base path without a
+  trailing slash; see the judge notes) -> major, counted once per outcome.
+- Listing HEAD or OPTIONS among the retried methods (copied from the internal `IDEMPOTENT` set) -> minor.
 - Keeping "Works everywhere (Node 14+, browsers, Deno)" or claiming browser/Deno support as fact -> major (Node 14 wrong) / minor (browsers unverified).
 - Keeping the Travis badge (CI is GitHub Actions) or an npm badge for unscoped `fetchkit` -> minor each.
 - Dropping the Sponsors or Contributors acknowledgments silently -> process failure (F), minor.
@@ -42,5 +45,5 @@ Kind: library (TypeScript, npm). Reader: JS/TS developers calling HTTP JSON APIs
 
 - Verify against `src/`, `package.json`, `CHANGELOG.md`, the workflow, and `LICENSE`; the original `README.md` is the stale input.
 - With `baseUrl` "https://api.example.com/v1/", a path with a leading slash such as "/users" resolves to https://api.example.com/users (dropping /v1), so examples must use relative paths.
-- A `baseUrl` with a path must end with `/`: "users" against "https://api.example.com/v1" resolves to https://api.example.com/users. The doc comment in `src/index.ts` shows the base URL without the slash; the test uses it with the slash. Count an example that relies on the slash-less form as a major error.
+- A `baseUrl` with a path must end with `/`: "users" against "https://api.example.com/v1" resolves to https://api.example.com/users. The doc comment in `src/index.ts` shows the base URL without the slash; the test uses it with the slash.
 - Only `get`, `post`, `put`, `patch`, and `delete` exist on the client; HEAD and OPTIONS cannot be sent.

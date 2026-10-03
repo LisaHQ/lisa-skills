@@ -80,9 +80,10 @@ never append it to another view of the same file. Ask only when a material
 ambiguity cannot be resolved from context.
 
 For SVN, `auto` and `working-tree` select working-copy changes against BASE.
-When the request names `auto-priority`, `staged`, or `unstaged`, report that
-SVN has no staging area; reject explicit `staged` or `unstaged` without
-substituting another scope.
+SVN has no staging area; say so when the request names `auto-priority`,
+`staged`, or `unstaged`. For a request for staged or unstaged changes,
+however worded, give only the report and offer to describe the working-copy
+changes.
 
 ## 2. Ground the content in evidence
 
@@ -113,10 +114,11 @@ substituting another scope.
   integration gaps, such as new code nothing calls or new settings nothing
   reads, when the change could otherwise look active.
 - Group by purpose, not by file; describe each material logical change once.
-  Keep supporting code, tests, docs, and configuration with their change.
-  State the outcome or limit directly; do not inventory supporting edits
-  unless they are independently material. Exclude plans and out-of-scope
-  claims; describe partial work honestly.
+  Give each change one bullet, even across modules: fold in the code, tests,
+  docs, configuration, and new dependencies that serve it, and state each new
+  dependency only in that bullet. State the outcome or limit directly;
+  mention supporting edits only when independently material. Exclude plans
+  and out-of-scope claims; describe partial work honestly.
 - Recommend separate commits for independent goals when useful, while still
   covering the requested scope. Different types alone do not justify a split.
 - Use identifiers and paths only when useful; never expose secrets or private data.
@@ -139,7 +141,8 @@ Use the following display order; it is not classification priority.
 | 9 | `build` | Change builds, packaging, or tooling; perform routine dependency upgrades |
 | 10 | `ci` | Change continuous integration or delivery workflows |
 
-Use `docs`, `test`, or `ci` when the purpose is confined to those concerns.
+Reserve `docs`, `test`, and `ci` for work that serves no other change in the
+selection.
 Use `chore` for value-only adjustments or initial scaffolding unless evidence
 establishes a more specific purpose. A changed value or a new file alone
 does not establish an added capability.
@@ -159,15 +162,17 @@ no changes from insufficient evidence.
 
 Keep reports, inspection limitations, split recommendations, format conflicts,
 routine logs, task status, and task next steps outside the commit-message block.
+Mention whether tests ran only when the request asks, and leave claims
+omitted from the message unexplained.
 
 ### Selection report
 
 Before the message, report in the conversation's language, normally in one
-or two sentences. State the requested scope (mark default `auto`), resolved
-comparison(s), boundary, and material exclusions or evidence limits, including
-fallback caused by unavailable evidence. For `auto`, include the priority
-and group selected files by view; use counts when clearer. Identify paths
-with excluded changes or net cancellations.
+or two sentences. State the requested scope (mark default `auto`) or fixed
+selection, resolved comparison(s), boundary, and material exclusions or
+inspection limits, including fallback caused by unavailable evidence. For
+`auto`, include the priority and group selected files by view; use counts
+when clearer. Identify paths with excluded changes or net cancellations.
 
 When staged and unstaged changes coexist within the boundary, report whether
 paths overlap and whether the selection combines both sides, selects one, or
@@ -177,9 +182,9 @@ existing snapshot.
 
 Example with default priority:
 > Scope: auto (default), priority working-tree → staged → unstaged.
-> Select working-tree changes for A, B, C and untracked D (HEAD → working
-> tree), including C's combined staged and unstaged result once; omit E
-> because its staged and unstaged changes cancel out.
+> Select the working-tree view (HEAD → working tree) for four files,
+> including renamed B, untracked D, and C's combined staged and unstaged
+> result once; omit E because its staged and unstaged changes cancel out.
 
 ### Commit message
 
@@ -251,8 +256,9 @@ Never invent issue references, identities, approvals, or sign-off attestations.
    empty/unavailable handling, stopping, fallback, and reported exclusions.
 2. Confirm every selected diff and new file was inspected; reject duplicate
    views or claims in the summary or body unsupported by the selected versions.
-3. Cover each material logical change once; remove incidental detail and
-   check focus, grouping, and split advice.
+3. Cover each material logical change in one main bullet: fold into it
+   every bullet or clause about its tests, docs, configuration, or added
+   dependencies. Remove incidental detail and check focus and split advice.
 4. Check classification, order, summary, nesting, punctuation, references,
    trailers, and code-block format.
 5. Keep the report and other commentary outside the commit-message block.

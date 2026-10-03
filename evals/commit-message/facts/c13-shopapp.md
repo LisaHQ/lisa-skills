@@ -45,8 +45,8 @@ ignored `scratch.tmp`.
    include it, is optional credit.
 3. `rates.csv` described as changed (a books rate added), not as deleted.
 4. Report: auto (default) within `src/billing/`; `rates.csv`'s deletion and
-   recreation reconciled into one modification; out-of-boundary paths and the
-   ignored file excluded.
+   recreation reconciled into one modification; out-of-boundary paths
+   excluded. Naming the ignored `scratch.tmp` in the report is neutral.
 
 Example of a strong message:
 

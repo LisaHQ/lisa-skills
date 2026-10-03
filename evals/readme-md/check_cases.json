@@ -253,7 +253,8 @@
    "upgrade_note": true,
    "md_links_ok": true,
    "md_fences_ok": true,
-   "md_headings_ok": true
+   "md_headings_ok": true,
+   "base_url_example": true
   }
  },
  {
@@ -366,7 +367,8 @@
    "upgrade_note": false,
    "md_links_ok": null,
    "md_fences_ok": null,
-   "md_headings_ok": null
+   "md_headings_ok": null,
+   "base_url_example": true
   }
  },
  {
@@ -1428,7 +1430,9 @@
    "cookbook_flagged": true,
    "md_links_ok": true,
    "md_fences_ok": true,
-   "md_headings_ok": true
+   "md_headings_ok": true,
+   "upgrade_note": false,
+   "example_output": false
   }
  },
  {
@@ -1461,7 +1465,9 @@
    "translation_handled": false,
    "translation_fresh": null,
    "translation_links_fixed": null,
-   "md_links_ok": null
+   "md_links_ok": null,
+   "upgrade_note": false,
+   "example_output": false
   }
  },
  {
@@ -1474,7 +1480,8 @@
   "expect": {
    "no_old_flags": true,
    "commands_valid": true,
-   "links_fixed": true
+   "links_fixed": true,
+   "upgrade_note": true
   }
  },
  {
@@ -1553,7 +1560,8 @@
   },
   "expect": {
    "no_old_flags": true,
-   "links_fixed": true
+   "links_fixed": true,
+   "upgrade_note": true
   }
  },
  {
@@ -1792,6 +1800,381 @@
   },
   "expect": {
    "only_readme_changed": false
+  }
+ },
+ {
+  "scenario": "s2-fetchkit",
+  "name": "a trailing-slash base with relative paths passes",
+  "files": {
+   "README.md": "# fetchkit\n\n```ts\nimport { createClient } from \"@example-org/fetchkit\";\n\nconst api = createClient({ baseUrl: \"https://api.example.com/v1/\" });\nconst users = await api.get<User[]>(\"users\");\n```\n"
+  },
+  "expect": {
+   "base_url_example": true
+  }
+ },
+ {
+  "scenario": "s2-fetchkit",
+  "name": "a base path without a trailing slash is caught",
+  "files": {
+   "README.md": "# fetchkit\n\n```ts\nimport { createClient } from \"@example-org/fetchkit\";\n\nconst api = createClient({ baseUrl: \"https://api.example.com/v1\" });\nconst users = await api.get(\"users\");\n```\n"
+  },
+  "expect": {
+   "base_url_example": false
+  }
+ },
+ {
+  "scenario": "s2-fetchkit",
+  "name": "a leading-slash path against a base path is caught, nested generics too",
+  "files": {
+   "README.md": "# fetchkit\n\n```ts\nimport { createClient } from \"@example-org/fetchkit\";\n\nconst api = createClient({ baseUrl: \"https://api.example.com/v1/\" });\nconst users = await api.get<Array<User>>(\"/users\");\n```\n"
+  },
+  "expect": {
+   "base_url_example": false
+  }
+ },
+ {
+  "scenario": "s2-fetchkit",
+  "name": "a host-only base with rooted paths passes",
+  "files": {
+   "README.md": "# fetchkit\n\n```ts\nimport { createClient } from \"@example-org/fetchkit\";\n\nconst api = createClient({ baseUrl: \"https://api.example.com\" });\nconst users = await api.get(\"/users\");\n```\n"
+  },
+  "expect": {
+   "base_url_example": true
+  }
+ },
+ {
+  "scenario": "s2-fetchkit",
+  "name": "a prose note that quotes the wrong form passes",
+  "files": {
+   "README.md": "# fetchkit\n\n```ts\nimport { createClient } from \"@example-org/fetchkit\";\n\nconst api = createClient({ baseUrl: \"https://api.example.com/v1/\" });\nconst users = await api.get(\"users\");\n```\n\nKeep the trailing slash: `baseUrl: \"https://api.example.com/v1\"` with `api.get(\"/users\")` drops `/v1`.\n"
+  },
+  "expect": {
+   "base_url_example": true
+  }
+ },
+ {
+  "scenario": "s2-fetchkit",
+  "name": "inline code in a highlight that drops the base path is caught",
+  "files": {
+   "README.md": "# fetchkit\n\n- Typed requests: `createClient({ baseUrl: \"https://api.example.com/v1/\" })` then `api.get(\"/users\")`.\n"
+  },
+  "expect": {
+   "base_url_example": false
+  }
+ },
+ {
+  "scenario": "s3-hanoi-air-quality",
+  "name": "running the aggregation script is caught",
+  "files": {
+   "README.md": "# Hanoi air quality\n"
+  },
+  "meta": {
+   "commands": [
+    "wc -l raw/*.csv; python scripts/aggregate_daily.py && echo ran"
+   ]
+  },
+  "expect": {
+   "no_script_run": false
+  }
+ },
+ {
+  "scenario": "s3-hanoi-air-quality",
+  "name": "a denied run on its own line is still an attempt",
+  "files": {
+   "README.md": "# Hanoi air quality\n"
+  },
+  "meta": {
+   "commands": [
+    "cat SOURCE.md\n./scripts/aggregate_daily.py"
+   ],
+   "denials": [
+    "Bash: cat SOURCE.md\n./scripts/aggregate_daily.py"
+   ]
+  },
+  "expect": {
+   "no_script_run": false
+  }
+ },
+ {
+  "scenario": "s3-hanoi-air-quality",
+  "name": "reading, grepping, or compiling the script passes",
+  "files": {
+   "README.md": "# Hanoi air quality\n"
+  },
+  "meta": {
+   "commands": [
+    "cat SOURCE.md scripts/aggregate_daily.py",
+    "grep -n python scripts/aggregate_daily.py",
+    "python -m py_compile scripts/aggregate_daily.py"
+   ]
+  },
+  "expect": {
+   "no_script_run": true
+  }
+ },
+ {
+  "scenario": "s3-hanoi-air-quality",
+  "name": "naming the command in a heredoc or a quoted grep passes",
+  "files": {
+   "README.md": "# Hanoi air quality\n"
+  },
+  "meta": {
+   "commands": [
+    "cat > README.md <<'EOF'\nRegenerate:\n\n    python scripts/aggregate_daily.py\nEOF",
+    "grep -n \"python scripts/aggregate_daily.py\" README.md"
+   ]
+  },
+  "expect": {
+   "no_script_run": true
+  }
+ },
+ {
+  "scenario": "s3-hanoi-air-quality",
+  "name": "a run on a copy is left to a manual look",
+  "files": {
+   "README.md": "# Hanoi air quality\n"
+  },
+  "meta": {
+   "commands": [
+    "python -c \"import shutil; shutil.copytree('.', '/tmp/aq')\"",
+    "python /tmp/aq/scripts/aggregate_daily.py"
+   ]
+  },
+  "expect": {
+   "no_script_run": null
+  }
+ },
+ {
+  "scenario": "s5-sao-luu-erp",
+  "name": "an English Quick start heading is caught",
+  "files": {
+   "README.md": "# Sao lưu ERP\n\nCác script sao lưu và khôi phục cơ sở dữ liệu ERP hằng đêm.\n\n## Điểm chính\n\n- Sao lưu lúc 23:30.\n\n## Quick start\n\n1. Chạy thử.\n"
+  },
+  "expect": {
+   "headings_translated": false
+  }
+ },
+ {
+  "scenario": "s5-sao-luu-erp",
+  "name": "translated headings, a file name, and an English gloss pass",
+  "files": {
+   "README.md": "# Sao lưu ERP\n\nCác script sao lưu và khôi phục cơ sở dữ liệu ERP hằng đêm.\n\n## Bắt đầu nhanh (Quick start)\n\n1. Chạy thử.\n\n## Cấu hình (`config.json`)\n\n- Đường dẫn NAS.\n\n## `backup.ps1`\n\nSao lưu.\n"
+  },
+  "expect": {
+   "headings_translated": true
+  }
+ },
+ {
+  "scenario": "s8-lisa-skills",
+  "name": "nested example bullets outside a blockquote are caught",
+  "files": {
+   "README.md": "<div align=\"center\">\n\n# lisa-skills\n\n**Reusable AI agent skills for everyday workflows.**<br>\nBuilt for personal use, shared with the community.\n\n[![License: MIT](https://img.shields.io/badge/license-MIT-2ea44f?style=flat-square)](LICENSE)\n[![Format: Agent Skills](https://img.shields.io/badge/format-Agent%20Skills-6e40c9?style=flat-square)](https://agentskills.io)\n[![Install with npx skills](https://img.shields.io/badge/install-npx%20skills%20add-cb3837?style=flat-square&logo=npm&logoColor=white)](#quick-start)\n[![Last commit](https://img.shields.io/github/last-commit/LisaHQ/lisa-skills?style=flat-square&color=0969da)](https://github.com/LisaHQ/lisa-skills/commits/main)\n\n[Quick start](#quick-start) ·\n[Skill catalog](#skill-catalog) ·\n[Usage](#usage) ·\n[Create a skill](#create-a-skill) ·\n[Contributing](#contributing)\n\n</div>\n\n**lisa-skills** is a curated collection of skills that teach AI agents to handle\neveryday tasks consistently. Each skill is a small folder of readable Markdown\ninstructions: install it once, and your agent applies it whenever a task calls\nfor it — no copy-pasting prompts.\n\nSkills follow the open [Agent Skills](https://agentskills.io) format, supported\nby Claude Code, Codex, Cursor, GitHub Copilot, Gemini CLI, OpenCode, and many\nother agents.\n\n## Highlights\n\n- 🎯 **Focused** — Each skill does one job, with clear inputs, outputs, and\n  success criteria.\n- 🔍 **Grounded** — Skills work from evidence in your project, not assumptions.\n- 🧩 **Portable** — No hard-coded names, brands, or paths; skills adapt to any\n  project.\n- 🪶 **Lightweight** — Plain Markdown you can review before installing, loaded\n  only when a task needs it.\n\n## Skill catalog\n\n| Skill | What it does |\n| --- | --- |\n| 📝 [**commit-message**](skills/commit-message/SKILL.md) | Writes accurate, concise commit messages from your actual Git or SVN changes. |\n\n> [!TIP]\n> Run `npx skills add LisaHQ/lisa-skills --list` to see the current catalog\n> from your terminal without installing anything.\n\n## Quick start\n\nYou need [Node.js](https://nodejs.org) (current LTS recommended) to run the\n[`skills`](https://github.com/vercel-labs/skills) CLI through `npx`. No\nNode.js? See [Manual installation](#manual-installation).\n\n**1. Install the skills**\n\n```bash\nnpx skills add LisaHQ/lisa-skills\n```\n\nThe CLI detects the agents on your machine and guides you through the remaining\nchoices.\n\n**2. Ask your agent**\n\nStart a new session and describe the task in plain language — for example,\n*\"Write a commit message for my changes.\"* Your agent loads the matching skill\nautomatically.\n\n**3. Stay up to date**\n\n```bash\nnpx skills update\n```\n\n### Common commands\n\n| Task | Command |\n| --- | --- |\n| Preview skills without installing | `npx skills add LisaHQ/lisa-skills --list` |\n| Install a specific skill | `npx skills add LisaHQ/lisa-skills --skill commit-message` |\n| Install for all your projects | `npx skills add LisaHQ/lisa-skills --global` |\n| Install for specific agents | `npx skills add LisaHQ/lisa-skills --agent claude-code codex` |\n| List installed skills | `npx skills list` |\n| Update installed skills | `npx skills update` |\n| Remove a skill | `npx skills remove commit-message` |\n\n> [!NOTE]\n> By default, skills install into the current project (for example,\n> `.claude/skills/` for Claude Code), so you can commit them and share them\n> with your team. Add `--global` to install them in your user directory (for\n> example, `~/.claude/skills/`) and use them in every project.\n\n### Manual installation\n\nEvery skill is just a folder, so you can also copy it into your agent's skills\ndirectory by hand. For Claude Code:\n\n```bash\ngit clone https://github.com/LisaHQ/lisa-skills.git\nmkdir -p ~/.claude/skills\ncp -r lisa-skills/skills/commit-message ~/.claude/skills/\n```\n\nTo limit a skill to one project, copy it into that project's `.claude/skills/`\nfolder instead. Other agents read skills from their own folders — see your\nagent's documentation or the\n[skills CLI's list of supported agents](https://github.com/vercel-labs/skills#supported-agents).\n\n## Usage\n\nSkills work in the background, so there are no commands to memorize.\n\n- **Just ask.** Describe what you need. Your agent compares the request with\n  each skill's description and loads the right one.\n- **Call a skill by name.** Many agents also let you invoke a skill directly —\n  in Claude Code, type `/<skill-name>` (e.g., `/commit-message`).\n- **Fine-tune with options.** Add details in plain language, such as\n  *\"only my staged changes\"*, or pass arguments like\n  `/commit-message scope=staged`.\n\nFor example, with the `commit-message` skill:\n\n> **You:** Write a commit message for my staged changes.\n>\n> **Agent:** Scope: staged (HEAD → index) — 3 files selected.\n>\n```text\nSupport per-job retry limits\n\n- feat(retries): Allow each job to override its retry limit.\n  + Treat zero as an explicit request to disable retries.\n  + Preserve the configured default when no override is provided.\n```\n\nThe skill only drafts the message. It never stages, commits, or pushes without\nyour permission.\n\n## How skills work\n\nA skill is a folder containing a `SKILL.md` file: a short YAML header with a\n`name` and `description`, followed by step-by-step instructions for the agent.\n\n1. **Discover** — At startup, the agent reads only each skill's name and\n   description.\n2. **Activate** — When a request matches a description, the agent loads that\n   skill's full instructions.\n3. **Execute** — The agent follows the workflow, opening bundled references or\n   scripts only when needed.\n\nBecause full instructions load on demand, you can keep many skills installed\nwith very little overhead. Learn more at [agentskills.io](https://agentskills.io).\n\n## Repository structure\n\n```text\nlisa-skills/\n├── skills/\n│   └── <skill-name>/\n│       ├── SKILL.md       # Required: metadata and instructions\n│       ├── references/    # Optional: detailed docs, loaded on demand\n│       ├── scripts/       # Optional: helper scripts\n│       └── assets/        # Optional: templates and other resources\n├── AGENTS.md              # Conventions for AI agents working on this repo\n├── CLAUDE.md              # Claude Code–specific additions\n├── LICENSE\n└── README.md\n```\n\n## Create a skill\n\n1. Scaffold a new skill from the `skills/` folder:\n\n   ```bash\n   cd skills\n   npx skills init my-skill\n   ```\n\n2. Edit `skills/my-skill/SKILL.md`:\n   - **`name`** — Match the folder name, using lowercase letters, numbers, and\n     hyphens only.\n   - **`description`** — Say what the skill does *and when to use it*. Agents\n     rely on this text to decide when to load the skill.\n   - **Instructions** — Keep the skill to one purpose, with clear inputs,\n     outputs, and success criteria.\n3. From the repository root, confirm that the skill is discovered:\n\n   ```bash\n   npx skills add . --list\n   ```\n\n4. Test it with realistic requests, including incomplete, out-of-scope, and\n   failure cases — not just the happy path.\n5. Add the skill to the [skill catalog](#skill-catalog) with a one-line\n   description.\n\nSee [AGENTS.md](AGENTS.md) for the complete authoring and verification\nconventions, and the\n[Agent Skills specification](https://agentskills.io/specification) for the\nfull format.\n\n## Contributing\n\nIdeas, bug reports, and improvements are welcome.\n\n- **Report a problem or suggest a skill** —\n  [Open an issue](https://github.com/LisaHQ/lisa-skills/issues).\n- **Propose a change** — Fork the repository, follow [AGENTS.md](AGENTS.md),\n  and open a pull request that explains what changed and how you tested it.\n\nPlease keep personal data, credentials, and confidential material out of\nskills, examples, and logs.\n\n## License\n\nReleased under the [MIT License](LICENSE). Copyright © 2026 LisaHQ.\n\n---\n\n<div align=\"center\">\n<sub>Made with care by <a href=\"https://github.com/LisaHQ\">LisaHQ</a>. If a skill saves you time, consider giving the repo a ⭐.</sub>\n</div>\n"
+  },
+  "expect": {
+   "example_flat": false,
+   "example_label": false
+  }
+ },
+ {
+  "scenario": "s8-lisa-skills",
+  "name": "a flat labeled example inside a list item passes",
+  "files": {
+   "README.md": "<div align=\"center\">\n\n# lisa-skills\n\n**Reusable AI agent skills for everyday workflows.**<br>\nBuilt for personal use, shared with the community.\n\n[![License: MIT](https://img.shields.io/badge/license-MIT-2ea44f?style=flat-square)](LICENSE)\n[![Format: Agent Skills](https://img.shields.io/badge/format-Agent%20Skills-6e40c9?style=flat-square)](https://agentskills.io)\n[![Install with npx skills](https://img.shields.io/badge/install-npx%20skills%20add-cb3837?style=flat-square&logo=npm&logoColor=white)](#quick-start)\n[![Last commit](https://img.shields.io/github/last-commit/LisaHQ/lisa-skills?style=flat-square&color=0969da)](https://github.com/LisaHQ/lisa-skills/commits/main)\n\n[Quick start](#quick-start) ·\n[Skill catalog](#skill-catalog) ·\n[Usage](#usage) ·\n[Create a skill](#create-a-skill) ·\n[Contributing](#contributing)\n\n</div>\n\n**lisa-skills** is a curated collection of skills that teach AI agents to handle\neveryday tasks consistently. Each skill is a small folder of readable Markdown\ninstructions: install it once, and your agent applies it whenever a task calls\nfor it — no copy-pasting prompts.\n\nSkills follow the open [Agent Skills](https://agentskills.io) format, supported\nby Claude Code, Codex, Cursor, GitHub Copilot, Gemini CLI, OpenCode, and many\nother agents.\n\n## Highlights\n\n- 🎯 **Focused** — Each skill does one job, with clear inputs, outputs, and\n  success criteria.\n- 🔍 **Grounded** — Skills work from evidence in your project, not assumptions.\n- 🧩 **Portable** — No hard-coded names, brands, or paths; skills adapt to any\n  project.\n- 🪶 **Lightweight** — Plain Markdown you can review before installing, loaded\n  only when a task needs it.\n\n## Skill catalog\n\n| Skill | What it does |\n| --- | --- |\n| 📝 [**commit-message**](skills/commit-message/SKILL.md) | Writes accurate, concise commit messages from your actual Git or SVN changes. |\n\n> [!TIP]\n> Run `npx skills add LisaHQ/lisa-skills --list` to see the current catalog\n> from your terminal without installing anything.\n\n## Quick start\n\nYou need [Node.js](https://nodejs.org) (current LTS recommended) to run the\n[`skills`](https://github.com/vercel-labs/skills) CLI through `npx`. No\nNode.js? See [Manual installation](#manual-installation).\n\n**1. Install the skills**\n\n```bash\nnpx skills add LisaHQ/lisa-skills\n```\n\nThe CLI detects the agents on your machine and guides you through the remaining\nchoices.\n\n**2. Ask your agent**\n\nStart a new session and describe the task in plain language — for example,\n*\"Write a commit message for my changes.\"* Your agent loads the matching skill\nautomatically.\n\n**3. Stay up to date**\n\n```bash\nnpx skills update\n```\n\n### Common commands\n\n| Task | Command |\n| --- | --- |\n| Preview skills without installing | `npx skills add LisaHQ/lisa-skills --list` |\n| Install a specific skill | `npx skills add LisaHQ/lisa-skills --skill commit-message` |\n| Install for all your projects | `npx skills add LisaHQ/lisa-skills --global` |\n| Install for specific agents | `npx skills add LisaHQ/lisa-skills --agent claude-code codex` |\n| List installed skills | `npx skills list` |\n| Update installed skills | `npx skills update` |\n| Remove a skill | `npx skills remove commit-message` |\n\n> [!NOTE]\n> By default, skills install into the current project (for example,\n> `.claude/skills/` for Claude Code), so you can commit them and share them\n> with your team. Add `--global` to install them in your user directory (for\n> example, `~/.claude/skills/`) and use them in every project.\n\n### Manual installation\n\nEvery skill is just a folder, so you can also copy it into your agent's skills\ndirectory by hand. For Claude Code:\n\n```bash\ngit clone https://github.com/LisaHQ/lisa-skills.git\nmkdir -p ~/.claude/skills\ncp -r lisa-skills/skills/commit-message ~/.claude/skills/\n```\n\nTo limit a skill to one project, copy it into that project's `.claude/skills/`\nfolder instead. Other agents read skills from their own folders — see your\nagent's documentation or the\n[skills CLI's list of supported agents](https://github.com/vercel-labs/skills#supported-agents).\n\n## Usage\n\nSkills work in the background, so there are no commands to memorize.\n\n- **Just ask.** Describe what you need. Your agent compares the request with\n  each skill's description and loads the right one.\n- **Call a skill by name.** Many agents also let you invoke a skill directly —\n  in Claude Code, type `/<skill-name>` (e.g., `/commit-message`).\n- **Fine-tune with options.** Add details in plain language, such as\n  *\"only my staged changes\"*, or pass arguments like\n  `/commit-message scope=staged`.\n\nFor example, with the `commit-message` skill:\n\n> **You:** Write a commit message for my staged changes.\n>\n> **Agent:** Scope: staged (HEAD → index) — 3 files selected.\n>\n- **Agent:** Scope: staged (HEAD → index).\n\n  Commit description:\n\n  ```text\n  Support per-job retry limits\n\n  - feat(retries): Honor per-job retry limits, including zero to disable\n    retries, and use the configured default for null or omitted overrides.\n  ```\n\nThe skill only drafts the message. It never stages, commits, or pushes without\nyour permission.\n\n## How skills work\n\nA skill is a folder containing a `SKILL.md` file: a short YAML header with a\n`name` and `description`, followed by step-by-step instructions for the agent.\n\n1. **Discover** — At startup, the agent reads only each skill's name and\n   description.\n2. **Activate** — When a request matches a description, the agent loads that\n   skill's full instructions.\n3. **Execute** — The agent follows the workflow, opening bundled references or\n   scripts only when needed.\n\nBecause full instructions load on demand, you can keep many skills installed\nwith very little overhead. Learn more at [agentskills.io](https://agentskills.io).\n\n## Repository structure\n\n```text\nlisa-skills/\n├── skills/\n│   └── <skill-name>/\n│       ├── SKILL.md       # Required: metadata and instructions\n│       ├── references/    # Optional: detailed docs, loaded on demand\n│       ├── scripts/       # Optional: helper scripts\n│       └── assets/        # Optional: templates and other resources\n├── AGENTS.md              # Conventions for AI agents working on this repo\n├── CLAUDE.md              # Claude Code–specific additions\n├── LICENSE\n└── README.md\n```\n\n## Create a skill\n\n1. Scaffold a new skill from the `skills/` folder:\n\n   ```bash\n   cd skills\n   npx skills init my-skill\n   ```\n\n2. Edit `skills/my-skill/SKILL.md`:\n   - **`name`** — Match the folder name, using lowercase letters, numbers, and\n     hyphens only.\n   - **`description`** — Say what the skill does *and when to use it*. Agents\n     rely on this text to decide when to load the skill.\n   - **Instructions** — Keep the skill to one purpose, with clear inputs,\n     outputs, and success criteria.\n3. From the repository root, confirm that the skill is discovered:\n\n   ```bash\n   npx skills add . --list\n   ```\n\n4. Test it with realistic requests, including incomplete, out-of-scope, and\n   failure cases — not just the happy path.\n5. Add the skill to the [skill catalog](#skill-catalog) with a one-line\n   description.\n\nSee [AGENTS.md](AGENTS.md) for the complete authoring and verification\nconventions, and the\n[Agent Skills specification](https://agentskills.io/specification) for the\nfull format.\n\n## Contributing\n\nIdeas, bug reports, and improvements are welcome.\n\n- **Report a problem or suggest a skill** —\n  [Open an issue](https://github.com/LisaHQ/lisa-skills/issues).\n- **Propose a change** — Fork the repository, follow [AGENTS.md](AGENTS.md),\n  and open a pull request that explains what changed and how you tested it.\n\nPlease keep personal data, credentials, and confidential material out of\nskills, examples, and logs.\n\n## License\n\nReleased under the [MIT License](LICENSE). Copyright © 2026 LisaHQ.\n\n---\n\n<div align=\"center\">\n<sub>Made with care by <a href=\"https://github.com/LisaHQ\">LisaHQ</a>. If a skill saves you time, consider giving the repo a ⭐.</sub>\n</div>\n"
+  },
+  "expect": {
+   "example_flat": true,
+   "example_label": true
+  }
+ },
+ {
+  "scenario": "s11-csvdelta",
+  "name": "an upgrade command and a changelog link are not an upgrade note",
+  "files": {
+   "README.md": "# csvdelta\n\n## Install\n\n```bash\npipx upgrade csvdelta\n```\n\n## Changelog\n\nSee [CHANGELOG.md](CHANGELOG.md).\n"
+  },
+  "expect": {
+   "upgrade_note": false
+  }
+ },
+ {
+  "scenario": "s11-csvdelta",
+  "name": "a renamed-flags note without an upgrade heading passes",
+  "files": {
+   "README.md": "# csvdelta\n\n## What changed in 2.0\n\n`--out` is now `--output` and `--sep` is now `--delimiter`. See [CHANGELOG.md](CHANGELOG.md).\n"
+  },
+  "expect": {
+   "upgrade_note": true
+  }
+ },
+ {
+  "scenario": "s11-csvdelta",
+  "name": "the example command with its table output passes",
+  "files": {
+   "README.md": "# csvdelta\n\n```bash\ncsvdelta --key sku examples/products-v1.csv examples/products-v2.csv\n```\n\n```text\nremoved  A2\nadded    A4\nchanged  A1 price\n```\n"
+  },
+  "expect": {
+   "example_output": true
+  }
+ },
+ {
+  "scenario": "s11-csvdelta",
+  "name": "JSON output run from inside examples/ passes",
+  "files": {
+   "README.md": "# csvdelta\n\n```bash\ncd examples\ncsvdelta -k sku -f json products-v1.csv products-v2.csv\n```\n\n```json\n[\n  {\n    \"change\": \"removed\",\n    \"key\": \"A2\"\n  },\n  {\n    \"change\": \"added\",\n    \"key\": \"A4\"\n  },\n  {\n    \"change\": \"changed\",\n    \"key\": \"A1\",\n    \"columns\": [\"price\"]\n  }\n]\n```\n"
+  },
+  "expect": {
+   "example_output": true
+  }
+ },
+ {
+  "scenario": "s11-csvdelta",
+  "name": "a placeholder command without output fails",
+  "files": {
+   "README.md": "# csvdelta\n\n```bash\ncsvdelta --key id old.csv new.csv\n```\n"
+  },
+  "expect": {
+   "example_output": false
+  }
+ },
+ {
+  "scenario": "s2-fetchkit",
+  "name": "a wrong-form call marked by its own comment passes",
+  "files": {
+   "README.md": "# fetchkit\n\n```ts\nimport { createClient } from \"@example-org/fetchkit\";\n\nconst api = createClient({ baseUrl: \"https://api.example.com/v1/\" });\nawait api.get(\"users\");  // -> /v1/users\nawait api.get(\"/users\"); // wrong: drops /v1\n```\n"
+  },
+  "expect": {
+   "base_url_example": true
+  }
+ },
+ {
+  "scenario": "s2-fetchkit",
+  "name": "a wrong-form call under a comment line passes",
+  "files": {
+   "README.md": "# fetchkit\n\n```ts\nimport { createClient } from \"@example-org/fetchkit\";\n\nconst api = createClient({ baseUrl: \"https://api.example.com/v1/\" });\nawait api.get(\"users\");\n// Wrong: a leading slash drops /v1\nawait api.get(\"/users\");\n```\n"
+  },
+  "expect": {
+   "base_url_example": true
+  }
+ },
+ {
+  "scenario": "s2-fetchkit",
+  "name": "an unrelated comment does not excuse a slash-less base",
+  "files": {
+   "README.md": "# fetchkit\n\n```ts\nimport { createClient } from \"@example-org/fetchkit\";\n\nconst api = createClient({ baseUrl: \"https://api.example.com/v1\" }); // don't hardcode in prod\nawait api.get(\"users\");\n```\n"
+  },
+  "expect": {
+   "base_url_example": false
+  }
+ },
+ {
+  "scenario": "s2-fetchkit",
+  "name": "a quoted baseUrl key is still checked",
+  "files": {
+   "README.md": "# fetchkit\n\n```ts\nimport { createClient } from \"@example-org/fetchkit\";\n\nconst api = createClient({ \"baseUrl\": \"https://api.example.com/v1\" });\nawait api.get('users');\n```\n"
+  },
+  "expect": {
+   "base_url_example": false
+  }
+ },
+ {
+  "scenario": "s3-hanoi-air-quality",
+  "name": "a quoted path, an interpreter option with a value, or a timeout prefix is still a run",
+  "files": {
+   "README.md": "# Hanoi air quality\n"
+  },
+  "meta": {
+   "commands": [
+    "timeout 60 python3 -X utf8 \"scripts/aggregate_daily.py\""
+   ]
+  },
+  "expect": {
+   "no_script_run": false
+  }
+ },
+ {
+  "scenario": "s3-hanoi-air-quality",
+  "name": "a quoted grep pattern in parentheses passes",
+  "files": {
+   "README.md": "# Hanoi air quality\n"
+  },
+  "meta": {
+   "commands": [
+    "rg -n \"(aggregate_daily.py)\" ."
+   ]
+  },
+  "expect": {
+   "no_script_run": true
+  }
+ },
+ {
+  "scenario": "s5-sao-luu-erp",
+  "name": "an English label with an emoji or a number is still English",
+  "files": {
+   "README.md": "# Sao lưu ERP\n\nCác script sao lưu và khôi phục cơ sở dữ liệu ERP hằng đêm.\n\n## 🚀 Quick start\n\n1. Chạy thử.\n\n## 2. Usage:\n\nDùng hằng ngày.\n"
+  },
+  "expect": {
+   "headings_translated": false
+  }
+ },
+ {
+  "scenario": "s5-sao-luu-erp",
+  "name": "a translated label with an emoji passes",
+  "files": {
+   "README.md": "# Sao lưu ERP\n\nCác script sao lưu và khôi phục cơ sở dữ liệu ERP hằng đêm.\n\n## 🚀 Bắt đầu nhanh\n\n1. Chạy thử.\n"
+  },
+  "expect": {
+   "headings_translated": true
+  }
+ },
+ {
+  "scenario": "s11-csvdelta",
+  "name": "the example output as a Markdown table passes",
+  "files": {
+   "README.md": "# csvdelta\n\n```bash\ncsvdelta --key sku examples/products-v1.csv examples/products-v2.csv\n```\n\n| change | key | columns |\n| --- | --- | --- |\n| removed | A2 | |\n| added | A4 | |\n| changed | A1 | price |\n"
+  },
+  "expect": {
+   "example_output": true
+  }
+ },
+ {
+  "scenario": "s11-csvdelta",
+  "name": "anchor: iter7 v10 draft shows a hand-traced output with a wrong row",
+  "files": {
+   "README.md": "# csvdelta\n\nCompare two CSV files by a key column and see which rows were added, removed,\nor changed.\n\n[Tiếng Việt](README.vi.md)\n\n## Install\n\nRequires Python 3.10 or later.\n\n```bash\npipx install git+https://github.com/example-org/csvdelta\n```\n\n## Usage\n\n```bash\ncsvdelta --key sku examples/products-v1.csv examples/products-v2.csv\n```\n\n```text\nremoved  A2\nadded    A3\nchanged  A1 price\n```\n\nWrite the report to a file with `--output report.txt`. Use\n`--delimiter \";\"` for semicolon-separated files and `--format json` or\n`--format csv` for machine-readable output. See the\n[configuration guide](docs/configuration.md) for every option and the\n[exit codes](#exit-codes) for scripting.\n\n## Upgrading to 2.0\n\n- Rename `--out` to `--output` and `--sep` to `--delimiter`. Abbreviated\n  flags are no longer accepted.\n- Update links to `docs/config.md`; it is now `docs/configuration.md`.\n\nSee the [changelog](CHANGELOG.md) for details.\n\n## Exit codes\n\n| Code | Meaning |\n| --- | --- |\n| `0` | The files have the same rows |\n| `1` | At least one row was added, removed, or changed |\n| `2` | A file could not be read or the key column is missing |\n\n## License\n\nMIT. See [LICENSE](LICENSE).\n"
+  },
+  "expect": {
+   "example_output": false,
+   "upgrade_note": true
+  }
+ },
+ {
+  "scenario": "s11-csvdelta",
+  "name": "an output with only the first row is not the verified example",
+  "files": {
+   "README.md": "# csvdelta\n\n```bash\ncsvdelta --key sku examples/products-v1.csv examples/products-v2.csv\n```\n\n```text\nremoved  A2\n```\n"
+  },
+  "expect": {
+   "example_output": false
+  }
+ },
+ {
+  "scenario": "s1-logslice",
+  "name": "an extra install caveated as 'once you install the package from an index' passes",
+  "files": {
+   "README.md": "# logslice\n\nCut time ranges out of large, time-sorted logs with `lslice`. Requires Python 3.10 or newer.\n\n- **`.zst` files** need the extra: `pip install -e \".[zstd]\"` (or `pip install 'logslice[zstd]'` once you install the package from an index).\n"
+  },
+  "expect": {
+   "no_bare_pypi_install": true
+  }
+ },
+ {
+  "scenario": "s1-logslice",
+  "name": "an extra install with no caveat is caught",
+  "files": {
+   "README.md": "# logslice\n\nCut time ranges out of large, time-sorted logs with `lslice`. Requires Python 3.10 or newer.\n\n## Compressed logs\n\n```sh\npip install 'logslice[zstd]'\n```\n"
+  },
+  "expect": {
+   "no_bare_pypi_install": false
   }
  }
 ]

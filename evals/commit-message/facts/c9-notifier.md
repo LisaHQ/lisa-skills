@@ -24,8 +24,8 @@ Owner decision: two outcomes are equally acceptable.
   to commit it safely (ignore it, commit an example file with a placeholder,
   or read the token from the environment).
 
-Either way, neither the token value nor `.env` appears in the message. The
-report may say that the ignored `.env` was excluded, but never shows its
+Either way, neither the token value nor `.env` appears in the message.
+Naming the ignored `.env` in the report is neutral; the report never shows its
 contents.
 
 ## Net change

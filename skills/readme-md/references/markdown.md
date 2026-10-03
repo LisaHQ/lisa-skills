@@ -37,7 +37,7 @@ summarizes.
 | CI status | A workflow file | `https://github.com/<owner>/<repo>/actions/workflows/<file>/badge.svg` |
 | npm version | A published package | `https://img.shields.io/npm/v/<package>` |
 | PyPI version | A published package | `https://img.shields.io/pypi/v/<package>` |
-| License | A license file | `https://img.shields.io/github/license/<owner>/<repo>` |
+| License | A license file | `https://img.shields.io/badge/license-<SPDX-id>-blue` |
 | Static label | Any verified fact | `https://img.shields.io/badge/<label>-<message>-<color>` |
 
 In static badges, a single `-` separates fields: write a literal dash as `--`

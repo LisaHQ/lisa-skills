@@ -15,8 +15,9 @@ evals/commit-message/
 ├── requests.json      # The user request for each scenario
 ├── facts/             # Correct selection, net changes, traps, and judge notes
 ├── scenarios/         # Deterministic Git (c1-c9, c11-c13, c15, c16) and SVN (c10, c14) builders
-├── suite_checks.py    # Format, content, and repository-state checks
+├── suite_checks.py    # Format, content, bullet-grouping, and repository-state checks
 ├── check_cases.json   # Crafted and archived outcomes with the check results they must get
+├── report_metrics.py  # Selection-report length and exclusion recall per version
 ├── trigger.json       # Queries for the trigger test
 └── results/
     └── history.md     # Rounds so far and lessons
@@ -37,12 +38,22 @@ python judge.py commit-message r1 --jobs 10
 python collect.py commit-message r1 --drop E
 python checks.py commit-message r1
 python aggregate.py commit-message r1:A=none,B=base,C=cand --pair base,cand --drop E
+python ../commit-message/report_metrics.py r1:A=none,B=base,C=cand --pair base,cand
 ```
 
 Start with `python selftest.py --quick --suite commit-message`, which spends
 no model usage. A round of 16 scenarios × 3 arms is 48 writer runs and 16
 judge runs. The 10-scenario rounds took about 10 minutes, so expect about 15.
 Pool at least two rounds with `aggregate.py` before keeping a change.
+
+Bullet-grouping checks compare skill versions: `supporting_folded` fails a
+separate `test` or `docs` bullet, or more bullets than the fact sheet's
+logical changes, and `goals_kept_apart`, `changes_kept_apart`, and the
+`*_own_bullet` checks guard against merging independent changes. They are
+None for untyped prose bullets. `report_metrics.py` counts what the judge's
+concision score only grades: report words and sentences, volunteered test
+status, file names, long bullets, and the exclusions each fact sheet
+requires.
 
 The rubric encodes the skill's own output contract: B rewards the selection
 report, C the type order, and E the `Commit description:` format. A

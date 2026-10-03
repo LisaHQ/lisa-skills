@@ -37,7 +37,8 @@ Python 3.10+, with a README, a version test, and an ignore file.
    files do not implement.
 2. The final `>=3.10`, not the staged `>=3.8`.
 3. Report: no commits yet, so the comparison starts from an empty tree; all
-   six paths selected as additions; the ignored `debug.log` excluded.
+   six paths selected as additions. Naming the ignored `debug.log` in the
+   report is neutral.
 
 Example of a strong message:
 

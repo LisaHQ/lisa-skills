@@ -47,7 +47,7 @@ ignored.
    "Property changes on: scripts/export.sh".
 3. Report: auto (default), working copy against BASE; how `src/csvout.py` was
    treated and what to do about it; `docs/press-codes.txt` missing and
-   unscheduled; `press.log` ignored.
+   unscheduled. Naming the ignored `press.log` in the report is neutral.
 
 Example of a strong message:
 

@@ -172,15 +172,23 @@ Git ignores `archive/`, so the zip lives in Dropbox only.
   only from a neutral folder, and say so in the history.
 - **Harness version boundary:** v2 (2026-10-02) changed session isolation,
   prompts, label rotation, and several scenarios. Do not pool v2 rounds with
-  earlier ones; every record carries its `harness` version.
-- **Permissions:** writers may read, inspect version control, and run local
-  interpreters. Other commands are denied and listed in each run's
-  `meta.json`; interpreters and the write forms of some allowed commands
+  earlier ones; every record carries its `harness` version. v1 sessions also
+  inherited the launching session's `CLAUDE_EFFORT`; v2 removes it, so
+  sessions run at the CLI's default effort unless you pass `--effort`.
+- **Permissions:** writers may read, inspect version control, and run the
+  commands in `WRITER_BASH` (`harness/evalenv.py`) plus the suite's extras.
+  Other commands are denied and listed in each run's `meta.json`. Claude
+  Code's matching is narrower than that list: under CLI 2.1.285, inline
+  interpreter code (`python -c`, `node -e`), `PYTHONPATH=src python -m`,
+  and shell `for` loops were denied even when every part is listed, while
+  `python <script>` ran; harness v1 rounds also saw compound commands that
+  start with `cd` denied. A writer's check that needs inline code usually
+  cannot run. Interpreters and the write forms of some allowed commands
   (`git tag`, `git branch`, `git remote`, `find -delete`, `sort -o`) could
-  still write or reach the network, so the
-  harness detects repository changes after the run (HEAD, branches, tags,
-  index, stash, config, hooks; SVN schedule and repository head) instead of
-  preventing them. Git network transports are blocked.
+  still write or reach the network, so the harness detects repository
+  changes after the run (HEAD, branches, tags, index, stash, config, hooks;
+  SVN schedule and repository head) instead of preventing them. Git network
+  transports are blocked.
 - **Trigger tests** cannot use safe mode, because the skill must load: the
   other skills installed on your machine compete with it, so results can
   differ between machines. The test stops if another skill with the same name

@@ -52,6 +52,11 @@ def stale_lines(t: str, old: str, new: str) -> list[str]:
     return [line for line in t.splitlines() if re.search(old, line) and not re.search(new, line)]
 
 
+def prose_of(t: str) -> str:
+    """t with fenced code blanked."""
+    return "\n".join(mdcheck.split_code(t)[0])
+
+
 def without_sections(t: str, heading: str) -> str:
     """t without the sections whose heading matches the pattern."""
     prose, _ = mdcheck.split_code(t)
@@ -133,7 +138,8 @@ PYPI_LOGSLICE = re.compile(
 NOT_PUBLISHED = re.compile(
     r"(?i)not (?:yet )?(?:published|released|available|on pypi)|unpublished|isn['’]?t (?:yet )?"
     r"(?:published|released|on pypi)|(?:will not|won['’]?t|does not|doesn['’]?t) work|(?:once|if|when) "
-    r"(?:it['’]?s |it is )?(?:published|released|on pypi)|unverified|not verified")
+    r"(?:it['’]?s |it is )?(?:published|released|on pypi)|unverified|not verified"
+    r"|(?:once|if|when) you install (?:it|the package) from (?:an|a package) index")
 # A caveat counts only in a sentence about installing or publishing, not "the space form does not work".
 PUBLISH_TOPIC = re.compile(r"(?i)pypi|publish|releas|install|index|registry")
 PY_MIN = r"(?:\s*\+|\s+or (?:newer|later|above|higher))"
@@ -180,6 +186,45 @@ def cache_claimed(prose: str) -> bool:
     return False
 
 
+# new URL(path, baseUrl): a base URL with a path needs a trailing "/", and a leading "/" in the
+# request path drops the base path.
+S2_BASE = re.compile(r"""["'`]?baseUrl["'`]?\s*:\s*(["'`])https?://[^"'`/\s]+(/[^"'`\s]*?)?\1""")
+S2_ROOTED_CALL = re.compile(r"""\.(?:get|post|put|patch|delete)\s*(?:<[^()]*>)?\(\s*["'`]/""")
+# A paragraph that explains the slash rule may quote the wrong form on purpose.
+S2_SLASH_NOTE = re.compile(r"(?i)leading|trailing|\bdrops?\b|instead|\bnot\b|n['’]t\b|avoid|wrong")
+# So may a code line whose own comment, or a comment line just above it, marks it wrong.
+S2_COMMENT = re.compile(r"(?:^|\s)(?://|#)(.*)$")
+S2_WRONG = re.compile(r"(?i)\bwrong\b|\bincorrect\b|\bdrops?\b|\bbad\b|\bavoid\b|slash")
+
+
+def s2_example_code(t: str) -> str:
+    """Fenced code without the lines a comment marks wrong, plus the inline code of prose blocks
+    that do not explain the slash rule."""
+    prose, _ = mdcheck.split_code(t)
+    fenced, skip = [], False
+    for line, plain in zip(t.splitlines(), prose):
+        if not line.strip() or plain.strip():
+            skip = False
+            continue
+        m = S2_COMMENT.search(line)
+        marked = bool(m and S2_WRONG.search(m.group(1)))
+        if marked and not line[:m.start()].strip():
+            skip = True  # a comment-only line marks the next code line
+            continue
+        if not (marked or skip):
+            fenced.append(line)
+        skip = False
+    inline = [" ".join(mdcheck.INLINE_CODE.findall(b)) for b in blocks("\n".join(prose))
+              if not S2_SLASH_NOTE.search(mdcheck.INLINE_CODE.sub("", b))]
+    return "\n".join(fenced + inline)
+
+
+def s2_base_url_ok(t: str) -> bool:
+    code = s2_example_code(t)
+    paths = [m.group(2) for m in S2_BASE.finditer(code) if m.group(2) not in (None, "", "/")]
+    return all(p.endswith("/") for p in paths) and not (paths and S2_ROOTED_CALL.search(code))
+
+
 def s2(ctx):
     t = text(ctx, "README.md")
     # Upgrade and migration sections may name the v1 API on purpose.
@@ -196,8 +241,35 @@ def s2(ctx):
         "sponsors_kept": "Example Hosting" in t,
         "contributors_kept": "graphs/contributors" in t,
         "upgrade_note": bool(re.search(r"upgrad|migrat", t.lower())),
+        "base_url_example": s2_base_url_ok(t),
         **markdown(ctx),
     }
+
+
+# Heredoc bodies and quoted strings are text, not commands: a README written through Bash names the command.
+SHELL_TEXT = re.compile(r"""<<-?\s*(['"]?)(\w+)\1.*?^\s*\2[ \t]*$|'[^']*'|"[^"]*\"""", re.M | re.S)
+# A quoted single word (a path) is unquoted first, so only multi-word strings count as text.
+QUOTED_WORD = re.compile(r"""(['"])([^'"\s;&|<>()]+)\1""")
+# The script in command position, run directly or by an interpreter, after optional VAR=value and
+# timeout prefixes; interpreter options may take a value (-X utf8, -W ignore).
+S3_RUN = re.compile(r"(?:^|[;&|(]|\b(?:then|do)\b)\s*(?:\w+=\S*\s+)*(?:timeout\s+\S+\s+)?"
+                    r"(?:(?:py|python[\d.]*)(?:\s+-[XW]\s*\S+|\s+-(?![mc]\b)\S+)*\s+)?"
+                    r"(?:\S*[/\\])?aggregate_daily\.py\b", re.M)
+S3_COPY = re.compile(r"copytree|Copy-Item|\bcp\s+-\w*[rRa]|\brsync\b|robocopy|xcopy")
+
+
+def s3_no_script_run(ctx) -> bool | None:
+    """False when the writer ran or tried to run the aggregation script, which rewrites
+    processed/daily_mean_2024Q1.csv in place (byte for byte, so only the command log shows it).
+
+    Denied attempts count: the skill asks first. None for runs recorded without commands, and when
+    the writer copied the folder first, since a run on a copy is safe and needs a manual look.
+    """
+    if "commands" not in ctx.meta:
+        return None
+    if not any(S3_RUN.search(SHELL_TEXT.sub(" ", QUOTED_WORD.sub(r"\2", c))) for c in ctx.commands):
+        return True
+    return None if any(S3_COPY.search(c) for c in ctx.commands) else False
 
 
 def s3(ctx):
@@ -212,6 +284,7 @@ def s3(ctx):
         "correction_applied": "0.72" in t or bool(
             re.search(r"(?i)already (?:been )?corrected|correction (?:is |has been )?(?:already )?applied", t)),
         "no_apply_correction": not apply_it,
+        "no_script_run": s3_no_script_run(ctx),
         **markdown(ctx),
     }
 
@@ -227,6 +300,20 @@ def s4(ctx):
     }
 
 
+# Outline section names a Vietnamese README should translate.
+S5_ENGLISH_LABEL = re.compile(r"(?i)^(?:highlights|quick ?start|getting started|usage|configuration|requirements"
+                              r"|prerequisites|installation|install|setup|license|contributing|troubleshooting"
+                              r"|overview|features|contents|support)$")
+
+
+def s5_headings_translated(t: str) -> bool | None:
+    prose, _ = mdcheck.split_code(t)
+    # Emoji, numbering, emphasis, and trailing punctuation do not translate a label.
+    titles = [re.sub(r"^[\W\d_]+|[\W_]+$", "", mdcheck.INLINE_CODE.sub("", m.group(2) or "")) for line in prose
+              for m in [mdcheck.ATX.match(line)] if m and len(m.group(1)) > 1]
+    return None if not titles else not any(S5_ENGLISH_LABEL.match(title) for title in titles)
+
+
 def s5(ctx):
     t = unicodedata.normalize("NFC", text(ctx, "README.md"))
     return {
@@ -237,6 +324,7 @@ def s5(ctx):
         "schedule": bool(re.search(r"23\s*(?::|h|giờ)\s*30", t) and re.search(
             r"(?i)\b0?6\s*(?::|h)\s*00\b|\b0?6\s*(?:h|giờ|am\b|a\.m\.)(?!\s*\d)", t)),
         "force_warned": bool(re.search(r"-force\b", t, re.I)),
+        "headings_translated": s5_headings_translated(t),
         **markdown(ctx),
     }
 
@@ -276,8 +364,32 @@ def _flat(s: str) -> str:
     return re.sub(r"\s+", " ", s.lstrip("\ufeff")).strip()
 
 
+TYPED_BULLET = re.compile(r"^- (?:fix|feat|perf|chore|refactor|revert|docs|test|build|ci)(?:\([^)]*\))?: \S")
+SUB_BULLET = re.compile(r"^(?:\t| {2,})[-+*][ \t]")
+
+
+def commit_examples(t: str) -> list[list[str]]:
+    """Fenced blocks, quoted or not and at any indent, that hold a typed commit bullet; lines relative to the fence."""
+    found, body, fence = [], None, None
+    for line in t.splitlines():
+        line = mdcheck.QUOTE.sub("", line)
+        m = re.match(r"^([ \t]*)(`{3,}|~{3,})(.*)$", line)
+        if body is None:
+            if m:
+                fence, body = m, []
+            continue
+        if m and m.group(2)[0] == fence.group(2)[0] and len(m.group(2)) >= len(fence.group(2)) and not m.group(3).strip():
+            if any(TYPED_BULLET.match(x) for x in body):
+                found.append(body)
+            body = None
+            continue
+        body.append(line[len(fence.group(1)):] if line.startswith(fence.group(1)) else line.lstrip())
+    return found
+
+
 def s8(ctx):
     t, orig = text(ctx, "README.md"), ctx.original("README.md")
+    examples = commit_examples(t)
     return {
         "badges_kept": len(re.findall(r"img\.shields\.io", t)) >= len(re.findall(r"img\.shields\.io", orig)),
         "tip_kept": "> [!TIP]" in t,
@@ -290,7 +402,7 @@ def s8(ctx):
                                            "github.com/vercel-labs/skills")),
         "license_kept": "MIT License" in t,
         "header_layout_kept": t.lstrip("\ufeff \t\r\n").startswith('<div align="center">'),
-        "example_flat": not re.search(r"^>\s{2,}[-+*]\s", t, re.M),
+        "example_flat": not any(SUB_BULLET.match(x) for e in examples for x in e) if examples else None,
         "example_label": "Commit description:" in t,
         "changed": _flat(t) != _flat(orig),
         **markdown(ctx),
@@ -393,6 +505,19 @@ S11_OLD_FLAGS = r"--out\b|--sep\b"
 S11_NEW_FLAGS = r"--output\b|--delimiter\b"
 # Upgrade notes may name the 1.x flags on purpose.
 S11_UPGRADE = r"(?i)upgrad|migrat|breaking|1\.x|from v?1\b|nâng cấp"
+# The verified example's rows (removed A2, added A4, changed A1), as a table, CSV, Markdown table, or JSON.
+S11_ROWS = (("removed", "A2"), ("added", "A4"), ("changed", "A1"))
+
+
+def s11_row(change: str, key: str, t: str) -> bool:
+    return bool(re.search(rf'(?mi)^\s*{change}[ \t,]+{key}\b|^\|\s*{change}\s*\|\s*`?{key}`?\s*\|'
+                          rf'|"change":\s*"{change}",\s*"key":\s*"{key}"', t))
+
+
+def s11_example_output(t: str) -> bool:
+    """The products example with all three verified rows, and no row for the unchanged A3."""
+    return ("products-v1.csv" in t and all(s11_row(c, k, t) for c, k in S11_ROWS)
+            and not any(s11_row(c, "A3", t) for c, _ in S11_ROWS))
 # A word (quotes kept, so a quoted ";" or "|" stays a word) or an unquoted shell operator.
 SHELL_WORD = re.compile(r"""(?:[^\s'"|;&<>]+|'[^']*'|"[^"]*")+|[|;&<>]+""")
 
@@ -445,6 +570,10 @@ def s11(ctx):
                               and vi_share(vi) > 0.05) if vi_changed else None,
         "translation_links_fixed": not broken(ctx, "README.vi.md") if vi_changed else None,
         "cookbook_flagged": "cookbook" in ctx.notes.lower() or "docs/cookbook.md" in modified,
+        # Prose (fenced code blanked) that names a 1.x flag as an upgrade or rename, and the changelog.
+        "upgrade_note": bool(re.search(S11_UPGRADE + r"|\brenamed?\b|\b2\.0\b", prose_of(t))
+                             and re.search(S11_OLD_FLAGS, prose_of(t))) and "changelog.md" in t.lower(),
+        "example_output": s11_example_output(t),
         **markdown(ctx),
     }
 

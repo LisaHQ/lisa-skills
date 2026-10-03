@@ -88,11 +88,17 @@ relative links and anchors, unclosed or untagged code fences, and heading
 problems. They count only problems the original README did not already have,
 and are skipped when the README is absent or unchanged.
 
+Some checks read the session rather than the files: `no_script_run` (s3)
+reads the command log, because the aggregation script rewrites its output
+byte for byte. `example_output` (s11) requires all three verified rows, so a
+hand-traced output with a wrong row fails.
+
 ## Results and archive
 
 [`results/history.md`](results/history.md) records every round, version
-scores, and lessons. The raw material of the 2026-10-02 rounds is in
-`archive/readme-md-eval-2026-10-02.zip` (Dropbox only). To revisit it, unzip
+scores, and lessons. The raw material is in `archive/` (Dropbox only):
+`readme-md-eval-2026-10-02.zip` (harness v1), `-2026-10-02-v2.zip` (iter6),
+and `-2026-10-03.zip` (iter6-iter11). To revisit the first one, unzip
 it into a separate work root (`LISA_EVAL_WORK=<other folder>`, under
 `<that folder>/readme-md/`) so its older scenario build does not replace the
 current one, and run `collect.py`, `aggregate.py`, `checks.py`, or `usage.py`
