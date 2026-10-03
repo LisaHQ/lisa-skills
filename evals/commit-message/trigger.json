@@ -1,0 +1,15 @@
+{
+  "project": "c1-shipcalc",
+  "queries": [
+    ["write a commit message for my changes", true],
+    ["Viết commit message cho các thay đổi đã stage giúp mình", true],
+    ["what should the commit message be for what I've staged?", true],
+    ["give me a commit description for the diff in this repo", true],
+    ["I'm squashing the last 3 commits, write the combined commit message", true],
+    ["summarize my uncommitted changes as a commit message", true],
+    ["explain what git rebase --onto does", false],
+    ["write release notes for version 2.0 for our customers", false],
+    ["review my uncommitted changes for bugs", false],
+    ["write a pull request description for this branch", false]
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "c1-shipcalc": "Write a commit message for my changes.",
+  "c2-notes-api": "Write a commit message for my staged changes.",
+  "c3-csvtool": "Can you write the commit message for what I've got here?",
+  "c4-dashboard": "Write a commit message for these changes.",
+  "c5-ledger": "Write a commit message for my changes.",
+  "c6-todo-cli": "Write a commit message for my staged changes only - I'll commit the rest later.",
+  "c7-catalog-api": "Viết commit message cho các thay đổi hiện tại giúp mình nhé.",
+  "c8-invoices": "I'm going to squash my last three commits into one. Write the commit message for HEAD~3..HEAD.",
+  "c9-notifier": "Write a commit message for my changes.",
+  "c10-reports": "Write a commit message for my staged changes."
+}

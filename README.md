@@ -163,8 +163,9 @@ lisa-skills/
 │       ├── references/    # Optional: detailed docs, loaded on demand
 │       ├── scripts/       # Optional: helper scripts
 │       └── assets/        # Optional: templates and other resources
-├── evals/
-│   └── <skill-name>/      # Optional: A/B test harness and results history
+├── evals/                 # Blind A/B evaluations of skill changes
+│   ├── harness/           # Shared scripts: build, run, judge, score
+│   └── <skill-name>/      # Optional per-skill suite and results history
 ├── AGENTS.md              # Conventions for AI agents working on this repo
 ├── CLAUDE.md              # Claude Code–specific additions
 ├── LICENSE

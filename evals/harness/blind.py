@@ -1,42 +1,27 @@
 """Hide which arm produced which outcome before judging.
 
-Usage: python blind.py <iter> <arm> <arm> [<arm> ...] [--only s1-logslice,...] [--tag NAME]
+Usage: python blind.py <suite> <iter> <arm> <arm> [<arm> ...] [--only <scenario>,...] [--tag NAME]
 
 For each scenario, shuffles the arms into labels X, Y, Z, W (seeded by the
 iteration, scenario, and arms, so reruns give the same labels) and writes
-<work>/blind/<name>/<scenario>/<label>/ with the files the writer added or
-modified (files/), changes.txt, and notes.md with run paths scrubbed. The
-label-to-arm mapping goes to <work>/runs/<iter>/mapping[-<tag>].json, which
+<work>/<suite>/blind/<name>/<scenario>/<label>/ with the files the writer
+added or modified (files/), changes.txt, and notes.md with run paths scrubbed.
+The label-to-arm mapping goes to runs/<iter>/mapping[-<tag>].json, which
 judges must never read. <name> is <iter> or <iter>-<tag>.
 """
-import filecmp
 import hashlib
 import json
 import random
 import re
 import shutil
 import sys
-from pathlib import Path
 
-from evalenv import WORK, folder_of, force_rmtree, positional, split_flag
+from evalenv import diff_tree, folder_of, force_rmtree, load_suite, positional, split_flag, vcs_report
 
 LABELS = "XYZW"
-SKIP_DIRS = {".git", "__pycache__", "node_modules", ".venv", ".pytest_cache"}
 # Paths that name the arm or the skill version would unblind the judge.
 RUN_PATH = re.compile(r"(?:[A-Za-z]:|/[a-zA-Z])?[\\/]?[^\s`'\"()\[\]<>]*?[\\/]runs[\\/][^\\/\s]+[\\/][^\\/\s]+[\\/][^\\/\s]+")
 SKILL_PATH = re.compile(r"(?:[A-Za-z]:|/[a-zA-Z])?[\\/]?[^\s`'\"()\[\]<>]*?skill-snapshots[\\/][^\\/\s]+")
-
-
-def walk(base: Path):
-    for p in base.rglob("*"):
-        if p.is_file() and not any(part in SKIP_DIRS for part in p.relative_to(base).parts):
-            yield p.relative_to(base).as_posix()
-
-
-def diff_tree(pristine: Path, out: Path):
-    before, after = set(walk(pristine)), set(walk(out))
-    modified = sorted(f for f in before & after if not filecmp.cmp(pristine / f, out / f, shallow=False))
-    return sorted(after - before), modified, sorted(before - after)
 
 
 def scrub(text: str) -> str:
@@ -44,7 +29,7 @@ def scrub(text: str) -> str:
 
 
 def main() -> None:
-    args = sys.argv[1:]
+    suite, args = load_suite(sys.argv[1:], __doc__)
     only, args = split_flag(args, "--only")
     tag, args = split_flag(args, "--tag")
     positional(args, __doc__, at_least=3)
@@ -53,9 +38,9 @@ def main() -> None:
         raise SystemExit(f"at most {len(LABELS)} arms per judge")
     only = set(only.split(",")) if only else None
     name = f"{it}-{tag}" if tag else it
-    mapping_file = WORK / "runs" / it / f"mapping{'-' + tag if tag else ''}.json"
+    mapping_file = suite.work / "runs" / it / f"mapping{'-' + tag if tag else ''}.json"
     mapping = json.loads(mapping_file.read_text(encoding="utf-8")) if mapping_file.exists() else {}
-    for scen in sorted(p for p in (WORK / "runs" / it).iterdir() if p.is_dir()):
+    for scen in sorted(p for p in (suite.work / "runs" / it).iterdir() if p.is_dir()):
         if only and scen.name not in only:
             continue
         order = list(arms)
@@ -64,10 +49,11 @@ def main() -> None:
         mapping[scen.name] = {LABELS[i]: arm for i, arm in enumerate(order)}
         for i, arm in enumerate(order):
             src = scen / arm / folder_of(scen.name)
-            dst = WORK / "blind" / name / scen.name / LABELS[i]
+            dst = suite.work / "blind" / name / scen.name / LABELS[i]
             force_rmtree(dst)
             dst.mkdir(parents=True)
-            added, modified, deleted = diff_tree(WORK / "scenarios" / scen.name, src)
+            pristine = suite.work / "scenarios" / scen.name
+            added, modified, deleted = diff_tree(pristine, src)
             for rel in added + modified:
                 (dst / "files" / rel).parent.mkdir(parents=True, exist_ok=True)
                 shutil.copy2(src / rel, dst / "files" / rel)
@@ -78,11 +64,12 @@ def main() -> None:
             (dst / "changes.txt").write_text(
                 "added:\n" + "".join(f"  {f}\n" for f in added)
                 + "modified:\n" + "".join(f"  {f}\n" for f in modified)
-                + "deleted:\n" + "".join(f"  {f}\n" for f in deleted),
+                + "deleted:\n" + "".join(f"  {f}\n" for f in deleted)
+                + vcs_report(pristine, src),
                 encoding="utf-8")
     mapping_file.write_text(json.dumps(mapping, indent=2), encoding="utf-8")
     print("blinded:", ", ".join(sorted(k for k in mapping if not only or k in only)))
-    print(f"outcomes: {WORK / 'blind' / name}")
+    print(f"outcomes: {suite.work / 'blind' / name}")
 
 
 if __name__ == "__main__":

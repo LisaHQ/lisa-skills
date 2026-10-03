@@ -37,10 +37,11 @@ core highlighting 3.89 → 4.78, concision 4.56 → 3.89, presentation 4.22 →
 4.78, friendliness 3.89 → 4.33, usefulness 4.11 → 4.78. The skill trades some
 brevity for completeness and correctness.
 
-Reproduce with:
+Reproduce from `evals/harness/` after unzipping the archive into
+`<LISA_EVAL_WORK>/readme-md/`:
 
 ```bash
-python aggregate.py iter2:A=base,B=v1,C=v2 iter3:B=v1,C=v2,D=v3 iter4:C=v2,D=v3,E=v4
+python aggregate.py readme-md iter2:A=base,B=v1,C=v2 iter3:B=v1,C=v2,D=v3 iter4:C=v2,D=v3,E=v4
 ```
 
 ## Final validation (iter5, Opus writers)

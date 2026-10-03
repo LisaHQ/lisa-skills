@@ -1,0 +1,15 @@
+{
+  "project": "s6-grepl",
+  "queries": [
+    ["write a README for this repo", true],
+    ["Viết README cho project này giúp mình nhé", true],
+    ["can you review my readme and tell me what's wrong with it? don't change anything", true],
+    ["our README.md is outdated since we renamed the CLI flags, please update it", true],
+    ["document this folder so new people know what the files are and how to use them", true],
+    ["make the readme look more professional, maybe add some badges", true],
+    ["write a CONTRIBUTING.md that explains how to send pull requests", false],
+    ["add doc comments to every function in main.go", false],
+    ["write a commit message for my staged changes", false],
+    ["explain in two sentences what this repo does", false]
+  ]
+}

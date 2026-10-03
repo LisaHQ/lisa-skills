@@ -1,0 +1,6 @@
+{
+  "skill": "readme-md",
+  "weights": {"A": 3, "B": 2, "C": 2, "D": 1.5, "E": 1, "F": 1.5},
+  "repo_ref": "668ba4f",
+  "extra_bash": []
+}

@@ -48,6 +48,23 @@ def git(cwd: Path, *args: str) -> None:
                    stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
 
+def git_out(cwd: Path, *args: str) -> str:
+    return subprocess.run(["git", *args], cwd=cwd, env=ENV, check=True,
+                          capture_output=True, text=True).stdout
+
+
+def commit_all(cwd: Path, message: str) -> None:
+    git(cwd, "add", "-A")
+    git(cwd, "-c", "commit.gpgsign=false", "commit", "-q", "-m", message)
+
+
+def expect_status(cwd: Path, expected: list[str]) -> None:
+    """Fail the build unless `git status --porcelain` lists exactly the expected entries."""
+    actual = sorted(line for line in git_out(cwd, "status", "--porcelain").splitlines() if line)
+    if actual != sorted(expected):
+        raise SystemExit(f"{cwd.name}: unexpected git status\n  expected {sorted(expected)}\n  actual   {actual}")
+
+
 def git_init(path: Path, remote: str | None = None, tag: str | None = None,
              message: str = "Initial import") -> None:
     git(path, "init", "-q", "-b", "main")

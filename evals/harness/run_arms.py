@@ -1,13 +1,14 @@
-"""Run the README tasks with headless Claude Code, one session per scenario and arm.
+"""Run a suite's tasks with headless Claude Code, one session per scenario and arm.
 
 Usage:
-  python run_arms.py <iter> <arm>=<snapshot-label|skill-dir|none> [<arm>=...]
-                     [--only s1-logslice,...] [--model sonnet] [--jobs 6] [--max-turns 80]
+  python run_arms.py <suite> <iter> <arm>=<snapshot-label|skill-dir|none> [<arm>=...]
+                     [--only <scenario>,...] [--model sonnet] [--jobs 6] [--max-turns 80]
 
-Each session starts in <work>/runs/<iter>/<scenario>/<arm>/<folder> (see
-prep_runs.py), so no repository instructions leak into it. A skill arm is told
-to read the snapshot's SKILL.md first; `none` is the no-skill baseline. The
-final message goes to notes.md and run metadata to meta.json beside the folder.
+Each session starts in <work>/<suite>/runs/<iter>/<scenario>/<arm>/<folder>
+(see prep_runs.py), so no repository instructions leak into it. A skill arm is
+told to read the snapshot's SKILL.md first; `none` is the no-skill baseline.
+The final message goes to notes.md and run metadata, including any denied
+tool calls, to meta.json beside the folder.
 """
 import json
 import subprocess
@@ -16,31 +17,30 @@ import time
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
-from evalenv import (DENIED_TOOLS, REQUESTS, SESSION_ENV, WORK, WRITER_TOOLS, claude_bin, folder_of,
-                     positional, split_flag)
+from evalenv import DENIED_TOOLS, SESSION_ENV, claude_bin, folder_of, load_suite, positional, split_flag
 
 NOTE = ("(You are running non-interactively, so you cannot ask me follow-up questions. "
         "If something is unclear, make the most reasonable choice and say so in your final message.)")
 
 
-def resolve_skill(spec: str) -> Path | None:
+def resolve_skill(suite, spec: str) -> Path | None:
     if spec == "none":
         return None
-    snapshot = WORK / "skill-snapshots" / spec / "readme-md"
+    snapshot = suite.snapshot(spec)
     path = snapshot if snapshot.exists() else Path(spec)
     if not (path / "SKILL.md").exists():
         raise SystemExit(f"no SKILL.md for arm spec {spec!r} (looked in {path})")
     return path.resolve()
 
 
-def run_one(it: str, scen: str, arm: str, skill: Path | None, model: str, max_turns: str) -> str:
-    run_dir = WORK / "runs" / it / scen / arm
+def run_one(suite, it, scen, arm, skill, model, max_turns) -> str:
+    run_dir = suite.work / "runs" / it / scen / arm
     cwd = run_dir / folder_of(scen)
     if not cwd.exists():
         return f"{scen}/{arm}: missing {cwd} (run prep_runs.py)"
-    prompt = REQUESTS[scen] + "\n\n" + NOTE
-    cmd = [claude_bin(), "-p", "--model", model, "--output-format", "json",
-           "--max-turns", max_turns, "--allowedTools", *WRITER_TOOLS, "--disallowedTools", *DENIED_TOOLS]
+    prompt = suite.requests[scen] + "\n\n" + NOTE
+    cmd = [claude_bin(), "-p", "--model", model, "--output-format", "json", "--max-turns", max_turns,
+           "--allowedTools", *suite.writer_tools, "--disallowedTools", *DENIED_TOOLS]
     if skill:
         prompt = (f"Before you start, read the skill file {skill.as_posix()}/SKILL.md and follow it. "
                   "Open the reference files it points to when it tells you to.\n\n" + prompt)
@@ -70,7 +70,7 @@ def run_one(it: str, scen: str, arm: str, skill: Path | None, model: str, max_tu
 
 
 def main() -> None:
-    args = sys.argv[1:]
+    suite, args = load_suite(sys.argv[1:], __doc__)
     only, args = split_flag(args, "--only")
     model, args = split_flag(args, "--model", "sonnet")
     jobs, args = split_flag(args, "--jobs", "6")
@@ -80,10 +80,10 @@ def main() -> None:
     arms = {}
     for spec in args[1:]:
         arm, skill = spec.split("=", 1)
-        arms[arm] = resolve_skill(skill)
+        arms[arm] = resolve_skill(suite, skill)
     only = set(only.split(",")) if only else None
-    tasks = [(it, scen, arm, skill, model, max_turns)
-             for scen in sorted(REQUESTS) if not only or scen in only
+    tasks = [(suite, it, scen, arm, skill, model, max_turns)
+             for scen in sorted(suite.requests) if not only or scen in only
              for arm, skill in arms.items()]
     with ThreadPoolExecutor(max_workers=int(jobs)) as pool:
         for line in pool.map(lambda t: run_one(*t), tasks):
