@@ -7,5 +7,8 @@
   "s6-grepl": "Make a nice, professional README for this repo.",
   "s7-tasklog": "Can you review my README and tell me what to fix? Don't edit anything yet.",
   "s8-lisa-skills": "Polish the README of this repository - make it as clear and inviting as possible without losing anything important.",
-  "s9-cnc-onboarding": "Create a README for the cnc-onboarding folder. New operators will open it on their first day."
+  "s9-cnc-onboarding": "Create a README for the cnc-onboarding folder. New operators will open it on their first day.",
+  "s10-acme-platform": "Add a README for packages/money - other teams in this repo keep asking how to use it.",
+  "s11-csvdelta": "README của công cụ này đã lỗi thời từ khi bọn mình lên bản 2.0 và đổi tên mấy cờ dòng lệnh. Cập nhật lại giúp mình nhé.",
+  "s12-slugkit": "Add a few badges at the top of the README - build status, coverage, PyPI version, that kind of thing - so it looks more professional. Leave the rest as it is."
 }

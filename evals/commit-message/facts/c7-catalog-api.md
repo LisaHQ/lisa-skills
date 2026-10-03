@@ -40,3 +40,9 @@ Start pagination at the first item on page 1
 - A commit message written in Vietnamese → major F problem (score F at most 2).
 - A report written in English → F deduction.
 - Typing it as feat or refactor → C deduction.
+
+## Judge notes
+
+- A translated label before the message block (for example `Mô tả commit:`)
+  is acceptable (owner decision); the English `Commit description:` is too.
+- An attribution trailer such as `Co-Authored-By:` is neutral.

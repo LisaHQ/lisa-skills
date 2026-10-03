@@ -1,8 +1,11 @@
 # README evaluation rubric
 
-Pre-registered on 2026-10-02 before the first run; the criteria and weights
-have not changed since. Judge every outcome (X, Y, Z, ...) against the
-scenario's evidence and `facts.md`. Do not reward length, polish, confidence,
+Pre-registered on 2026-10-02 before the first run. Dimensions and weights
+have not changed since; judge notes in `facts/` and the notes-versus-README
+rule were added after the archived rounds, and the harness v2 revision added
+error dimensions and clarified the accuracy anchors. Do not pool rounds
+judged under different revisions. Judge every outcome (X, Y, Z, ...) against
+the scenario's evidence and `facts.md`. Do not reward length, polish, confidence,
 or the amount of change for their own sake.
 
 ## Inputs
@@ -25,9 +28,10 @@ or the amount of change for their own sake.
 | F | Usefulness & honesty | 1.5 | Gives the target reader what they need (prerequisites, install or setup, usage, configuration, help, license or terms when evidenced). Unknowns are surfaced to the requester instead of guessed or padded with placeholders. Request constraints honored (language, review-only, preservation of valuable existing content, no secrets). |
 
 Accuracy anchors: 5 = no errors; 4 = one minor error (cosmetic, low impact);
-3 = one major error (a reader following it would fail or be misled) or two to
-three minor; 2 = two major errors; 1 = three or more major errors or a
-fabricated section. Score README claims under A; weigh mistakes that appear
+3 = one major error (a reader following it would fail or be misled) with up
+to three minor, or two or more minor; 2 = two major errors, or one major with
+four or more minor; 1 = three or more major errors or a fabricated section.
+Count each error toward the one dimension it lowers. Score README claims under A; weigh mistakes that appear
 only in `notes.md` under F.
 
 Weighted score = (3A + 2B + 2C + 1.5D + 1E + 1.5F) / 11, reported to two
@@ -44,7 +48,7 @@ Judge each outcome on its own against the evidence first, then compare them.
     "scores": {"A": 0, "B": 0, "C": 0, "D": 0, "E": 0, "F": 0},
     "weighted": 0.0,
     "lines": 0,
-    "errors": [{"severity": "major|minor", "claim": "...", "evidence": "..."}],
+    "errors": [{"severity": "major|minor", "dimension": "A|B|C|D|E|F", "claim": "...", "evidence": "..."}],
     "strengths": ["..."],
     "weaknesses": ["..."]
   },

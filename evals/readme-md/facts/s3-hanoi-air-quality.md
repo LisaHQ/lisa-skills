@@ -11,6 +11,7 @@ Kind: dataset folder. Reader: collaborators/analysts who will use the data.
 - Hourly columns: station_id, timestamp_local (`YYYY-MM-DD HH:MM`), pm25_ugm3 (µg/m³), pm10_ugm3 (µg/m³), temp_c (°C), rh_pct (%), qc_flag.
 - Missing values: **-999** in any numeric column.
 - QC flags: 0 valid; 1 sensor warm-up after power loss; 2 out of plausible range (PM2.5 < 0 or > 1000); 3 excluded manually (maintenance/calibration).
+- Derived counts (recounted from the files): qc_flag 0 = 10,617 rows, 1 = 178, 2 = 54, 3 = 71. **213 rows hold -999** (one cell each: pm25 48, pm10 46, temp 49, rh 70); **208 of them have qc_flag 0**, including all 48 missing PM2.5 values, so filtering on qc_flag alone does not remove -999. Every daily row has both means (minimum 20 valid hours), so the >= 18 rule empties no day in this release.
 - Daily file columns: station_id, date, pm25_mean_ugm3, pm10_mean_ugm3, pm25_valid_hours. Rules: only qc_flag 0, -999 excluded, **mean requires >= 18 valid hours else empty**, days in local time. Regenerate with `python scripts/aggregate_daily.py` from the dataset folder (stdlib only).
 - License: **CC BY-NC 4.0 (non-commercial)**. Citation: "Example Air Network (2024). Hanoi PM2.5 hourly observations, Q1 2024 (v1.1)." Version **v1.1** (2024-04-15: removed duplicate February HN03 rows; re-ran aggregation); v1.0 2024-04-05. Contact: data@example.invalid.
 

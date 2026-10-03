@@ -14,7 +14,7 @@ A       src/fmt.py        scheduled addition: fmt_qty with thousands separators
 
 ## Correct outcome
 
-The skill's contract: when the request names `staged` or `unstaged` in an SVN
+Correct outcome: when the request names `staged` or `unstaged` in an SVN
 project, report that SVN has no staging area and do not substitute another
 scope, so no commit message. The ideal answer explains this in a sentence or
 two and offers to describe the working-copy changes (`svn diff` against BASE)

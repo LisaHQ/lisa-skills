@@ -6,7 +6,7 @@ Kind: CLI tool (Python). Reader: developers/operators who need to cut log files 
 ## Ground truth
 
 - Package `logslice` 0.4.1; console command is **`lslice`** (not `logslice`). `python -m logslice` also works.
-- Python **>= 3.10**; **no runtime dependencies**. Optional extra **`zstd`** (`pip install 'logslice[zstd]'` style) needed only for `.zst` input; `dev` extra = pytest + ruff.
+- Python **>= 3.10**; **no runtime dependencies**. Optional extra **`zstd`** (zstandard) needed only for `.zst` input, installed from a checkout or Git (for example `pip install '.[zstd]'` or `pip install 'logslice[zstd] @ git+https://github.com/example-org/logslice'`); `dev` extra = pytest + ruff. The code's own hint (`cli.py`, `core.py`) says `pip install 'logslice[zstd]'`, which assumes a PyPI release.
 - Inputs: files (`.log`/plain, `.gz`, `.zst`) or stdin (`-` or no file).
 - Flags: `--from TIME` (inclusive), `--to TIME` (exclusive); TIME = ISO 8601 or relative to now (`-15m`, `-2h`, `-1d`, also `s`); `--format {auto,iso,jsonl,nginx,syslog}` (default auto); `--tz` (default `$LOGSLICE_TZ`, else UTC; applies to timestamps without offset); `--count`; `--version`.
 - Exit codes: 0 when lines matched, 1 when none matched, 2 on errors (bad range, unreadable file, missing zstd extra).
@@ -27,7 +27,7 @@ Kind: CLI tool (Python). Reader: developers/operators who need to cut log files 
 ## Traps (judge explicitly)
 
 - Calling the command `logslice` instead of `lslice` -> major.
-- `pip install logslice` presented as fact with no caveat -> major (not evidenced; name may belong to someone else on PyPI). If the writer flags it as unverified in notes but still presents it as the install command, count minor.
+- A PyPI install of the package with no clear caveat in the README that it is not published, such as `pip install logslice`, `python -m pip install logslice`, `pipx install logslice`, `uv tool install logslice`, or `pip install 'logslice[zstd]'` -> major when it is the install path (not evidenced; the name may belong to someone else on PyPI). Count minor instead when only the notes flag it as unverified, or when it appears only for the optional `zstd` extra. A local `pip install '.[zstd]'` or a Git URL install is correct.
 - Claiming binary search / speed applies to `.gz`/`.zst`/stdin -> major.
 - Wrong Python minimum, wrong license, invented flags/options, invented badges (PyPI version/downloads/coverage) -> major each.
 - Claiming `--to` is inclusive or `--from` exclusive -> minor.
@@ -37,5 +37,6 @@ Kind: CLI tool (Python). Reader: developers/operators who need to cut log files 
 ## Judge notes
 
 - Run the documented commands on a copy of `scenario/`: `PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=src python -m logslice ...` stands in for `lslice`.
-- Relative times written with a space (`--from -15m`) fail on Python 3.10-3.13 argparse ("expected one argument"); `--from=-15m` works everywhere. Count the space form as one minor error per outcome.
+- Relative times written with a space (`--from -15m`) fail on at least Python 3.9-3.12 argparse ("expected one argument"); Python 3.14 accepts them, and `--from=-15m` works everywhere. Judge against the 3.10 minimum: count the space form as one minor error per outcome, and do not accept a writer's successful local run on 3.14 as proof.
 - A malformed time or unknown `--tz` crashes with a traceback and exit code 1, not 2.
+- On Windows without the `tzdata` package, any `--tz` or `LOGSLICE_TZ` other than UTC raises `ZoneInfoNotFoundError`, because the package declares no dependencies. This is an environment limit, not a README error; a README that notes it is an optional deep catch. Judging on Windows, set `PYTHONTZPATH` to a tz database or skip such commands.

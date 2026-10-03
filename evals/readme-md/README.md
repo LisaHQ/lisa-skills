@@ -13,8 +13,10 @@ evals/readme-md/
 ├── rubric.md          # Pre-registered scoring criteria and verdict format
 ├── requests.json      # The user request for each scenario
 ├── facts/             # Ground truth, traps, and judge notes per scenario
-├── scenarios/         # Deterministic builders for the nine test projects
+├── scenarios/         # Deterministic builders for the twelve test projects
 ├── suite_checks.py    # Mechanical checks, one function per scenario
+├── mdcheck.py         # Link, anchor, fence, and heading checks for any README
+├── check_cases.json   # Self-test cases with expected check results
 ├── trigger.json       # Queries for the trigger test
 └── results/
     └── history.md     # Every round so far, version scores, and lessons
@@ -36,8 +38,9 @@ python collect.py readme-md r1
 python checks.py readme-md r1
 ```
 
-Run a second round with fresh runs and pool them before deciding:
-`python aggregate.py readme-md r1:A=none,B=base,C=cand r2:A=none,B=base,C=cand`.
+Start with `python selftest.py --quick --suite readme-md`, which spends no
+model usage. Run a second round with fresh runs and pool them before deciding:
+`python aggregate.py readme-md r1:A=none,B=base,C=cand r2:A=none,B=base,C=cand --pair base,cand`.
 
 ## Improvement loop
 
@@ -67,25 +70,49 @@ Run a second round with fresh runs and pool them before deciding:
 | `s7-tasklog` | Node CLI | Review | Findings only, with no file changes |
 | `s8-lisa-skills` | This repository at `668ba4f` | Polish | Over-editing a strong README; a stale example |
 | `s9-cnc-onboarding` | Training material | Create | Unreadable binaries, a trainers-only answer key, PDF content |
+| `s10-acme-platform` | Package in a pnpm monorepo | Create | Subfolder README, workspace install, license conflict, generated docs, lint style |
+| `s11-csvdelta` | Python CLI | Improve | Vietnamese request for an English README, stale translation, renamed flags, broken links |
+| `s12-slugkit` | Python library | Narrow edit | Requested badges without a source, unescaped static badges, scope, a stale line |
 
 `s4` has stub implementations; its judge notes tell judges not to penalize
 honest reports of stubs. `s8` clones this repository at `repo_ref` in
-`suite.json`; pass `--ref` to `build_scenarios.py` to retarget it, then update
-`facts/s8-lisa-skills.md` and `suite_checks.py` to match.
+`suite.json`, keeping only `main` and its history. The build refuses a commit
+whose history contains `evals/` or `skills/readme-md`, because writers could
+read the fact sheets and the skill under test. Retarget `s8` only to a commit
+that predates the eval harness (before `314060f`), with `--ref` or `repo_ref`,
+then update `facts/s8-lisa-skills.md` and `suite_checks.py` to match; a later
+commit would need a filtered history.
+
+Checks named `md_*` are advisory Markdown hygiene from `mdcheck.py`: broken
+relative links and anchors, unclosed or untagged code fences, and heading
+problems. They count only problems the original README did not already have,
+and are skipped when the README is absent or unchanged.
 
 ## Results and archive
 
 [`results/history.md`](results/history.md) records every round, version
 scores, and lessons. The raw material of the 2026-10-02 rounds is in
 `archive/readme-md-eval-2026-10-02.zip` (Dropbox only). To revisit it, unzip
-it into `<LISA_EVAL_WORK>/readme-md/` and run `collect.py`, `aggregate.py`, or
-`checks.py` with the suite name.
+it into a separate work root (`LISA_EVAL_WORK=<other folder>`, under
+`<that folder>/readme-md/`) so its older scenario build does not replace the
+current one, and run `collect.py`, `aggregate.py`, `checks.py`, or `usage.py`
+with the suite name. Those rounds ran `s1`–`s9` under harness v1, so compare
+pooled means only between rounds with the same scenario set and harness.
 
 ## Add a scenario
 
 1. Add a builder module in `scenarios/` with `ROOT` and `build(base)`, and
-   register it in `BUILDERS` in `scenarios/suite_build.py`.
-2. Add the request to `requests.json` and a fact sheet in `facts/` with core
-   points, traps, and judge notes.
-3. Add a check function to `suite_checks.py` if a trap can be checked
-   mechanically.
+   register it in `BUILDERS` in `scenarios/suite_build.py`. Build twice and
+   confirm the files and commits are identical.
+2. Add the request to `requests.json` and a fact sheet in `facts/` with ground
+   truth, core points, traps with severities, and judge notes. Verify every
+   fact against the built scenario, running the code on a copy.
+3. Add a check function to `CHECKS` in `suite_checks.py` for the traps that can
+   be checked mechanically, merged with `markdown(ctx)`, and a row to the
+   scenario table above.
+4. Add at least one good and one bad outcome to `check_cases.json`, plus a case
+   for every false result you fix. A case names its scenario, the files it
+   writes or deletes, optional notes, and the expected result of each check it
+   asserts. From `evals/harness/`, run
+   `python selftest.py --quick --suite readme-md` until every expectation
+   passes.

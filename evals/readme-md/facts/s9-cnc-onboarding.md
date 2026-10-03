@@ -22,6 +22,7 @@ Kind: document/material collection (training). Reader: new CNC operators (traine
 ## Traps (judge explicitly)
 
 - **Pointing trainees to `quiz/answers.md`** (e.g., "check your answers in answers.md") -> major. Acceptable: mention it is for trainers only, or omit it.
+- A pointer that implies trainees may open `quiz/answers.md` after the quiz (e.g., "leave it until you have attempted the quiz", "don't open it before the quiz") -> major, unless the same sentence or table row marks it trainers-only. Listing it with neither a trainers-only marking nor a plain "do not open" also counts as pointing.
 - **Inventing contents of `02-machine-overview.pptx` or `04-daily-startup-checklist.xlsx`** (specific slides, checklist items) -> major each. Acceptable: describe by name/type/purpose implied by filename and welcome note, flag as unread.
 - Wrong pass mark, wrong day order, wrong machine/cell -> major.
 - Rewriting safety rules with errors (e.g., "wear gloves") -> major.

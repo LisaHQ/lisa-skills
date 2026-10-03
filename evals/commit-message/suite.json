@@ -3,7 +3,7 @@
   "weights": {"A": 3, "B": 3, "C": 2, "D": 2, "E": 1, "F": 1},
   "extra_bash": [
     "git rev-parse", "git cat-file", "git ls-tree", "git branch", "git stash list", "git merge-base",
-    "git rev-list", "git check-ignore", "git config --get", "git shortlog", "git whatchanged",
+    "git rev-list", "git check-ignore", "git config --get", "git shortlog", "git hash-object",
     "svn status", "svn diff", "svn info", "svn log", "svn cat", "svn proplist", "svn propget"
   ]
 }

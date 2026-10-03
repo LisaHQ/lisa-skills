@@ -26,3 +26,4 @@ Kind: repository of AI agent skills (Agent Skills format). Readers: people who w
 
 - Compare each outcome with the original README line by line (for example `git diff --no-index --word-diff`), ignoring pure line-ending differences. Classify each change as a real improvement, neutral churn, or a loss, and check that the outcome delivers the requested polish. An outcome that changed nothing is judged as the original README plus its notes.
 - The original Usage example (nested `+` sub-bullets, no "Commit description:" label) is out of date relative to `skills/commit-message/SKILL.md`, which shows the same change as one merged bullet and requires the label.
+- The clone contains this repository's `CLAUDE.md` and `AGENTS.md` as of `668ba4f`. Writers run in safe mode (harness v2) and do not load them as instructions, though they may read them as evidence. A trailing commit message in the notes is neutral: neither a strength nor an error.

@@ -7,9 +7,16 @@
     ["give me a commit description for the diff in this repo", true],
     ["I'm squashing the last 3 commits, write the combined commit message", true],
     ["summarize my uncommitted changes as a commit message", true],
+    ["write an svn commit log message for my working copy changes", true],
+    ["reword the message of my last commit - write a better one", true],
+    ["write a commit message for this diff:\n--- a/shipcalc/rates.py\n+++ b/shipcalc/rates.py\n@@ -4 +4 @@\n-BASE_RATE = Decimal(\"4.50\")\n+BASE_RATE = Decimal(\"4.75\")", true],
     ["explain what git rebase --onto does", false],
     ["write release notes for version 2.0 for our customers", false],
     ["review my uncommitted changes for bugs", false],
-    ["write a pull request description for this branch", false]
+    ["write a pull request description for this branch", false],
+    ["write a CHANGELOG.md entry for these changes", false],
+    ["write a PR title for this branch", false],
+    ["explain what the last commit changed", false],
+    ["add commitlint with the conventional config to this repo", false]
   ]
 }

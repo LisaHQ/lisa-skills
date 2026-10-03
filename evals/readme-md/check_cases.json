@@ -1,0 +1,1797 @@
+[
+ {
+  "scenario": "s1-logslice",
+  "name": "PyPI install via pipx is caught (audit rm-content-07)",
+  "files": {
+   "README.md": "# logslice\n\nCut time ranges out of large, time-sorted logs with `lslice`. Requires Python 3.10 or newer.\n\n## Install\n\n```bash\npipx install logslice\n```\n"
+  },
+  "expect": {
+   "no_bare_pypi_install": false,
+   "command_lslice": true
+  }
+ },
+ {
+  "scenario": "s1-logslice",
+  "name": "PyPI install via pip3 is caught (audit rm-content-07)",
+  "files": {
+   "README.md": "# logslice\n\nCut time ranges out of large, time-sorted logs with `lslice`. Requires Python 3.10 or newer.\n\n## Install\n\n```bash\npip3 install logslice\n```\n"
+  },
+  "expect": {
+   "no_bare_pypi_install": false,
+   "command_lslice": true
+  }
+ },
+ {
+  "scenario": "s1-logslice",
+  "name": "PyPI install via upgrade is caught (audit rm-content-07)",
+  "files": {
+   "README.md": "# logslice\n\nCut time ranges out of large, time-sorted logs with `lslice`. Requires Python 3.10 or newer.\n\n## Install\n\n```bash\npip install --upgrade logslice\n```\n"
+  },
+  "expect": {
+   "no_bare_pypi_install": false,
+   "command_lslice": true
+  }
+ },
+ {
+  "scenario": "s1-logslice",
+  "name": "PyPI install via uv tool is caught (audit rm-content-07)",
+  "files": {
+   "README.md": "# logslice\n\nCut time ranges out of large, time-sorted logs with `lslice`. Requires Python 3.10 or newer.\n\n## Install\n\n```bash\nuv tool install logslice\n```\n"
+  },
+  "expect": {
+   "no_bare_pypi_install": false,
+   "command_lslice": true
+  }
+ },
+ {
+  "scenario": "s1-logslice",
+  "name": "caveated PyPI command passes (audit rm-content-07)",
+  "files": {
+   "README.md": "# logslice\n\nCut time ranges out of large, time-sorted logs with `lslice`. Requires Python 3.10 or newer.\n\n## Install\n\n`logslice` is not on PyPI, so `pip install logslice` will not work. Install from Git:\n\n```bash\npipx install git+https://github.com/example-org/logslice\n```\n"
+  },
+  "expect": {
+   "no_bare_pypi_install": true
+  }
+ },
+ {
+  "scenario": "s1-logslice",
+  "name": "caveat in the paragraph before the command passes",
+  "files": {
+   "README.md": "# logslice\n\nCut time ranges out of large, time-sorted logs with `lslice`. Requires Python 3.10 or newer.\n\n## Install\n\nThe package is not published on PyPI yet. Once it is:\n\n```bash\npip install logslice\n```\n"
+  },
+  "expect": {
+   "no_bare_pypi_install": true
+  }
+ },
+ {
+  "scenario": "s1-logslice",
+  "name": "PyPI install of the zstd extra is an error (owner decision)",
+  "files": {
+   "README.md": "# logslice\n\nCut time ranges out of large, time-sorted logs with `lslice`. Requires Python 3.10 or newer.\n\n## Compressed input\n\n- To read `.zst` files, install the extra: `pip install 'logslice[zstd]'`.\n"
+  },
+  "expect": {
+   "no_bare_pypi_install": false
+  }
+ },
+ {
+  "scenario": "s1-logslice",
+  "name": "local or Git installs of the zstd extra pass",
+  "files": {
+   "README.md": "# logslice\n\nCut time ranges out of large, time-sorted logs with `lslice`. Requires Python 3.10 or newer.\n\n## Compressed input\n\n```bash\npip install '.[zstd]'\npip install 'logslice[zstd] @ git+https://github.com/example-org/logslice'\n```\n"
+  },
+  "expect": {
+   "no_bare_pypi_install": true,
+   "md_fences_ok": true
+  }
+ },
+ {
+  "scenario": "s1-logslice",
+  "name": "a later minimum next to the CI range fails python_3_10 (audit rm-content-07)",
+  "files": {
+   "README.md": "# logslice\n\nRequires Python 3.11+ (CI 3.10-3.12).\n"
+  },
+  "expect": {
+   "python_3_10": false
+  }
+ },
+ {
+  "scenario": "s1-logslice",
+  "name": "minimum version stated: Requires Python 3.10 or newer.",
+  "files": {
+   "README.md": "# logslice\n\nRequires Python 3.10 or newer.\n"
+  },
+  "expect": {
+   "python_3_10": true
+  }
+ },
+ {
+  "scenario": "s1-logslice",
+  "name": "minimum version stated: Python >= 3.10, no dependencies.",
+  "files": {
+   "README.md": "# logslice\n\nPython >= 3.10, no dependencies.\n"
+  },
+  "expect": {
+   "python_3_10": true
+  }
+ },
+ {
+  "scenario": "s1-logslice",
+  "name": "minimum version stated: Requires Python 3.10.",
+  "files": {
+   "README.md": "# logslice\n\nRequires Python 3.10.\n"
+  },
+  "expect": {
+   "python_3_10": true
+  }
+ },
+ {
+  "scenario": "s1-logslice",
+  "name": "create-mode Markdown problems are reported",
+  "files": {
+   "README.md": "# logslice\n\nSee [the guide](docs/guide.md) and [usage](#usage).\n\n### Options\n\n```\nlslice --count\n```\n\n# Second title\n"
+  },
+  "expect": {
+   "md_links_ok": false,
+   "md_fences_ok": false,
+   "md_headings_ok": false
+  }
+ },
+ {
+  "scenario": "s1-logslice",
+  "name": "a README without Markdown problems passes the md checks",
+  "files": {
+   "README.md": "# logslice\n\nCut time ranges out of large, time-sorted logs with `lslice`. Requires Python 3.10 or newer.\n\n## Usage\n\nSee [Usage](#usage), the [changelog](CHANGELOG.md), and the [example log](examples/nginx-access.log).\n\n```bash\nlslice --count examples/nginx-access.log\n```\n"
+  },
+  "expect": {
+   "md_links_ok": true,
+   "md_fences_ok": true,
+   "md_headings_ok": true
+  }
+ },
+ {
+  "scenario": "s1-logslice",
+  "name": "archived iter2 C: zstd extra from PyPI (regression anchor)",
+  "files": {
+   "README.md": "# logslice\n\nSlice large, time-sorted log files by time range without reading them end to end.\n\n`logslice` installs the `lslice` command, which prints only the lines between two timestamps.\n\n## Highlights\n\n- **Fast on big plain files:** `lslice` binary-searches byte offsets, so it reads a few blocks before the first match, whatever the file size.\n- **Reads what you have:** plain `.log`, `.gz`, `.zst`, and standard input, in `nginx`, `iso`, `jsonl`, and `syslog` formats, auto-detected by default.\n- **Human-friendly bounds:** use ISO 8601 (`2024-05-01T10:00`) or relative times (`-15m`, `-2h`, `-1d`).\n- **Keeps stack traces whole:** lines without a timestamp stay with the nearest timestamped line above them.\n- **No runtime dependencies:** `.zst` support is an optional extra.\n\n## Quick start\n\nYou need Python 3.10 or newer. Clone the repository, then install it from the project root:\n\n```sh\ngit clone https://github.com/example-org/logslice.git\ncd logslice\npip install .\n```\n\nPrint the requests between 10:00 and 10:05 from the bundled sample:\n\n```sh\nlslice --from 2024-05-01T10:00 --to 2024-05-01T10:05 examples/nginx-access.log\n```\n\n```text\n198.51.100.7 - - [01/May/2024:10:00:03 +0000] \"POST /api/orders HTTP/1.1\" 201 87 \"-\" \"curl/8.5.0\"\n203.0.113.24 - - [01/May/2024:10:01:15 +0000] \"GET /api/orders/981 HTTP/1.1\" 200 811 \"-\" \"Mozilla/5.0\"\n203.0.113.10 - - [01/May/2024:10:02:12 +0000] \"GET /health HTTP/1.1\" 200 2 \"-\" \"kube-probe/1.29\"\n198.51.100.7 - - [01/May/2024:10:04:59 +0000] \"DELETE /api/orders/981 HTTP/1.1\" 500 64 \"-\" \"curl/8.5.0\"\n```\n\nCheck the install with `lslice --version`. You can also run `python -m logslice` instead of `lslice`.\n\n## Usage\n\n```text\nlslice [--from TIME] [--to TIME] [--format FORMAT] [--tz ZONE] [--count] [FILE ...]\n```\n\nCommon tasks:\n\n```sh\n# The last 15 minutes of a live log\nlslice --from -15m /var/log/nginx/access.log\n\n# Count matching lines in a compressed archive\nlslice --count --from 2024-05-01T10:00 --to 2024-05-01T11:00 access.log.gz\n\n# Slice a stream\njournalctl -o short-iso | lslice --from -1h\n```\n\n| Option | Default | Purpose |\n| --- | --- | --- |\n| `--from TIME` | start of input | Inclusive start. |\n| `--to TIME` | end of input | Exclusive end. Must be later than `--from`. |\n| `--format` | `auto` | One of `auto`, `iso`, `nginx`, `jsonl`, `syslog`. |\n| `--tz` | `$LOGSLICE_TZ`, else `UTC` | IANA time zone for timestamps without an offset. |\n| `--count` | off | Print only the number of matching lines. |\n| `FILE` | standard input | One or more files; `-` reads standard input. |\n\nFormat details:\n\n- `jsonl` reads the timestamp from the key `ts`, `time`, or `timestamp`.\n- `syslog` timestamps have no year, so `lslice` assumes the current year.\n- `auto` detects the format from the first line it reads.\n\n### Input requirements\n\n- Input must be sorted by time. Both the binary search and the early stop at `--to` rely on it.\n- Only plain files are searched by offset. `.gz`, `.zst`, and standard input are scanned from the start.\n- To read `.zst` files, install the extra: `pip install 'logslice[zstd]'`.\n\n### Exit codes\n\n| Code | Meaning |\n| --- | --- |\n| `0` | At least one line matched. |\n| `1` | No lines matched. |\n| `2` | Bad arguments, an unreadable file, or `.zst` input without the `zstd` extra. |\n\n## Development\n\n```sh\npip install -e \".[dev,zstd]\"\nmake test   # python -m pytest -q\nmake lint   # ruff check src tests\n```\n\nCI runs lint and tests on Ubuntu and macOS with Python 3.10, 3.11, and 3.12. See the [changelog](CHANGELOG.md) for release history.\n\n## License\n\n[Apache License 2.0](LICENSE). Copyright 2024 Example Labs.\n"
+  },
+  "expect": {
+   "command_lslice": true,
+   "no_bare_pypi_install": false,
+   "apache_license": true,
+   "python_3_10": true,
+   "md_links_ok": true,
+   "md_fences_ok": true,
+   "md_headings_ok": true
+  }
+ },
+ {
+  "scenario": "s1-logslice",
+  "name": "minimum version stated: Requires **Python 3.10** or later. (review)",
+  "files": {
+   "README.md": "# logslice\n\nRequires **Python 3.10** or later.\n"
+  },
+  "expect": {
+   "python_3_10": true
+  }
+ },
+ {
+  "scenario": "s1-logslice",
+  "name": "minimum version stated: | Minimum Python | 3.10 | (review)",
+  "files": {
+   "README.md": "# logslice\n\n| Requirement | Version |\n| --- | --- |\n| Minimum Python | 3.10 |\n"
+  },
+  "expect": {
+   "python_3_10": true
+  }
+ },
+ {
+  "scenario": "s1-logslice",
+  "name": "minimum version stated: Python 3.10 (minimum), no dependencies. (review)",
+  "files": {
+   "README.md": "# logslice\n\nPython 3.10 (minimum), no dependencies.\n"
+  },
+  "expect": {
+   "python_3_10": true
+  }
+ },
+ {
+  "scenario": "s1-logslice",
+  "name": "a 3.14+ note on the space form keeps the 3.10 minimum (review)",
+  "files": {
+   "README.md": "# logslice\n\nCut time ranges out of large, time-sorted logs with `lslice`. Requires Python 3.10 or newer.\n\nWrite relative times as `--from=-15m`; the space form works only on Python 3.14+.\n"
+  },
+  "expect": {
+   "python_3_10": true
+  }
+ },
+ {
+  "scenario": "s1-logslice",
+  "name": "a later minimum in a requirements bullet fails python_3_10 (review)",
+  "files": {
+   "README.md": "# logslice\n\nCut time ranges out of large, time-sorted logs with `lslice`. Requires Python 3.10 or newer.\n\n## Requirements\n\n- Python 3.11+\n"
+  },
+  "expect": {
+   "python_3_10": false
+  }
+ },
+ {
+  "scenario": "s1-logslice",
+  "name": "an unrelated 'does not work' next to a PyPI install is no caveat (review)",
+  "files": {
+   "README.md": "# logslice\n\nCut time ranges out of large, time-sorted logs with `lslice`. Requires Python 3.10 or newer.\n\nNote: `--from -15m` with a space does not work on Python 3.10; write `--from=-15m`.\n\n```bash\npip install logslice\n```\n"
+  },
+  "expect": {
+   "no_bare_pypi_install": false
+  }
+ },
+ {
+  "scenario": "s1-logslice",
+  "name": "<h1> inside inline code is not a heading (review)",
+  "files": {
+   "README.md": "# logslice\n\nCut time ranges out of large, time-sorted logs with `lslice`. Requires Python 3.10 or newer.\n\n## Output\n\nOutput is plain text, never HTML such as `<h1>`.\n"
+  },
+  "expect": {
+   "md_headings_ok": true
+  }
+ },
+ {
+  "scenario": "s2-fetchkit",
+  "name": "good update with an upgrade section naming the v1 API (audit rm-content-07)",
+  "files": {
+   "README.md": "# fetchkit\n\nA small `fetch` wrapper for Node.js 18 and later: retries with backoff, per-attempt timeouts, and typed JSON.\n\n## Install\n\n```bash\nnpm install @example-org/fetchkit\n```\n\n## Usage\n\n```ts\nimport { createClient } from \"@example-org/fetchkit\";\n\nconst api = createClient({ baseUrl: \"https://api.example.com/v1/\", timeoutMs: 5000 });\nconst users = await api.get<User[]>(\"users\");\n```\n\n## Options\n\n| Option | Default |\n| --- | --- |\n| `retries` | `2` |\n| `timeoutMs` | `10000` |\n\n## Upgrading from v1\n\n- The unscoped `npm install fetchkit` package is deprecated.\n- Replace `fetchkit.get(url, { timeout: 5000 })` with `createClient({ timeoutMs: 5000 }).get(url)`.\n- Caching was removed, and Node 14 is no longer supported.\n\n## Sponsors\n\nThanks to [Example Hosting](https://hosting.example.com) for supporting this project.\n\n## Contributors\n\nThanks to everyone who has contributed! See the [contributors graph](https://github.com/example-org/fetchkit/graphs/contributors).\n\n## License\n\nMIT\n"
+  },
+  "expect": {
+   "scoped_install": true,
+   "create_client_api": true,
+   "timeoutMs": true,
+   "no_travis": true,
+   "no_hype": true,
+   "no_stale_claims": true,
+   "no_cache_claim": true,
+   "sponsors_kept": true,
+   "contributors_kept": true,
+   "upgrade_note": true,
+   "md_links_ok": true,
+   "md_fences_ok": true,
+   "md_headings_ok": true
+  }
+ },
+ {
+  "scenario": "s2-fetchkit",
+  "name": "rename rows outside an upgrade section pass",
+  "files": {
+   "README.md": "# fetchkit\n\nA small `fetch` wrapper for Node.js 18 and later: retries with backoff, per-attempt timeouts, and typed JSON.\n\n## Install\n\n```bash\nnpm install @example-org/fetchkit\n```\n\n## Usage\n\n```ts\nimport { createClient } from \"@example-org/fetchkit\";\n\nconst api = createClient({ baseUrl: \"https://api.example.com/v1/\", timeoutMs: 5000 });\nconst users = await api.get<User[]>(\"users\");\n```\n\n## What changed in 2.0\n\n| v1 | v2 |\n| --- | --- |\n| `timeout: 5000` | `timeoutMs: 5000` |\n| `fetchkit.get(url)` | `createClient().get(url)` |\n\n## Options\n\n| Option | Default |\n| --- | --- |\n| `retries` | `2` |\n| `timeoutMs` | `10000` |\n\n## Upgrading from v1\n\n- The unscoped `npm install fetchkit` package is deprecated.\n- Replace `fetchkit.get(url, { timeout: 5000 })` with `createClient({ timeoutMs: 5000 }).get(url)`.\n- Caching was removed, and Node 14 is no longer supported.\n\n## Sponsors\n\nThanks to [Example Hosting](https://hosting.example.com) for supporting this project.\n\n## Contributors\n\nThanks to everyone who has contributed! See the [contributors graph](https://github.com/example-org/fetchkit/graphs/contributors).\n\n## License\n\nMIT\n"
+  },
+  "expect": {
+   "timeoutMs": true,
+   "create_client_api": true
+  }
+ },
+ {
+  "scenario": "s2-fetchkit",
+  "name": "unscoped npm i is caught (audit rm-content-07)",
+  "files": {
+   "README.md": "# fetchkit\n\nA small `fetch` wrapper for Node.js 18 and later: retries with backoff, per-attempt timeouts, and typed JSON.\n\n## Install\n\n```bash\nnpm install @example-org/fetchkit\n# or, for the old name:\nnpm i fetchkit\n```\n\n## Usage\n\n```ts\nimport { createClient } from \"@example-org/fetchkit\";\n\nconst api = createClient({ baseUrl: \"https://api.example.com/v1/\", timeoutMs: 5000 });\nconst users = await api.get<User[]>(\"users\");\n```\n\n## Options\n\n| Option | Default |\n| --- | --- |\n| `retries` | `2` |\n| `timeoutMs` | `10000` |\n\n## Upgrading from v1\n\n- The unscoped `npm install fetchkit` package is deprecated.\n- Replace `fetchkit.get(url, { timeout: 5000 })` with `createClient({ timeoutMs: 5000 }).get(url)`.\n- Caching was removed, and Node 14 is no longer supported.\n\n## Sponsors\n\nThanks to [Example Hosting](https://hosting.example.com) for supporting this project.\n\n## Contributors\n\nThanks to everyone who has contributed! See the [contributors graph](https://github.com/example-org/fetchkit/graphs/contributors).\n\n## License\n\nMIT\n"
+  },
+  "expect": {
+   "scoped_install": false
+  }
+ },
+ {
+  "scenario": "s2-fetchkit",
+  "name": "unscoped pnpm add is caught",
+  "files": {
+   "README.md": "# fetchkit\n\nA small `fetch` wrapper for Node.js 18 and later: retries with backoff, per-attempt timeouts, and typed JSON.\n\n## Install\n\n```bash\npnpm add fetchkit\n```\n\n## Usage\n\n```ts\nimport { createClient } from \"@example-org/fetchkit\";\n\nconst api = createClient({ baseUrl: \"https://api.example.com/v1/\", timeoutMs: 5000 });\nconst users = await api.get<User[]>(\"users\");\n```\n\n## Options\n\n| Option | Default |\n| --- | --- |\n| `retries` | `2` |\n| `timeoutMs` | `10000` |\n\n## Upgrading from v1\n\n- The unscoped `npm install fetchkit` package is deprecated.\n- Replace `fetchkit.get(url, { timeout: 5000 })` with `createClient({ timeoutMs: 5000 }).get(url)`.\n- Caching was removed, and Node 14 is no longer supported.\n\n## Sponsors\n\nThanks to [Example Hosting](https://hosting.example.com) for supporting this project.\n\n## Contributors\n\nThanks to everyone who has contributed! See the [contributors graph](https://github.com/example-org/fetchkit/graphs/contributors).\n\n## License\n\nMIT\n"
+  },
+  "expect": {
+   "scoped_install": false
+  }
+ },
+ {
+  "scenario": "s2-fetchkit",
+  "name": "unscoped npm i without an upgrade note is caught (audit rm-content-07)",
+  "files": {
+   "README.md": "# fetchkit\n\n```bash\nnpm i fetchkit\n```\n\n```ts\nimport { createClient } from \"@example-org/fetchkit\";\n```\n"
+  },
+  "expect": {
+   "scoped_install": false
+  }
+ },
+ {
+  "scenario": "s2-fetchkit",
+  "name": "kept caching and Node 14 claims are caught (audit rm-content-07)",
+  "files": {
+   "README.md": "# fetchkit\n\nA small `fetch` wrapper for Node.js 18 and later: retries with backoff, per-attempt timeouts, and typed JSON.\n\n## Features\n\n- ✅ Retries\n- ✅ Caching\n- ✅ Works everywhere (Node 14+, browsers, Deno)\n\n## Install\n\n```bash\nnpm install @example-org/fetchkit\n```\n\n## Usage\n\n```ts\nimport { createClient } from \"@example-org/fetchkit\";\n\nconst api = createClient({ baseUrl: \"https://api.example.com/v1/\", timeoutMs: 5000 });\nconst users = await api.get<User[]>(\"users\");\n```\n\n## Options\n\n| Option | Default |\n| --- | --- |\n| `retries` | `2` |\n| `timeoutMs` | `10000` |\n\n## Upgrading from v1\n\n- The unscoped `npm install fetchkit` package is deprecated.\n- Replace `fetchkit.get(url, { timeout: 5000 })` with `createClient({ timeoutMs: 5000 }).get(url)`.\n- Caching was removed, and Node 14 is no longer supported.\n\n## Sponsors\n\nThanks to [Example Hosting](https://hosting.example.com) for supporting this project.\n\n## Contributors\n\nThanks to everyone who has contributed! See the [contributors graph](https://github.com/example-org/fetchkit/graphs/contributors).\n\n## License\n\nMIT\n"
+  },
+  "expect": {
+   "no_cache_claim": false,
+   "no_stale_claims": false,
+   "scoped_install": true
+  }
+ },
+ {
+  "scenario": "s2-fetchkit",
+  "name": "a no-cache note with the CHANGELOG's advice passes (review)",
+  "files": {
+   "README.md": "# fetchkit\n\nA small `fetch` wrapper for Node.js 18 and later: retries with backoff, per-attempt timeouts, and typed JSON.\n\n## Install\n\n```bash\nnpm install @example-org/fetchkit\n```\n\n## Usage\n\n```ts\nimport { createClient } from \"@example-org/fetchkit\";\n\nconst api = createClient({ baseUrl: \"https://api.example.com/v1/\", timeoutMs: 5000 });\nconst users = await api.get<User[]>(\"users\");\n```\n\n## Options\n\n| Option | Default |\n| --- | --- |\n| `retries` | `2` |\n| `timeoutMs` | `10000` |\n\n## Upgrading from v1\n\n- The unscoped `npm install fetchkit` package is deprecated.\n- Replace `fetchkit.get(url, { timeout: 5000 })` with `createClient({ timeoutMs: 5000 }).get(url)`.\n- Caching was removed, and Node 14 is no longer supported.\n\n## Notes\n\nfetchkit has no built-in response cache.\nFor caching, use HTTP caching or your own layer.\n\n## Sponsors\n\nThanks to [Example Hosting](https://hosting.example.com) for supporting this project.\n\n## Contributors\n\nThanks to everyone who has contributed! See the [contributors graph](https://github.com/example-org/fetchkit/graphs/contributors).\n\n## License\n\nMIT\n"
+  },
+  "expect": {
+   "no_cache_claim": true
+  }
+ },
+ {
+  "scenario": "s2-fetchkit",
+  "name": "a caching bullet is caught despite a negation in the next item (review)",
+  "files": {
+   "README.md": "# fetchkit\n\nA small `fetch` wrapper for Node.js 18 and later: retries with backoff, per-attempt timeouts, and typed JSON.\n\n## Features\n\n- Caching of GET responses\n- No dependencies\n\n## Install\n\n```bash\nnpm install @example-org/fetchkit\n```\n\n## Usage\n\n```ts\nimport { createClient } from \"@example-org/fetchkit\";\n\nconst api = createClient({ baseUrl: \"https://api.example.com/v1/\", timeoutMs: 5000 });\nconst users = await api.get<User[]>(\"users\");\n```\n\n## Options\n\n| Option | Default |\n| --- | --- |\n| `retries` | `2` |\n| `timeoutMs` | `10000` |\n\n## Upgrading from v1\n\n- The unscoped `npm install fetchkit` package is deprecated.\n- Replace `fetchkit.get(url, { timeout: 5000 })` with `createClient({ timeoutMs: 5000 }).get(url)`.\n- Caching was removed, and Node 14 is no longer supported.\n\n## Sponsors\n\nThanks to [Example Hosting](https://hosting.example.com) for supporting this project.\n\n## Contributors\n\nThanks to everyone who has contributed! See the [contributors graph](https://github.com/example-org/fetchkit/graphs/contributors).\n\n## License\n\nMIT\n"
+  },
+  "expect": {
+   "no_cache_claim": false
+  }
+ },
+ {
+  "scenario": "s2-fetchkit",
+  "name": "improve mode is not blamed for the owner's untagged fence",
+  "files": {
+   "README.md": "# fetchkit\n\n[![npm](https://img.shields.io/npm/v/fetchkit.svg)](https://www.npmjs.com/package/fetchkit)\n[![Build Status](https://travis-ci.org/example-org/fetchkit.svg?branch=master)](https://travis-ci.org/example-org/fetchkit)\n\nA small fetch wrapper.\n\n## Features\n\n- ✅ Retries\n- ✅ Timeouts\n- ✅ Caching\n- ✅ Works everywhere (Node 14+, browsers, Deno)\n\n## Install\n\n    npm install fetchkit\n\n## Usage\n\n```\nconst fetchkit = require('fetchkit')\n\nfetchkit.get('https://api.example.com/users', { retries: 3, timeout: 5000 })\n  .then(users => console.log(users))\n```\n\n## Options\n\n| Option | Default | Description |\n|--------|---------|-------------|\n| retries | 3 | Number of retries |\n| timeout | 5000 | Timeout in ms |\n| cache | false | Cache responses in memory |\n\n## Sponsors\n\nThanks to [Example Hosting](https://hosting.example.com) for supporting this project.\n\n## Contributors\n\nThanks to everyone who has contributed! See the [contributors graph](https://github.com/example-org/fetchkit/graphs/contributors).\n\n## License\n\nMIT\n"
+  },
+  "expect": {
+   "md_fences_ok": true,
+   "no_hype": true
+  }
+ },
+ {
+  "scenario": "s2-fetchkit",
+  "name": "a new untagged fence is reported",
+  "files": {
+   "README.md": "# fetchkit\n\n[![npm](https://img.shields.io/npm/v/fetchkit.svg)](https://www.npmjs.com/package/fetchkit)\n[![Build Status](https://travis-ci.org/example-org/fetchkit.svg?branch=master)](https://travis-ci.org/example-org/fetchkit)\n\nA tiny, powerful and blazing fast fetch wrapper!!! 🚀🚀🚀\n\n## Features\n\n- ✅ Retries\n- ✅ Timeouts\n- ✅ Caching\n- ✅ Works everywhere (Node 14+, browsers, Deno)\n\n## Install\n\n    npm install fetchkit\n\n## Usage\n\n```\nconst fetchkit = require('fetchkit')\n\nfetchkit.get('https://api.example.com/users', { retries: 3, timeout: 5000 })\n  .then(users => console.log(users))\n```\n\n## Options\n\n| Option | Default | Description |\n|--------|---------|-------------|\n| retries | 3 | Number of retries |\n| timeout | 5000 | Timeout in ms |\n| cache | false | Cache responses in memory |\n\n## Sponsors\n\nThanks to [Example Hosting](https://hosting.example.com) for supporting this project.\n\n## Contributors\n\nThanks to everyone who has contributed! See the [contributors graph](https://github.com/example-org/fetchkit/graphs/contributors).\n\n## License\n\nMIT\n\n## Example\n\n```\nnpm test\n```\n"
+  },
+  "expect": {
+   "md_fences_ok": false
+  }
+ },
+ {
+  "scenario": "s2-fetchkit",
+  "name": "unchanged stale README",
+  "expect": {
+   "scoped_install": false,
+   "create_client_api": false,
+   "timeoutMs": false,
+   "no_travis": false,
+   "no_hype": false,
+   "no_stale_claims": false,
+   "no_cache_claim": false,
+   "sponsors_kept": true,
+   "contributors_kept": true,
+   "upgrade_note": false,
+   "md_links_ok": null,
+   "md_fences_ok": null,
+   "md_headings_ok": null
+  }
+ },
+ {
+  "scenario": "s3-hanoi-air-quality",
+  "name": "license in SOURCE.md's long form passes (audit rm-content-08)",
+  "files": {
+   "README.md": "# Hanoi air quality\n\nLicensed under Creative Commons Attribution-NonCommercial 4.0.\n"
+  },
+  "expect": {
+   "license_noncommercial": true
+  }
+ },
+ {
+  "scenario": "s3-hanoi-air-quality",
+  "name": "license as CC BY NC passes",
+  "files": {
+   "README.md": "# Hanoi air quality\n\nLicense: CC BY NC 4.0.\n"
+  },
+  "expect": {
+   "license_noncommercial": true
+  }
+ },
+ {
+  "scenario": "s3-hanoi-air-quality",
+  "name": "GMT+7 and the zone name pass local_time (audit rm-content-08)",
+  "files": {
+   "README.md": "# Hanoi air quality\n\nTimestamps are local time, GMT+7 (Asia/Ho_Chi_Minh).\n"
+  },
+  "expect": {
+   "local_time": true
+  }
+ },
+ {
+  "scenario": "s3-hanoi-air-quality",
+  "name": "timestamps said to be UTC fail local_time (audit rm-content-08)",
+  "files": {
+   "README.md": "# Hanoi air quality\n\nAll timestamps are UTC (not ICT).\n"
+  },
+  "expect": {
+   "local_time": false
+  }
+ },
+ {
+  "scenario": "s3-hanoi-air-quality",
+  "name": "telling users to apply the correction is caught (audit rm-content-08)",
+  "files": {
+   "README.md": "# Hanoi air quality\n\nValues are raw; apply the correction yourself. Make sure the path is correct.\n"
+  },
+  "expect": {
+   "correction_applied": false,
+   "no_apply_correction": false
+  }
+ },
+ {
+  "scenario": "s3-hanoi-air-quality",
+  "name": "an applied correction with a do-not-reapply warning passes",
+  "files": {
+   "README.md": "# Hanoi air quality\n\nPM2.5 values already include the correction `pm25 = 0.72 * raw + 1.8`; do not apply the correction again. Missing values are -999.\n"
+  },
+  "expect": {
+   "correction_applied": true,
+   "no_apply_correction": true,
+   "missing_code": true
+  }
+ },
+ {
+  "scenario": "s4-shopfloor",
+  "name": "a negated license mention passes (audit rm-content-06)",
+  "files": {
+   "README.md": "# shopfloor\n\n## License\n\nThere is no LICENSE file; do not assume MIT.\n"
+  },
+  "expect": {
+   "no_invented_license": true
+  }
+ },
+ {
+  "scenario": "s4-shopfloor",
+  "name": "an invented license line is caught",
+  "files": {
+   "README.md": "# shopfloor\n\n## License\n\nMIT © 2024 Example Org\n"
+  },
+  "expect": {
+   "no_invented_license": false
+  }
+ },
+ {
+  "scenario": "s4-shopfloor",
+  "name": "the env step, ports, and API README link pass",
+  "files": {
+   "README.md": "# shopfloor\n\nCopy `.env.example` to `.env`, run `make dev`, then open http://localhost:5173 (API on port 8000). See [the API README](apps/api/README.md).\n"
+  },
+  "expect": {
+   "env_step": true,
+   "ports": true,
+   "links_api_readme": true,
+   "md_links_ok": true
+  }
+ },
+ {
+  "scenario": "s5-sao-luu-erp",
+  "name": "Vietnamese times 23h30 and 6h00 pass (audit rm-content-09)",
+  "files": {
+   "README.md": "# Sao lưu ERP\n\nThư mục này chứa các script PowerShell sao lưu cơ sở dữ liệu ERP_Production mỗi đêm, nén bản sao lưu bằng 7-Zip, chép sang NAS và xoá các bản cũ hơn mười bốn ngày. Nếu có lỗi, script ghi nhật ký và gửi email cho nhóm IT. Mật khẩu SQL nằm trong config.json, vì vậy đừng chia sẻ tệp đó và đừng đưa nó vào kho mã.\n\nLịch chạy: sao lưu lúc 23h30, kiểm tra lúc 6h00 mỗi ngày.\n"
+  },
+  "expect": {
+   "schedule": true,
+   "vietnamese": true
+  }
+ },
+ {
+  "scenario": "s5-sao-luu-erp",
+  "name": "26 giờ and 16:00 are not the 06:00 job",
+  "files": {
+   "README.md": "# Sao lưu ERP\n\nThư mục này chứa các script PowerShell sao lưu cơ sở dữ liệu ERP_Production mỗi đêm, nén bản sao lưu bằng 7-Zip, chép sang NAS và xoá các bản cũ hơn mười bốn ngày. Nếu có lỗi, script ghi nhật ký và gửi email cho nhóm IT. Mật khẩu SQL nằm trong config.json, vì vậy đừng chia sẻ tệp đó và đừng đưa nó vào kho mã.\n\nSao lưu lúc 23:30. Bản mới nhất phải mới hơn 26 giờ; báo cáo gửi lúc 16:00.\n"
+  },
+  "expect": {
+   "schedule": false
+  }
+ },
+ {
+  "scenario": "s5-sao-luu-erp",
+  "name": "06:30 is not the 06:00 verify job (review)",
+  "files": {
+   "README.md": "# Sao lưu ERP\n\nChạy lúc 23:30 và kiểm tra lúc 06:30 mỗi ngày.\n"
+  },
+  "expect": {
+   "schedule": false
+  }
+ },
+ {
+  "scenario": "s5-sao-luu-erp",
+  "name": "6 giờ sáng is the 06:00 verify job",
+  "files": {
+   "README.md": "# Sao lưu ERP\n\nSao lưu lúc 23 giờ 30, kiểm tra lúc 6 giờ sáng mỗi ngày.\n"
+  },
+  "expect": {
+   "schedule": true
+  }
+ },
+ {
+  "scenario": "s5-sao-luu-erp",
+  "name": "lowercase -force counts as warned",
+  "files": {
+   "README.md": "# Sao lưu ERP\n\nThư mục này chứa các script PowerShell sao lưu cơ sở dữ liệu ERP_Production mỗi đêm, nén bản sao lưu bằng 7-Zip, chép sang NAS và xoá các bản cũ hơn mười bốn ngày. Nếu có lỗi, script ghi nhật ký và gửi email cho nhóm IT. Mật khẩu SQL nằm trong config.json, vì vậy đừng chia sẻ tệp đó và đừng đưa nó vào kho mã.\n\nCảnh báo: tham số -force ghi đè cơ sở dữ liệu đang có.\n"
+  },
+  "expect": {
+   "force_warned": true
+  }
+ },
+ {
+  "scenario": "s5-sao-luu-erp",
+  "name": "NFD Vietnamese text still counts as Vietnamese (audit rm-content-09)",
+  "files": {
+   "README.md": "# Sao lưu ERP\n\nThư mục này chứa các script PowerShell sao lưu cơ sở dữ liệu ERP_Production mỗi đêm, nén bản sao lưu bằng 7-Zip, chép sang NAS và xoá các bản cũ hơn mười bốn ngày. Nếu có lỗi, script ghi nhật ký và gửi email cho nhóm IT. Mật khẩu SQL nằm trong config.json, vì vậy đừng chia sẻ tệp đó và đừng đưa nó vào kho mã.\n\n"
+  },
+  "expect": {
+   "vietnamese": true
+  }
+ },
+ {
+  "scenario": "s5-sao-luu-erp",
+  "name": "an English README that quotes Vietnamese log lines is not Vietnamese",
+  "files": {
+   "README.md": "# ERP backup scripts\n\nThese PowerShell scripts back up the ERP_Production database every night at 23:30, compress it with 7-Zip, copy it to the NAS, and delete copies older than 14 days. A verify job runs at 06:00. Log lines look like \"Bắt đầu sao lưu ERP_Production\" and \"Hoàn tất.\"; failure emails use the subject \"[ERP Backup] Lỗi sao lưu ERP_Production\". Restoring with -Force overwrites a database.\n"
+  },
+  "expect": {
+   "vietnamese": false
+  }
+ },
+ {
+  "scenario": "s5-sao-luu-erp",
+  "name": "the config password is caught in README and notes",
+  "notes": "Mật khẩu là Bk@2024!erp#Prod.",
+  "files": {
+   "README.md": "# Sao lưu ERP\n\nThư mục này chứa các script PowerShell sao lưu cơ sở dữ liệu ERP_Production mỗi đêm, nén bản sao lưu bằng 7-Zip, chép sang NAS và xoá các bản cũ hơn mười bốn ngày. Nếu có lỗi, script ghi nhật ký và gửi email cho nhóm IT. Mật khẩu SQL nằm trong config.json, vì vậy đừng chia sẻ tệp đó và đừng đưa nó vào kho mã.\n\nSqlPassword: Bk@2024!erp#Prod\n"
+  },
+  "expect": {
+   "no_password_in_readme": false,
+   "no_password_in_notes": false
+  }
+ },
+ {
+  "scenario": "s6-grepl",
+  "name": "'BSD grep' is not a license claim (audit rm-content-06)",
+  "files": {
+   "README.md": "# grepl\n\nFilter standard input with a Go regular expression. Exit codes: 0 match, 1 none, 2 error.\n\nUnlike GNU or BSD grep, grepl uses RE2 syntax.\n"
+  },
+  "expect": {
+   "no_license_claim": true
+  }
+ },
+ {
+  "scenario": "s6-grepl",
+  "name": "BSD tools are not a license claim: Unlike BSD or GNU grep, grepl uses RE2 syntax. (review)",
+  "files": {
+   "README.md": "# grepl\n\nFilter standard input with a Go regular expression. Exit codes: 0 match, 1 none, 2 error.\n\nUnlike BSD or GNU grep, grepl uses RE2 syntax.\n"
+  },
+  "expect": {
+   "no_license_claim": true
+  }
+ },
+ {
+  "scenario": "s6-grepl",
+  "name": "BSD tools are not a license claim: Unlike BSD/GNU grep, grepl uses RE2. (review)",
+  "files": {
+   "README.md": "# grepl\n\nFilter standard input with a Go regular expression. Exit codes: 0 match, 1 none, 2 error.\n\nUnlike BSD/GNU grep, grepl uses RE2.\n"
+  },
+  "expect": {
+   "no_license_claim": true
+  }
+ },
+ {
+  "scenario": "s6-grepl",
+  "name": "BSD tools are not a license claim: Patterns use Go RE2 syntax, not GNU/BSD-style regex. (review)",
+  "files": {
+   "README.md": "# grepl\n\nFilter standard input with a Go regular expression. Exit codes: 0 match, 1 none, 2 error.\n\nPatterns use Go RE2 syntax, not GNU/BSD-style regex.\n"
+  },
+  "expect": {
+   "no_license_claim": true
+  }
+ },
+ {
+  "scenario": "s6-grepl",
+  "name": "invented license caught: BSD-3-Clause (review)",
+  "files": {
+   "README.md": "# grepl\n\nFilter standard input with a Go regular expression. Exit codes: 0 match, 1 none, 2 error.\n\n## License\n\nBSD-3-Clause\n"
+  },
+  "expect": {
+   "no_license_claim": false
+  }
+ },
+ {
+  "scenario": "s6-grepl",
+  "name": "invented license caught: MPL-2.0 (audit rm-content-06)",
+  "files": {
+   "README.md": "# grepl\n\nFilter standard input with a Go regular expression. Exit codes: 0 match, 1 none, 2 error.\n\n## License\n\nMPL-2.0\n"
+  },
+  "expect": {
+   "no_license_claim": false
+  }
+ },
+ {
+  "scenario": "s6-grepl",
+  "name": "invented license caught: long MIT sentence (audit rm-content-06)",
+  "files": {
+   "README.md": "# grepl\n\nFilter standard input with a Go regular expression. Exit codes: 0 match, 1 none, 2 error.\n\n## License\n\nThis project is made available to all users under the terms of the MIT.\n"
+  },
+  "expect": {
+   "no_license_claim": false
+  }
+ },
+ {
+  "scenario": "s6-grepl",
+  "name": "invented license caught: MIT after 'no license yet' (audit rm-content-06)",
+  "files": {
+   "README.md": "# grepl\n\nFilter standard input with a Go regular expression. Exit codes: 0 match, 1 none, 2 error.\n\nThere is no license yet. Released under MIT License.\n"
+  },
+  "expect": {
+   "no_license_claim": false
+  }
+ },
+ {
+  "scenario": "s6-grepl",
+  "name": "invented license caught: Unlicense (audit rm-content-06)",
+  "files": {
+   "README.md": "# grepl\n\nFilter standard input with a Go regular expression. Exit codes: 0 match, 1 none, 2 error.\n\n## License\n\nUnlicense\n"
+  },
+  "expect": {
+   "no_license_claim": false
+  }
+ },
+ {
+  "scenario": "s6-grepl",
+  "name": "GitHub Actions and pkg.go.dev badges are caught (audit rm-content-06)",
+  "files": {
+   "README.md": "# grepl\n\n[![CI](https://github.com/example-org/grepl/actions/workflows/ci.yml/badge.svg)](https://github.com/example-org/grepl/actions)\n[![Go Reference](https://pkg.go.dev/badge/github.com/example-org/grepl.svg)](https://pkg.go.dev/github.com/example-org/grepl)\n"
+  },
+  "expect": {
+   "no_service_badges": false
+  }
+ },
+ {
+  "scenario": "s6-grepl",
+  "name": "Ctrl+D to exit is not an exit-code section (audit rm-content-06)",
+  "files": {
+   "README.md": "# grepl\n\nType lines and press Ctrl+D to exit.\n"
+  },
+  "expect": {
+   "exit_codes": false
+  }
+ },
+ {
+  "scenario": "s6-grepl",
+  "name": "exits with 1 counts as exit codes",
+  "files": {
+   "README.md": "# grepl\n\n`grepl` exits with 1 when no line matches.\n"
+  },
+  "expect": {
+   "exit_codes": true
+  }
+ },
+ {
+  "scenario": "s6-grepl",
+  "name": "unverified go install is caught (audit rm-content-06)",
+  "files": {
+   "README.md": "# grepl\n\nFilter standard input with a Go regular expression. Exit codes: 0 match, 1 none, 2 error.\n\n```bash\ngo install github.com/example-org/grepl@latest\n```\n"
+  },
+  "expect": {
+   "no_unverified_go_install": false,
+   "no_license_claim": true,
+   "no_service_badges": true
+  }
+ },
+ {
+  "scenario": "s6-grepl",
+  "name": "go install from a clone passes",
+  "files": {
+   "README.md": "# grepl\n\nFilter standard input with a Go regular expression. Exit codes: 0 match, 1 none, 2 error.\n\n```bash\ngit clone <repository URL>\ncd grepl\ngo install .\n```\n"
+  },
+  "expect": {
+   "no_unverified_go_install": true,
+   "md_fences_ok": true
+  }
+ },
+ {
+  "scenario": "s6-grepl",
+  "name": "archived iter2 A: go install and an untagged fence (regression anchor)",
+  "files": {
+   "README.md": "# grepl\n\nA minimal grep-like filter written in Go. It reads lines from standard input and prints those that match a regular expression.\n\n## Installation\n\nRequires Go 1.22 or later.\n\n```sh\ngo install github.com/example-org/grepl@latest\n```\n\nOr build from source:\n\n```sh\ngit clone https://github.com/example-org/grepl.git\ncd grepl\ngo build -o grepl .\n```\n\n## Usage\n\n```\ngrepl [-i] [-v] PATTERN < input\n```\n\n`grepl` only reads from standard input; it does not take file arguments. Exactly one `PATTERN` is required.\n\n| Flag | Description                      |\n| ---- | -------------------------------- |\n| `-i` | Case-insensitive match           |\n| `-v` | Print lines that do **not** match |\n\nFlags must come before the pattern.\n\n### Examples\n\n```sh\n# Lines containing \"error\"\ncat app.log | grepl error\n\n# Case-insensitive\ncat app.log | grepl -i warning\n\n# Lines that do not contain \"debug\"\ncat app.log | grepl -v debug\n\n# Regular expressions\nps aux | grepl '^root\\s+\\d+'\n```\n\n## Regular expression syntax\n\nPatterns use Go's [`regexp`](https://pkg.go.dev/regexp) package (RE2 syntax, see the [syntax reference](https://pkg.go.dev/regexp/syntax)). This is similar to `grep -E`, but without backreferences or lookaround.\n\n## Exit status\n\n| Code | Meaning                                                      |\n| ---- | ------------------------------------------------------------ |\n| `0`  | At least one line was printed                                |\n| `1`  | No lines were printed                                        |\n| `2`  | Usage error or invalid pattern (message written to stderr)   |\n\n## Limitations\n\n- Input lines longer than 64 KiB are not supported (the default `bufio.Scanner` limit); reading stops at such a line without an error message.\n- Standard input only; no file or directory arguments.\n- No `-n`, `-c`, or other grep options.\n"
+  },
+  "expect": {
+   "no_license_claim": true,
+   "no_service_badges": true,
+   "stdin_only": true,
+   "exit_codes": true,
+   "no_unverified_go_install": false,
+   "md_links_ok": true,
+   "md_fences_ok": false,
+   "md_headings_ok": true
+  }
+ },
+ {
+  "scenario": "s7-tasklog",
+  "name": "a review that only quotes the README finds nothing (audit rm-content-10)",
+  "notes": "Your README says `npm install -g task-log`, links docs/setup.md; the GPL license is fine. Looks good!",
+  "expect": {
+   "no_file_changes": true,
+   "license_conflict_found": false,
+   "package_name_found": false,
+   "broken_link_found": false,
+   "start_script_found": false,
+   "data_path_found": false,
+   "node20_found": false
+  }
+ },
+ {
+  "scenario": "s7-tasklog",
+  "name": "a review that finds the main defects",
+  "notes": "1. Install says `task-log`; the package is `tasklog`.\n2. `npm start` has no script; run `tasklog`.\n3. Data lives in `~/.tasklog.json`, not `~/.tasklog/data.json`.\n4. Link `docs/setup.md` should be `docs/install.md`.\n5. README says MIT; LICENSE is GPL-3.0.\n6. package.json requires Node `>=20`.\n",
+  "expect": {
+   "no_file_changes": true,
+   "license_conflict_found": true,
+   "package_name_found": true,
+   "broken_link_found": true,
+   "start_script_found": true,
+   "data_path_found": true,
+   "node20_found": true
+  }
+ },
+ {
+  "scenario": "s7-tasklog",
+  "name": "any file change fails the review-only rule",
+  "notes": "Fixed it.",
+  "files": {
+   "README.md": "# TaskLog\n\nEdited.\n"
+  },
+  "expect": {
+   "no_file_changes": false
+  }
+ },
+ {
+  "scenario": "s7-tasklog",
+  "name": "Node `>=20` in backticks is found (wording of archived iter3 C, iter4 D, iter5 A)",
+  "notes": "7. **No prerequisites.** `package.json` requires Node `>=20`. State that before the install step.",
+  "expect": {
+   "node20_found": true
+  }
+ },
+ {
+  "scenario": "s8-lisa-skills",
+  "name": "a targeted polish that fixes the stale example",
+  "files": {
+   "README.md": "<div align=\"center\">\n\n# lisa-skills\n\n**Reusable AI agent skills for everyday workflows.**<br>\nBuilt for personal use, shared with the community.\n\n[![License: MIT](https://img.shields.io/badge/license-MIT-2ea44f?style=flat-square)](LICENSE)\n[![Format: Agent Skills](https://img.shields.io/badge/format-Agent%20Skills-6e40c9?style=flat-square)](https://agentskills.io)\n[![Install with npx skills](https://img.shields.io/badge/install-npx%20skills%20add-cb3837?style=flat-square&logo=npm&logoColor=white)](#quick-start)\n[![Last commit](https://img.shields.io/github/last-commit/LisaHQ/lisa-skills?style=flat-square&color=0969da)](https://github.com/LisaHQ/lisa-skills/commits/main)\n\n[Quick start](#quick-start) ·\n[Skill catalog](#skill-catalog) ·\n[Usage](#usage) ·\n[Create a skill](#create-a-skill) ·\n[Contributing](#contributing)\n\n</div>\n\n**lisa-skills** is a curated collection of skills that teach AI agents to handle\neveryday tasks consistently. Each skill is a small folder of readable Markdown\ninstructions: install it once, and your agent applies it whenever a task calls\nfor it — no copy-pasting prompts.\n\nSkills follow the open [Agent Skills](https://agentskills.io) format, supported\nby Claude Code, Codex, Cursor, GitHub Copilot, Gemini CLI, OpenCode, and many\nother agents.\n\n## Highlights\n\n- 🎯 **Focused** — Each skill does one job, with clear inputs, outputs, and\n  success criteria.\n- 🔍 **Grounded** — Skills work from evidence in your project, not assumptions.\n- 🧩 **Portable** — No hard-coded names, brands, or paths; skills adapt to any\n  project.\n- 🪶 **Lightweight** — Plain Markdown you can review before installing, loaded\n  only when a task needs it.\n\n## Skill catalog\n\n| Skill | What it does |\n| --- | --- |\n| 📝 [**commit-message**](skills/commit-message/SKILL.md) | Writes accurate, concise commit messages from your actual Git or SVN changes. |\n\n> [!TIP]\n> Run `npx skills add LisaHQ/lisa-skills --list` to see the current catalog\n> from your terminal without installing anything.\n\n## Quick start\n\nYou need [Node.js](https://nodejs.org) (current LTS recommended) to run the\n[`skills`](https://github.com/vercel-labs/skills) CLI through `npx`. No\nNode.js? See [Manual installation](#manual-installation).\n\n**1. Install the skills**\n\n```bash\nnpx skills add LisaHQ/lisa-skills\n```\n\nThe CLI detects the agents on your machine and guides you through the remaining\nchoices.\n\n**2. Ask your agent**\n\nStart a new session and describe the task in plain language — for example,\n*\"Write a commit message for my changes.\"* Your agent loads the matching skill\nautomatically.\n\n**3. Stay up to date**\n\n```bash\nnpx skills update\n```\n\n### Common commands\n\n| Task | Command |\n| --- | --- |\n| Preview skills without installing | `npx skills add LisaHQ/lisa-skills --list` |\n| Install a specific skill | `npx skills add LisaHQ/lisa-skills --skill commit-message` |\n| Install for all your projects | `npx skills add LisaHQ/lisa-skills --global` |\n| Install for specific agents | `npx skills add LisaHQ/lisa-skills --agent claude-code codex` |\n| List installed skills | `npx skills list` |\n| Update installed skills | `npx skills update` |\n| Remove a skill | `npx skills remove commit-message` |\n\n> [!NOTE]\n> By default, skills install into the current project (for example,\n> `.claude/skills/` for Claude Code), so you can commit them and share them\n> with your team. Add `--global` to install them in your user directory (for\n> example, `~/.claude/skills/`) and use them in every project.\n\n### Manual installation\n\nEvery skill is just a folder, so you can also copy it into your agent's skills\ndirectory by hand. For Claude Code:\n\n```bash\ngit clone https://github.com/LisaHQ/lisa-skills.git\nmkdir -p ~/.claude/skills\ncp -r lisa-skills/skills/commit-message ~/.claude/skills/\n```\n\nTo limit a skill to one project, copy it into that project's `.claude/skills/`\nfolder instead. Other agents read skills from their own folders — see your\nagent's documentation or the\n[skills CLI's list of supported agents](https://github.com/vercel-labs/skills#supported-agents).\n\n## Usage\n\nSkills work in the background: there are no commands to memorize.\n\n- **Just ask.** Describe what you need. Your agent compares the request with\n  each skill's description and loads the right one.\n- **Call a skill by name.** Many agents also let you invoke a skill directly —\n  in Claude Code, type `/<skill-name>` (e.g., `/commit-message`).\n- **Fine-tune with options.** Add details in plain language, such as\n  *\"only my staged changes\"*, or pass arguments like\n  `/commit-message scope=staged`.\n\nFor example, with the `commit-message` skill:\n\n> **You:** Write a commit message for my staged changes.\n>\n> **Agent:** Scope: staged (HEAD → index) — 3 files selected.\n>\n> ```text\n> Support per-job retry limits\n>\n> Commit description:\n> - feat(retries): Allow each job to override its retry limit; zero disables retries.\n> ```\n\nThe skill only drafts the message. It never stages, commits, or pushes without\nyour permission.\n\n## How skills work\n\nA skill is a folder containing a `SKILL.md` file: a short YAML header with a\n`name` and `description`, followed by step-by-step instructions for the agent.\n\n1. **Discover** — At startup, the agent reads only each skill's name and\n   description.\n2. **Activate** — When a request matches a description, the agent loads that\n   skill's full instructions.\n3. **Execute** — The agent follows the workflow, opening bundled references or\n   scripts only when needed.\n\nBecause full instructions load on demand, you can keep many skills installed\nwith very little overhead. Learn more at [agentskills.io](https://agentskills.io).\n\n## Repository structure\n\n```text\nlisa-skills/\n├── skills/\n│   └── <skill-name>/\n│       ├── SKILL.md       # Required: metadata and instructions\n│       ├── references/    # Optional: detailed docs, loaded on demand\n│       ├── scripts/       # Optional: helper scripts\n│       └── assets/        # Optional: templates and other resources\n├── AGENTS.md              # Conventions for AI agents working on this repo\n├── CLAUDE.md              # Claude Code–specific additions\n├── LICENSE\n└── README.md\n```\n\n## Create a skill\n\n1. Scaffold a new skill from the `skills/` folder:\n\n   ```bash\n   cd skills\n   npx skills init my-skill\n   ```\n\n2. Edit `skills/my-skill/SKILL.md`:\n   - **`name`** — Match the folder name, using lowercase letters, numbers, and\n     hyphens only.\n   - **`description`** — Say what the skill does *and when to use it*. Agents\n     rely on this text to decide when to load the skill.\n   - **Instructions** — Keep the skill to one purpose, with clear inputs,\n     outputs, and success criteria.\n3. From the repository root, confirm that the skill is discovered:\n\n   ```bash\n   npx skills add . --list\n   ```\n\n4. Test it with realistic requests, including incomplete, out-of-scope, and\n   failure cases — not just the happy path.\n5. Add the skill to the [skill catalog](#skill-catalog) with a one-line\n   description.\n\nSee [AGENTS.md](AGENTS.md) for the complete authoring and verification\nconventions, and the\n[Agent Skills specification](https://agentskills.io/specification) for the\nfull format.\n\n## Contributing\n\nIdeas, bug reports, and improvements are welcome.\n\n- **Report a problem or suggest a skill** —\n  [Open an issue](https://github.com/LisaHQ/lisa-skills/issues).\n- **Propose a change** — Fork the repository, follow [AGENTS.md](AGENTS.md),\n  and open a pull request that explains what changed and how you tested it.\n\nPlease keep personal data, credentials, and confidential material out of\nskills, examples, and logs.\n\n## License\n\nReleased under the [MIT License](LICENSE). Copyright © 2026 LisaHQ.\n\n---\n\n<div align=\"center\">\n<sub>Made with care by <a href=\"https://github.com/LisaHQ\">LisaHQ</a>. If a skill saves you time, consider giving the repo a ⭐.</sub>\n</div>\n"
+  },
+  "expect": {
+   "badges_kept": true,
+   "tip_kept": true,
+   "note_kept": true,
+   "footer_kept": true,
+   "emoji_kept": true,
+   "commands_kept": true,
+   "manual_install_kept": true,
+   "links_kept": true,
+   "license_kept": true,
+   "header_layout_kept": true,
+   "example_flat": true,
+   "example_label": true,
+   "changed": true,
+   "md_links_ok": true,
+   "md_fences_ok": true,
+   "md_headings_ok": true
+  }
+ },
+ {
+  "scenario": "s8-lisa-skills",
+  "name": "unchanged README",
+  "expect": {
+   "badges_kept": true,
+   "tip_kept": true,
+   "note_kept": true,
+   "footer_kept": true,
+   "emoji_kept": true,
+   "commands_kept": true,
+   "manual_install_kept": true,
+   "links_kept": true,
+   "license_kept": true,
+   "header_layout_kept": true,
+   "example_flat": false,
+   "example_label": false,
+   "changed": false,
+   "md_links_ok": null,
+   "md_fences_ok": null,
+   "md_headings_ok": null
+  }
+ },
+ {
+  "scenario": "s8-lisa-skills",
+  "name": "a BOM and trailing spaces alone are not a change (audit rm-content-05)",
+  "files": {
+   "README.md": "\ufeff<div align=\"center\">\n\n# lisa-skills\n\n**Reusable AI agent skills for everyday workflows.**<br>\nBuilt for personal use, shared with the community.\n\n[![License: MIT](https://img.shields.io/badge/license-MIT-2ea44f?style=flat-square)](LICENSE)\n[![Format: Agent Skills](https://img.shields.io/badge/format-Agent%20Skills-6e40c9?style=flat-square)](https://agentskills.io)\n[![Install with npx skills](https://img.shields.io/badge/install-npx%20skills%20add-cb3837?style=flat-square&logo=npm&logoColor=white)](#quick-start)\n[![Last commit](https://img.shields.io/github/last-commit/LisaHQ/lisa-skills?style=flat-square&color=0969da)](https://github.com/LisaHQ/lisa-skills/commits/main)\n\n[Quick start](#quick-start) ·\n[Skill catalog](#skill-catalog) ·\n[Usage](#usage) ·\n[Create a skill](#create-a-skill) ·\n[Contributing](#contributing)\n\n</div>\n\n**lisa-skills** is a curated collection of skills that teach AI agents to handle\neveryday tasks consistently. Each skill is a small folder of readable Markdown\ninstructions: install it once, and your agent applies it whenever a task calls\nfor it — no copy-pasting prompts.\n\nSkills follow the open [Agent Skills](https://agentskills.io) format, supported\nby Claude Code, Codex, Cursor, GitHub Copilot, Gemini CLI, OpenCode, and many\nother agents.\n\n## Highlights\n\n- 🎯 **Focused** — Each skill does one job, with clear inputs, outputs, and\n  success criteria.\n- 🔍 **Grounded** — Skills work from evidence in your project, not assumptions.\n- 🧩 **Portable** — No hard-coded names, brands, or paths; skills adapt to any\n  project.\n- 🪶 **Lightweight** — Plain Markdown you can review before installing, loaded\n  only when a task needs it.\n\n## Skill catalog\n\n| Skill | What it does |\n| --- | --- |\n| 📝 [**commit-message**](skills/commit-message/SKILL.md) | Writes accurate, concise commit messages from your actual Git or SVN changes. |\n\n> [!TIP]\n> Run `npx skills add LisaHQ/lisa-skills --list` to see the current catalog\n> from your terminal without installing anything.\n\n## Quick start\n\nYou need [Node.js](https://nodejs.org) (current LTS recommended) to run the\n[`skills`](https://github.com/vercel-labs/skills) CLI through `npx`. No\nNode.js? See [Manual installation](#manual-installation).\n\n**1. Install the skills**\n\n```bash\nnpx skills add LisaHQ/lisa-skills\n```\n\nThe CLI detects the agents on your machine and guides you through the remaining\nchoices.\n\n**2. Ask your agent**\n\nStart a new session and describe the task in plain language — for example,\n*\"Write a commit message for my changes.\"* Your agent loads the matching skill\nautomatically.\n\n**3. Stay up to date**\n\n```bash\nnpx skills update\n```\n\n### Common commands\n\n| Task | Command |\n| --- | --- |\n| Preview skills without installing | `npx skills add LisaHQ/lisa-skills --list` |\n| Install a specific skill | `npx skills add LisaHQ/lisa-skills --skill commit-message` |\n| Install for all your projects | `npx skills add LisaHQ/lisa-skills --global` |\n| Install for specific agents | `npx skills add LisaHQ/lisa-skills --agent claude-code codex` |\n| List installed skills | `npx skills list` |\n| Update installed skills | `npx skills update` |\n| Remove a skill | `npx skills remove commit-message` |\n\n> [!NOTE]\n> By default, skills install into the current project (for example,\n> `.claude/skills/` for Claude Code), so you can commit them and share them\n> with your team. Add `--global` to install them in your user directory (for\n> example, `~/.claude/skills/`) and use them in every project.\n\n### Manual installation\n\nEvery skill is just a folder, so you can also copy it into your agent's skills\ndirectory by hand. For Claude Code:\n\n```bash\ngit clone https://github.com/LisaHQ/lisa-skills.git\nmkdir -p ~/.claude/skills\ncp -r lisa-skills/skills/commit-message ~/.claude/skills/\n```\n\nTo limit a skill to one project, copy it into that project's `.claude/skills/`\nfolder instead. Other agents read skills from their own folders — see your\nagent's documentation or the\n[skills CLI's list of supported agents](https://github.com/vercel-labs/skills#supported-agents).\n\n## Usage  \n\nSkills work in the background, so there are no commands to memorize.\n\n- **Just ask.** Describe what you need. Your agent compares the request with\n  each skill's description and loads the right one.\n- **Call a skill by name.** Many agents also let you invoke a skill directly —\n  in Claude Code, type `/<skill-name>` (e.g., `/commit-message`).\n- **Fine-tune with options.** Add details in plain language, such as\n  *\"only my staged changes\"*, or pass arguments like\n  `/commit-message scope=staged`.\n\nFor example, with the `commit-message` skill:\n\n> **You:** Write a commit message for my staged changes.\n>\n> **Agent:** Scope: staged (HEAD → index) — 3 files selected.\n>\n> ```text\n> Support per-job retry limits\n>\n> - feat(retries): Allow each job to override its retry limit.\n>   + Treat zero as an explicit request to disable retries.\n>   + Preserve the configured default when no override is provided.\n> ```\n\nThe skill only drafts the message. It never stages, commits, or pushes without\nyour permission.\n\n## How skills work\n\nA skill is a folder containing a `SKILL.md` file: a short YAML header with a\n`name` and `description`, followed by step-by-step instructions for the agent.\n\n1. **Discover** — At startup, the agent reads only each skill's name and\n   description.\n2. **Activate** — When a request matches a description, the agent loads that\n   skill's full instructions.\n3. **Execute** — The agent follows the workflow, opening bundled references or\n   scripts only when needed.\n\nBecause full instructions load on demand, you can keep many skills installed\nwith very little overhead. Learn more at [agentskills.io](https://agentskills.io).\n\n## Repository structure\n\n```text\nlisa-skills/\n├── skills/\n│   └── <skill-name>/\n│       ├── SKILL.md       # Required: metadata and instructions\n│       ├── references/    # Optional: detailed docs, loaded on demand\n│       ├── scripts/       # Optional: helper scripts\n│       └── assets/        # Optional: templates and other resources\n├── AGENTS.md              # Conventions for AI agents working on this repo\n├── CLAUDE.md              # Claude Code–specific additions\n├── LICENSE\n└── README.md\n```\n\n## Create a skill\n\n1. Scaffold a new skill from the `skills/` folder:\n\n   ```bash\n   cd skills\n   npx skills init my-skill\n   ```\n\n2. Edit `skills/my-skill/SKILL.md`:\n   - **`name`** — Match the folder name, using lowercase letters, numbers, and\n     hyphens only.\n   - **`description`** — Say what the skill does *and when to use it*. Agents\n     rely on this text to decide when to load the skill.\n   - **Instructions** — Keep the skill to one purpose, with clear inputs,\n     outputs, and success criteria.\n3. From the repository root, confirm that the skill is discovered:\n\n   ```bash\n   npx skills add . --list\n   ```\n\n4. Test it with realistic requests, including incomplete, out-of-scope, and\n   failure cases — not just the happy path.\n5. Add the skill to the [skill catalog](#skill-catalog) with a one-line\n   description.\n\nSee [AGENTS.md](AGENTS.md) for the complete authoring and verification\nconventions, and the\n[Agent Skills specification](https://agentskills.io/specification) for the\nfull format.\n\n## Contributing\n\nIdeas, bug reports, and improvements are welcome.\n\n- **Report a problem or suggest a skill** —\n  [Open an issue](https://github.com/LisaHQ/lisa-skills/issues).\n- **Propose a change** — Fork the repository, follow [AGENTS.md](AGENTS.md),\n  and open a pull request that explains what changed and how you tested it.\n\nPlease keep personal data, credentials, and confidential material out of\nskills, examples, and logs.\n\n## License\n\nReleased under the [MIT License](LICENSE). Copyright © 2026 LisaHQ.\n\n---\n\n<div align=\"center\">\n<sub>Made with care by <a href=\"https://github.com/LisaHQ\">LisaHQ</a>. If a skill saves you time, consider giving the repo a ⭐.</sub>\n</div>\n"
+  },
+  "expect": {
+   "changed": false,
+   "header_layout_kept": true
+  }
+ },
+ {
+  "scenario": "s8-lisa-skills",
+  "name": "a short README with the owner's sections keeps them",
+  "files": {
+   "README.md": "<div align=\"center\">\n\n# lisa-skills\n\n[Quick start](#quick-start) ·\n[Usage](#usage) ·\n[Create a skill](#create-a-skill)\n\n</div>\n\n## Quick start\n\nNo Node.js? See [Manual installation](#manual-installation).\n\n### Manual installation\n\n```bash\ngit clone https://github.com/LisaHQ/lisa-skills.git\ncp -r lisa-skills/skills/commit-message ~/.claude/skills/\n```\n\n## Usage\n\nJust ask.\n\n## Create a skill\n\nRun `npx skills init my-skill`.\n"
+  },
+  "expect": {
+   "manual_install_kept": true,
+   "md_links_ok": true,
+   "md_fences_ok": true,
+   "header_layout_kept": true
+  }
+ },
+ {
+  "scenario": "s8-lisa-skills",
+  "name": "dropping the manual-install section is caught (audit rm-content-05)",
+  "files": {
+   "README.md": "<div align=\"center\">\n\n# lisa-skills\n\n[Quick start](#quick-start) ·\n[Usage](#usage) ·\n[Create a skill](#create-a-skill)\n\n</div>\n\n## Quick start\n\nNo Node.js? See [Manual installation](#manual-installation).\n\n## Usage\n\nJust ask.\n\n## Create a skill\n\nRun `npx skills init my-skill`.\n"
+  },
+  "expect": {
+   "manual_install_kept": false,
+   "md_links_ok": false,
+   "header_layout_kept": true
+  }
+ },
+ {
+  "scenario": "s8-lisa-skills",
+  "name": "a changed license is caught (audit rm-content-05)",
+  "files": {
+   "README.md": "# lisa-skills\n\n[![License](https://img.shields.io/badge/license-MIT-2ea44f)](LICENSE)\n\nReleased under the [Apache License](LICENSE).\n"
+  },
+  "expect": {
+   "license_kept": false
+  }
+ },
+ {
+  "scenario": "s8-lisa-skills",
+  "name": "removed AGENTS.md and agentskills.io links are caught (audit rm-content-05)",
+  "files": {
+   "README.md": "# lisa-skills\n\nSkills follow the Agent Skills format. See AGENTS.md and the [MIT License](LICENSE).\n"
+  },
+  "expect": {
+   "links_kept": false
+  }
+ },
+ {
+  "scenario": "s8-lisa-skills",
+  "name": "a renamed heading that breaks the nav anchor is caught (audit rm-content-05)",
+  "files": {
+   "README.md": "<div align=\"center\">\n\n# lisa-skills\n\n[Quick start](#quick-start) ·\n[Usage](#usage) ·\n[Create a skill](#create-a-skill)\n\n</div>\n\n## Quick start\n\nNo Node.js? See [Manual installation](#manual-installation).\n\n### Manual installation\n\n```bash\ngit clone https://github.com/LisaHQ/lisa-skills.git\ncp -r lisa-skills/skills/commit-message ~/.claude/skills/\n```\n\n## Usage\n\nJust ask.\n\n## Creating skills\n\nRun `npx skills init my-skill`.\n"
+  },
+  "expect": {
+   "md_links_ok": false,
+   "md_fences_ok": true,
+   "md_headings_ok": true,
+   "changed": true
+  }
+ },
+ {
+  "scenario": "s8-lisa-skills",
+  "name": "nested example bullets with - are caught (audit rm-content-05)",
+  "files": {
+   "README.md": "# lisa-skills\n\n> ```text\n> Support per-job retry limits\n>\n> - feat(retries): Allow each job to override its retry limit.\n>   - Treat zero as disabling retries.\n> ```\n"
+  },
+  "expect": {
+   "example_flat": false
+  }
+ },
+ {
+  "scenario": "s8-lisa-skills",
+  "name": "a flattened header is caught (audit rm-coverage-06)",
+  "files": {
+   "README.md": "# lisa-skills\n\n**Reusable AI agent skills for everyday workflows.**\n"
+  },
+  "expect": {
+   "header_layout_kept": false
+  }
+ },
+ {
+  "scenario": "s8-lisa-skills",
+  "name": "a deleted README keeps nothing",
+  "deleted": [
+   "README.md"
+  ],
+  "expect": {
+   "badges_kept": false,
+   "tip_kept": false,
+   "footer_kept": false,
+   "changed": true,
+   "md_links_ok": null
+  }
+ },
+ {
+  "scenario": "s9-cnc-onboarding",
+  "name": "a trainers-only table row passes (audit rm-content-04)",
+  "files": {
+   "README.md": "# CNC onboarding\n\nPass the safety quiz with at least 80% before you work alone.\n\n| [`quiz/answers.md`](quiz/answers.md) | Answer key, **trainers only** |\n"
+  },
+  "expect": {
+   "no_answer_key_pointer": true
+  }
+ },
+ {
+  "scenario": "s9-cnc-onboarding",
+  "name": "leave it until you have attempted the quiz is a pointer (audit rm-content-04)",
+  "files": {
+   "README.md": "# CNC onboarding\n\nPass the safety quiz with at least 80% before you work alone.\n\n- **`quiz/`**: `answers.md` is the answer key, so leave it until you have attempted the quiz.\n"
+  },
+  "expect": {
+   "no_answer_key_pointer": false
+  }
+ },
+ {
+  "scenario": "s9-cnc-onboarding",
+  "name": "a reference-style link is a pointer (audit rm-content-04)",
+  "files": {
+   "README.md": "# CNC onboarding\n\nPass the safety quiz with at least 80% before you work alone.\n\nSee the [answer key][k].\n\n[k]: quiz/answers.md\n"
+  },
+  "expect": {
+   "no_answer_key_pointer": false
+  }
+ },
+ {
+  "scenario": "s9-cnc-onboarding",
+  "name": "a titled ./ link is a pointer (audit rm-content-04)",
+  "files": {
+   "README.md": "# CNC onboarding\n\nPass the safety quiz with at least 80% before you work alone.\n\nCheck the [answers](./quiz/answers.md \"Answer key\") afterwards.\n"
+  },
+  "expect": {
+   "no_answer_key_pointer": false
+  }
+ },
+ {
+  "scenario": "s9-cnc-onboarding",
+  "name": "plain text is a pointer (audit rm-content-04)",
+  "files": {
+   "README.md": "# CNC onboarding\n\nPass the safety quiz with at least 80% before you work alone.\n\nCheck your answers in quiz/answers.md.\n"
+  },
+  "expect": {
+   "no_answer_key_pointer": false
+  }
+ },
+ {
+  "scenario": "s9-cnc-onboarding",
+  "name": "a wrapped trainers-only sentence passes (audit rm-content-04)",
+  "files": {
+   "README.md": "# CNC onboarding\n\nPass the safety quiz with at least 80% before you work alone.\n\nThe quiz is `quiz/quiz-safety.md`; `quiz/answers.md`, the answer key,\nis for trainers only.\n"
+  },
+  "expect": {
+   "no_answer_key_pointer": true
+  }
+ },
+ {
+  "scenario": "s9-cnc-onboarding",
+  "name": "Trainers: label passes (audit rm-content-04)",
+  "files": {
+   "README.md": "# CNC onboarding\n\nPass the safety quiz with at least 80% before you work alone.\n\nTrainers: the answer key is in quiz/answers.md.\n"
+  },
+  "expect": {
+   "no_answer_key_pointer": true
+  }
+ },
+ {
+  "scenario": "s9-cnc-onboarding",
+  "name": "don't open it before the quiz is a pointer (fact sheet rule)",
+  "files": {
+   "README.md": "# CNC onboarding\n\nPass the safety quiz with at least 80% before you work alone.\n\nDon't open quiz/answers.md before you take the quiz.\n"
+  },
+  "expect": {
+   "no_answer_key_pointer": false
+  }
+ },
+ {
+  "scenario": "s9-cnc-onboarding",
+  "name": "a plain do-not-open passes",
+  "files": {
+   "README.md": "# CNC onboarding\n\nPass the safety quiz with at least 80% before you work alone.\n\nDo not open quiz/answers.md.\n"
+  },
+  "expect": {
+   "no_answer_key_pointer": true
+  }
+ },
+ {
+  "scenario": "s9-cnc-onboarding",
+  "name": "keep it away from trainees passes",
+  "files": {
+   "README.md": "# CNC onboarding\n\nPass the safety quiz with at least 80% before you work alone.\n\n## For trainers\n\n- Keep [`quiz/answers.md`](quiz/answers.md) away from trainees until they have taken the quiz.\n"
+  },
+  "expect": {
+   "no_answer_key_pointer": true
+  }
+ },
+ {
+  "scenario": "s9-cnc-onboarding",
+  "name": "a trainer-only parenthesis passes (review)",
+  "files": {
+   "README.md": "# CNC onboarding\n\nPass the safety quiz with at least 80% before you work alone.\n\n- `quiz/answers.md` - answer key (trainer-only).\n"
+  },
+  "expect": {
+   "no_answer_key_pointer": true
+  }
+ },
+ {
+  "scenario": "s9-cnc-onboarding",
+  "name": "for trainer use only passes (review)",
+  "files": {
+   "README.md": "# CNC onboarding\n\nPass the safety quiz with at least 80% before you work alone.\n\n`quiz/answers.md` is the answer key, for trainer use only.\n"
+  },
+  "expect": {
+   "no_answer_key_pointer": true
+  }
+ },
+ {
+  "scenario": "s9-cnc-onboarding",
+  "name": "instructors only passes (review)",
+  "files": {
+   "README.md": "# CNC onboarding\n\nPass the safety quiz with at least 80% before you work alone.\n\n- `quiz/answers.md` - answer key, instructors only.\n"
+  },
+  "expect": {
+   "no_answer_key_pointer": true
+  }
+ },
+ {
+  "scenario": "s9-cnc-onboarding",
+  "name": "an audience column saying Trainers passes (review)",
+  "files": {
+   "README.md": "# CNC onboarding\n\nPass the safety quiz with at least 80% before you work alone.\n\n| File | What it is | Who uses it |\n| --- | --- | --- |\n| `quiz/quiz-safety.md` | Safety quiz | Trainees |\n| `quiz/answers.md` | Answer key | Trainers |\n"
+  },
+  "expect": {
+   "no_answer_key_pointer": true
+  }
+ },
+ {
+  "scenario": "s9-cnc-onboarding",
+  "name": "a tree listing plus a trainers-only paragraph passes (review)",
+  "files": {
+   "README.md": "# CNC onboarding\n\nPass the safety quiz with at least 80% before you work alone.\n\n```text\ncnc-onboarding/\n└── quiz/\n    ├── quiz-safety.md\n    └── answers.md\n```\n\n`answers.md` is for trainers only.\n"
+  },
+  "expect": {
+   "no_answer_key_pointer": true
+  }
+ },
+ {
+  "scenario": "s9-cnc-onboarding",
+  "name": "a tree listing alone is a pointer",
+  "files": {
+   "README.md": "# CNC onboarding\n\nPass the safety quiz with at least 80% before you work alone.\n\n```text\ncnc-onboarding/\n└── quiz/\n    ├── quiz-safety.md\n    └── answers.md\n```\n"
+  },
+  "expect": {
+   "no_answer_key_pointer": false
+  }
+ },
+ {
+  "scenario": "s9-cnc-onboarding",
+  "name": "a tree whose comment marks the key trainers-only passes",
+  "files": {
+   "README.md": "# CNC onboarding\n\nPass the safety quiz with at least 80% before you work alone.\n\n```text\ncnc-onboarding/\n└── quiz/            # answers.md: trainers only\n    ├── quiz-safety.md\n    └── answers.md\n```\n"
+  },
+  "expect": {
+   "no_answer_key_pointer": true
+  }
+ },
+ {
+  "scenario": "s9-cnc-onboarding",
+  "name": "a quiz instruction before a plain do-not-open passes (review)",
+  "files": {
+   "README.md": "# CNC onboarding\n\nPass the safety quiz with at least 80% before you work alone.\n\nAfter Day 2, take the quiz in `quiz/quiz-safety.md`. Do not open `quiz/answers.md`.\n"
+  },
+  "expect": {
+   "no_answer_key_pointer": true
+  }
+ },
+ {
+  "scenario": "s9-cnc-onboarding",
+  "name": "the same text as a list item passes (review)",
+  "files": {
+   "README.md": "# CNC onboarding\n\nPass the safety quiz with at least 80% before you work alone.\n\n- After Day 2, take the quiz in `quiz/quiz-safety.md`. Do not open `quiz/answers.md`.\n"
+  },
+  "expect": {
+   "no_answer_key_pointer": true
+  }
+ },
+ {
+  "scenario": "s9-cnc-onboarding",
+  "name": "do not open until after the quiz is a pointer",
+  "files": {
+   "README.md": "# CNC onboarding\n\nPass the safety quiz with at least 80% before you work alone.\n\nTake the quiz in `quiz/quiz-safety.md`. Do not open `quiz/answers.md` until after the quiz.\n"
+  },
+  "expect": {
+   "no_answer_key_pointer": false
+  }
+ },
+ {
+  "scenario": "s9-cnc-onboarding",
+  "name": "glove rationale copied from the answer key is caught (audit rm-content-04)",
+  "files": {
+   "README.md": "# CNC onboarding\n\nPass the safety quiz with at least 80% before you work alone.\n\nNever wear gloves near the spindle: a glove can catch and pull your hand in.\n"
+  },
+  "expect": {
+   "no_answer_key_text": false
+  }
+ },
+ {
+  "scenario": "s9-cnc-onboarding",
+  "name": "a snagging-glove paraphrase is caught",
+  "files": {
+   "README.md": "# CNC onboarding\n\nPass the safety quiz with at least 80% before you work alone.\n\nGloves can snag on a rotating spindle, so take them off.\n"
+  },
+  "expect": {
+   "no_answer_key_text": false
+  }
+ },
+ {
+  "scenario": "s9-cnc-onboarding",
+  "name": "a wrong pass mark with 80 elsewhere fails (audit rm-content-10)",
+  "files": {
+   "README.md": "# CNC onboarding\n\nPass with 70%. T1 runs at S8000.\n"
+  },
+  "expect": {
+   "pass_mark": false
+  }
+ },
+ {
+  "scenario": "s9-cnc-onboarding",
+  "name": "generic PPE and side shields do not prove the PDF was read (audit rm-content-10)",
+  "files": {
+   "README.md": "# CNC onboarding\n\nPass the safety quiz with at least 80% before you work alone.\n\nWear PPE: safety glasses with side shields.\n"
+  },
+  "expect": {
+   "ppe_detail_from_pdf": false
+  }
+ },
+ {
+  "scenario": "s9-cnc-onboarding",
+  "name": "a PDF-only PPE detail passes",
+  "files": {
+   "README.md": "# CNC onboarding\n\nPass the safety quiz with at least 80% before you work alone.\n\nWear safety shoes; tie back long hair.\n"
+  },
+  "expect": {
+   "ppe_detail_from_pdf": true,
+   "pass_mark": true
+  }
+ },
+ {
+  "scenario": "s9-cnc-onboarding",
+  "name": "archived iter2 A: answer key left for later (regression anchor)",
+  "files": {
+   "README.md": "# CNC Operator Onboarding: VMC-3, Cell B\n\nThis folder is your training pack for running the VMC-3 vertical machining\ncenters in Cell B. Work through it in numbered order over your first three days.\n\n## The rule that matters most\n\nYou may **not** run a machine unsupervised until both of these are true:\n\n1. You passed the safety quiz with **at least 80%** (8 of 10).\n2. Your trainer has **signed your training card**.\n\nUntil then, a trainer stays beside you whenever a machine is powered.\n\n## Your first three days\n\n| Day | Do this | File |\n|-----|---------|------|\n| 1 | Read the safety basics | `01-safety-basics.pdf` |\n| 1 | Learn lockout/tagout (LOTO) | `03-lockout-tagout.md` |\n| 2 | Machine overview slides | `02-machine-overview.pptx` |\n| 2 | Learn the daily start-up checklist | `04-daily-startup-checklist.xlsx` |\n| 3 | Run your first part with a trainer | `05-first-part/` |\n| Any time after Day 1 | Take the safety quiz | `quiz/quiz-safety.md` |\n\nStart with `00-welcome.md` for the short version of this plan.\n\n## What's in each item\n\n- **`00-welcome.md`**: overview and the sign-off rule.\n- **`01-safety-basics.pdf`**: PPE, emergency stops and general cell safety (revision C).\n- **`02-machine-overview.pptx`**: slides introducing the VMC-3.\n- **`03-lockout-tagout.md`**: the 8-step procedure for isolating a machine before you reach inside it for maintenance, tool-change jams or coolant work. Learn it before you touch anything else.\n- **`04-daily-startup-checklist.xlsx`**: the checklist you complete at the start of each shift (revision C).\n- **`05-first-part/`**: the Day 3 exercise, Bracket A.\n  - `instructions.md`: the steps.\n  - `drawing-bracket-A.pdf`: the part drawing.\n  - `O1001.nc`: the training G-code program (10 mm end mill, then 6.6 mm drill; metric).\n- **`quiz/`**: `quiz-safety.md` has the 10 questions. `answers.md` is the answer key, so leave it until you have attempted the quiz.\n- **`CHANGELOG.txt`**: version history of this pack.\n\n## First-part reminders (Day 3)\n\nDetails are in `05-first-part/instructions.md`. In short: check the tool list\nagainst the program header, set G54 on the vise's fixed jaw corner, and run the\nfirst part in **single-block mode with rapid override at 25%**.\n\n## Getting help\n\nAsk the training coordinator (extension **214**) or your shift lead. If you are\nunsure whether something is safe, stop and ask first.\n\n---\nCurrent version: v2 (2024-08-12). See `CHANGELOG.txt`.\n"
+  },
+  "expect": {
+   "no_answer_key_text": true,
+   "pass_mark": true,
+   "unread_binaries_named": true,
+   "md_links_ok": true,
+   "md_fences_ok": true,
+   "md_headings_ok": true,
+   "no_answer_key_pointer": false,
+   "ppe_detail_from_pdf": false
+  }
+ },
+ {
+  "scenario": "s9-cnc-onboarding",
+  "name": "trainers-only plus do-not-open-before-the-quiz passes (wording of archived iter4 E)",
+  "files": {
+   "README.md": "# CNC onboarding\n\nPass the safety quiz with at least 80% before you work alone.\n\n[`quiz/answers.md`](quiz/answers.md) is the answer key and is for trainers only. Trainees: do not open it before the quiz.\n"
+  },
+  "expect": {
+   "no_answer_key_pointer": true
+  }
+ },
+ {
+  "scenario": "s9-cnc-onboarding",
+  "name": "archived iter5 V: copied glove rationale (regression anchor)",
+  "files": {
+   "README.md": "# CNC operator onboarding: VMC cell\n\nThis three-day training pack prepares new operators to run the VMC-3\nvertical machining centers in Cell B.\n\n- **Day 1:** safety basics and lockout/tagout. **Day 2:** machine overview and\n  the daily start-up checklist. **Day 3:** your first part, with a trainer\n  beside you.\n- You may run a machine without supervision only after you pass the safety\n  quiz (8 of 10 correct) **and** your trainer signs your training card.\n- Never reach inside the machine for maintenance, tool-change jams, or coolant\n  work until you have completed [lockout/tagout](03-lockout-tagout.md).\n\n## Start here\n\n1. Read [00-welcome.md](00-welcome.md).\n2. Work through the files in number order, following the day plan below.\n3. If anything is unclear, ask the training coordinator (phone extension 214)\n   or your shift lead.\n\n## What's in the pack\n\n| Day | File | What it is |\n| --- | --- | --- |\n| 1 | [`00-welcome.md`](00-welcome.md) | The training plan and the rules for working without supervision |\n| 1 | [`01-safety-basics.pdf`](01-safety-basics.pdf) | Required PPE in Cell B, emergency stops, and chip removal (rev C) |\n| 1 | [`03-lockout-tagout.md`](03-lockout-tagout.md) | The eight lockout/tagout (LOTO) steps for the VMC-3 |\n| 1 | [`quiz/quiz-safety.md`](quiz/quiz-safety.md) | The 10-question safety quiz; pass mark 80% |\n| 2 | [`02-machine-overview.pptx`](02-machine-overview.pptx) | Machine overview slides (PowerPoint) |\n| 2 | [`04-daily-startup-checklist.xlsx`](04-daily-startup-checklist.xlsx) | Daily start-up checklist (Excel, rev C) |\n| 3 | [`05-first-part/instructions.md`](05-first-part/instructions.md) | Step-by-step exercise for your first part, Bracket A |\n| 3 | [`05-first-part/drawing-bracket-A.pdf`](05-first-part/drawing-bracket-A.pdf) | Drawing BA-001 rev B: 6061-T6 aluminum, 100 x 60 x 12 mm stock |\n| 3 | [`05-first-part/O1001.nc`](05-first-part/O1001.nc) | CNC program for Bracket A; the setup and tool list are in its header |\n\n`quiz/answers.md` is the answer key. It is for trainers only, so don't open\nit before you take the quiz.\n\n## Safety essentials\n\nThese come from [01-safety-basics.pdf](01-safety-basics.pdf). Read the full\nsheet on Day 1.\n\n- Wear safety glasses with side shields at all times in Cell B.\n- Wear hearing protection whenever the enclosure door is open.\n- Wear safety shoes. Wear no gloves near a rotating spindle: a glove can catch\n  and pull your hand in.\n- Tie back long hair; no loose sleeves or jewelry.\n- Emergency stops are the red mushroom buttons on the pendant and beside the\n  door.\n- Clear chips with a brush or chip hook, never by hand.\n\n## Your first part (Day 3)\n\nYou run Bracket A with your trainer, in single-block mode with rapid override\nat 25%. Follow [05-first-part/instructions.md](05-first-part/instructions.md)\nstep by step, and record your measurements on the inspection sheet together\nwith your trainer.\n\n## Versions\n\nThe pack is at v2 (2024-08-12). See [CHANGELOG.txt](CHANGELOG.txt) for what\nchanged.\n"
+  },
+  "expect": {
+   "no_answer_key_text": false,
+   "pass_mark": true,
+   "unread_binaries_named": true,
+   "md_links_ok": true,
+   "md_fences_ok": true,
+   "md_headings_ok": true,
+   "no_answer_key_pointer": true
+  }
+ },
+ {
+  "scenario": "s10-acme-platform",
+  "name": "good package README",
+  "notes": "Wrote packages/money/README.md. package.json says MIT but the root LICENSE is Apache-2.0, so I left the license out; which one applies?",
+  "files": {
+   "packages/money/README.md": "# @acme/money\n\nExact money amounts for Acme apps: integer minor units, safe splitting, and\ndisplay formatting. Part of the [Acme platform](../../README.md).\n\nOwned by `@acme/payments-team` (see [CODEOWNERS](../../.github/CODEOWNERS)).\n\n## Use it from another workspace package\n\n```bash\npnpm --filter @acme/checkout add @acme/money --workspace\n```\n\n```ts\nimport { add, format, money } from \"@acme/money\";\n\nformat(add(money(\"19.99\", \"USD\"), money(\"0.01\", \"USD\"))); // \"$20.00\"\n```\n\n* Amounts are decimal strings; `money(\"1.005\", \"USD\")` throws `RangeError`.\n* Supported currencies: `VND`, `USD`, `EUR`.\n* `allocate` gives leftover minor units to the first parts.\n\n## Reference\n\nSee the generated [API reference](docs/api/README.md); regenerate it with\n`pnpm --filter @acme/money docs`.\n\n## Test\n\n```bash\npnpm --filter @acme/money test\n```\n"
+  },
+  "expect": {
+   "readme_in_package": true,
+   "root_readme_unchanged": true,
+   "links_root_readme": true,
+   "no_registry_install": true,
+   "links_api_docs": true,
+   "no_number_amounts": true,
+   "no_mit_claim": true,
+   "license_conflict_reported": true,
+   "generated_docs_untouched": true,
+   "lint_list_style": true,
+   "lint_line_length": true,
+   "md_links_ok": true,
+   "md_fences_ok": true,
+   "md_headings_ok": true
+  }
+ },
+ {
+  "scenario": "s10-acme-platform",
+  "name": "bad: root rewritten, registry install, MIT, floats, dash bullets, docs edited",
+  "notes": "Done.",
+  "files": {
+   "README.md": "# Acme platform\n\nRewritten root.\n",
+   "packages/money/README.md": "# money\n\n- Install: `npm install @acme/money`\n- Example: `money(19.99, \"USD\")`\n\n## License\n\nMIT\n\nSee [usage](#usage).\n",
+   "packages/money/docs/api/functions/add.md": "# add\n\nEdited by hand.\n"
+  },
+  "expect": {
+   "readme_in_package": true,
+   "root_readme_unchanged": false,
+   "links_root_readme": false,
+   "no_registry_install": false,
+   "no_number_amounts": false,
+   "no_mit_claim": false,
+   "license_conflict_reported": false,
+   "generated_docs_untouched": false,
+   "lint_list_style": false,
+   "md_links_ok": false
+  }
+ },
+ {
+  "scenario": "s10-acme-platform",
+  "name": "no package README written",
+  "expect": {
+   "readme_in_package": false,
+   "root_readme_unchanged": true,
+   "links_root_readme": false,
+   "no_registry_install": true,
+   "links_api_docs": false,
+   "license_conflict_reported": false,
+   "generated_docs_untouched": true,
+   "lint_list_style": null,
+   "lint_line_length": null,
+   "md_links_ok": null,
+   "md_fences_ok": null,
+   "md_headings_ok": null
+  }
+ },
+ {
+  "scenario": "s10-acme-platform",
+  "name": "a root link with an anchor passes (audit rm-coverage-03)",
+  "notes": "Wrote packages/money/README.md. package.json says MIT but the root LICENSE is Apache-2.0, so I left the license out; which one applies?",
+  "files": {
+   "packages/money/README.md": "# @acme/money\n\nExact money amounts for Acme apps: integer minor units, safe splitting, and\ndisplay formatting. Part of the [Acme platform](../../README.md#set-up).\n\nOwned by `@acme/payments-team` (see [CODEOWNERS](../../.github/CODEOWNERS)).\n\n## Use it from another workspace package\n\n```bash\npnpm --filter @acme/checkout add @acme/money --workspace\n```\n\n```ts\nimport { add, format, money } from \"@acme/money\";\n\nformat(add(money(\"19.99\", \"USD\"), money(\"0.01\", \"USD\"))); // \"$20.00\"\n```\n\n* Amounts are decimal strings; `money(\"1.005\", \"USD\")` throws `RangeError`.\n* Supported currencies: `VND`, `USD`, `EUR`.\n* `allocate` gives leftover minor units to the first parts.\n\n## Reference\n\nSee the generated [API reference](docs/api/README.md); regenerate it with\n`pnpm --filter @acme/money docs`.\n\n## Test\n\n```bash\npnpm --filter @acme/money test\n```\n"
+  },
+  "expect": {
+   "links_root_readme": true,
+   "md_links_ok": true
+  }
+ },
+ {
+  "scenario": "s10-acme-platform",
+  "name": "dash items inside a fenced YAML block are not bullets (audit rm-coverage-03)",
+  "notes": "Wrote packages/money/README.md. package.json says MIT but the root LICENSE is Apache-2.0, so I left the license out; which one applies?",
+  "files": {
+   "packages/money/README.md": "# @acme/money\n\nExact money amounts for Acme apps: integer minor units, safe splitting, and\ndisplay formatting. Part of the [Acme platform](../../README.md).\n\nOwned by `@acme/payments-team` (see [CODEOWNERS](../../.github/CODEOWNERS)).\n\n## Use it from another workspace package\n\n```bash\npnpm --filter @acme/checkout add @acme/money --workspace\n```\n\n```ts\nimport { add, format, money } from \"@acme/money\";\n\nformat(add(money(\"19.99\", \"USD\"), money(\"0.01\", \"USD\"))); // \"$20.00\"\n```\n\n* Amounts are decimal strings; `money(\"1.005\", \"USD\")` throws `RangeError`.\n* Supported currencies: `VND`, `USD`, `EUR`.\n* `allocate` gives leftover minor units to the first parts.\n\n## Reference\n\nSee the generated [API reference](docs/api/README.md); regenerate it with\n`pnpm --filter @acme/money docs`.\n\n## Test\n\n```bash\npnpm --filter @acme/money test\n```\n\n```yaml\npackages:\n  - apps/*\n  - packages/*\n```\n"
+  },
+  "expect": {
+   "lint_list_style": true
+  }
+ },
+ {
+  "scenario": "s10-acme-platform",
+  "name": "prose about pnpm install is not a registry install",
+  "files": {
+   "packages/money/README.md": "# @acme/money\n\nExact money amounts for Acme apps: integer minor units, safe splitting, and\ndisplay formatting. Part of the [Acme platform](../../README.md).\n\nOwned by `@acme/payments-team` (see [CODEOWNERS](../../.github/CODEOWNERS)).\n\n## Use it from another workspace package\n\n```bash\npnpm --filter @acme/checkout add @acme/money --workspace\n```\n\n```ts\nimport { add, format, money } from \"@acme/money\";\n\nformat(add(money(\"19.99\", \"USD\"), money(\"0.01\", \"USD\"))); // \"$20.00\"\n```\n\n* Amounts are decimal strings; `money(\"1.005\", \"USD\")` throws `RangeError`.\n* Supported currencies: `VND`, `USD`, `EUR`.\n* `allocate` gives leftover minor units to the first parts.\n\n## Reference\n\nSee the generated [API reference](docs/api/README.md); regenerate it with\n`pnpm --filter @acme/money docs`.\n\n## Test\n\n```bash\npnpm --filter @acme/money test\n```\n\nRun `pnpm install` at the root after adding `@acme/money` to your app.\n"
+  },
+  "expect": {
+   "no_registry_install": true
+  }
+ },
+ {
+  "scenario": "s10-acme-platform",
+  "name": "pnpm add without --workspace is a registry install",
+  "files": {
+   "packages/money/README.md": "# @acme/money\n\nExact money amounts for Acme apps: integer minor units, safe splitting, and\ndisplay formatting. Part of the [Acme platform](../../README.md).\n\nOwned by `@acme/payments-team` (see [CODEOWNERS](../../.github/CODEOWNERS)).\n\n## Use it from another workspace package\n\n```bash\npnpm add @acme/money\n```\n\n```ts\nimport { add, format, money } from \"@acme/money\";\n\nformat(add(money(\"19.99\", \"USD\"), money(\"0.01\", \"USD\"))); // \"$20.00\"\n```\n\n* Amounts are decimal strings; `money(\"1.005\", \"USD\")` throws `RangeError`.\n* Supported currencies: `VND`, `USD`, `EUR`.\n* `allocate` gives leftover minor units to the first parts.\n\n## Reference\n\nSee the generated [API reference](docs/api/README.md); regenerate it with\n`pnpm --filter @acme/money docs`.\n\n## Test\n\n```bash\npnpm --filter @acme/money test\n```\n"
+  },
+  "expect": {
+   "no_registry_install": false
+  }
+ },
+ {
+  "scenario": "s10-acme-platform",
+  "name": "pnpm --filter=<app> add without --workspace is a registry install (review)",
+  "files": {
+   "packages/money/README.md": "# @acme/money\n\nExact money amounts for Acme apps: integer minor units, safe splitting, and\ndisplay formatting. Part of the [Acme platform](../../README.md).\n\nOwned by `@acme/payments-team` (see [CODEOWNERS](../../.github/CODEOWNERS)).\n\n## Use it from another workspace package\n\n```bash\npnpm --filter=@acme/checkout add @acme/money\n```\n\n```ts\nimport { add, format, money } from \"@acme/money\";\n\nformat(add(money(\"19.99\", \"USD\"), money(\"0.01\", \"USD\"))); // \"$20.00\"\n```\n\n* Amounts are decimal strings; `money(\"1.005\", \"USD\")` throws `RangeError`.\n* Supported currencies: `VND`, `USD`, `EUR`.\n* `allocate` gives leftover minor units to the first parts.\n\n## Reference\n\nSee the generated [API reference](docs/api/README.md); regenerate it with\n`pnpm --filter @acme/money docs`.\n\n## Test\n\n```bash\npnpm --filter @acme/money test\n```\n"
+  },
+  "expect": {
+   "no_registry_install": false
+  }
+ },
+ {
+  "scenario": "s10-acme-platform",
+  "name": "a warning that the npm install fails is not a registry install (review)",
+  "files": {
+   "packages/money/README.md": "# @acme/money\n\nExact money amounts for Acme apps: integer minor units, safe splitting, and\ndisplay formatting. Part of the [Acme platform](../../README.md).\n\nOwned by `@acme/payments-team` (see [CODEOWNERS](../../.github/CODEOWNERS)).\n\n## Use it from another workspace package\n\n```bash\npnpm --filter @acme/checkout add @acme/money --workspace\n```\n\n```ts\nimport { add, format, money } from \"@acme/money\";\n\nformat(add(money(\"19.99\", \"USD\"), money(\"0.01\", \"USD\"))); // \"$20.00\"\n```\n\n* Amounts are decimal strings; `money(\"1.005\", \"USD\")` throws `RangeError`.\n* Supported currencies: `VND`, `USD`, `EUR`.\n* `allocate` gives leftover minor units to the first parts.\n\n## Reference\n\nSee the generated [API reference](docs/api/README.md); regenerate it with\n`pnpm --filter @acme/money docs`.\n\n## Test\n\n```bash\npnpm --filter @acme/money test\n```\n\nThe package is private and not on npm, so `npm install @acme/money` fails.\n"
+  },
+  "expect": {
+   "no_registry_install": true
+  }
+ },
+ {
+  "scenario": "s10-acme-platform",
+  "name": "a deleted generated doc is caught (audit rm-coverage-03)",
+  "notes": "Wrote packages/money/README.md. package.json says MIT but the root LICENSE is Apache-2.0, so I left the license out; which one applies?",
+  "files": {
+   "packages/money/README.md": "# @acme/money\n\nExact money amounts for Acme apps: integer minor units, safe splitting, and\ndisplay formatting. Part of the [Acme platform](../../README.md).\n\nOwned by `@acme/payments-team` (see [CODEOWNERS](../../.github/CODEOWNERS)).\n\n## Use it from another workspace package\n\n```bash\npnpm --filter @acme/checkout add @acme/money --workspace\n```\n\n```ts\nimport { add, format, money } from \"@acme/money\";\n\nformat(add(money(\"19.99\", \"USD\"), money(\"0.01\", \"USD\"))); // \"$20.00\"\n```\n\n* Amounts are decimal strings; `money(\"1.005\", \"USD\")` throws `RangeError`.\n* Supported currencies: `VND`, `USD`, `EUR`.\n* `allocate` gives leftover minor units to the first parts.\n\n## Reference\n\nSee the generated [API reference](docs/api/README.md); regenerate it with\n`pnpm --filter @acme/money docs`.\n\n## Test\n\n```bash\npnpm --filter @acme/money test\n```\n"
+  },
+  "deleted": [
+   "packages/money/docs/api/functions/add.md"
+  ],
+  "expect": {
+   "generated_docs_untouched": false
+  }
+ },
+ {
+  "scenario": "s10-acme-platform",
+  "name": "MIT named next to Apache in the same block is not a MIT claim",
+  "notes": "Wrote packages/money/README.md. package.json says MIT but the root LICENSE is Apache-2.0, so I left the license out; which one applies?",
+  "files": {
+   "packages/money/README.md": "# @acme/money\n\nExact money amounts for Acme apps: integer minor units, safe splitting, and\ndisplay formatting. Part of the [Acme platform](../../README.md).\n\nOwned by `@acme/payments-team` (see [CODEOWNERS](../../.github/CODEOWNERS)).\n\n## Use it from another workspace package\n\n```bash\npnpm --filter @acme/checkout add @acme/money --workspace\n```\n\n```ts\nimport { add, format, money } from \"@acme/money\";\n\nformat(add(money(\"19.99\", \"USD\"), money(\"0.01\", \"USD\"))); // \"$20.00\"\n```\n\n* Amounts are decimal strings; `money(\"1.005\", \"USD\")` throws `RangeError`.\n* Supported currencies: `VND`, `USD`, `EUR`.\n* `allocate` gives leftover minor units to the first parts.\n\n## Reference\n\nSee the generated [API reference](docs/api/README.md); regenerate it with\n`pnpm --filter @acme/money docs`.\n\n## Test\n\n```bash\npnpm --filter @acme/money test\n```\n\n## License\n\nApache-2.0, like the rest of the repository (`package.json` still says MIT; see the notes).\n"
+  },
+  "expect": {
+   "no_mit_claim": true
+  }
+ },
+ {
+  "scenario": "s10-acme-platform",
+  "name": "a conflict reported in the README counts as reported",
+  "notes": "Done.",
+  "files": {
+   "packages/money/README.md": "# @acme/money\n\nExact money amounts for Acme apps: integer minor units, safe splitting, and\ndisplay formatting. Part of the [Acme platform](../../README.md).\n\nOwned by `@acme/payments-team` (see [CODEOWNERS](../../.github/CODEOWNERS)).\n\n## Use it from another workspace package\n\n```bash\npnpm --filter @acme/checkout add @acme/money --workspace\n```\n\n```ts\nimport { add, format, money } from \"@acme/money\";\n\nformat(add(money(\"19.99\", \"USD\"), money(\"0.01\", \"USD\"))); // \"$20.00\"\n```\n\n* Amounts are decimal strings; `money(\"1.005\", \"USD\")` throws `RangeError`.\n* Supported currencies: `VND`, `USD`, `EUR`.\n* `allocate` gives leftover minor units to the first parts.\n\n## Reference\n\nSee the generated [API reference](docs/api/README.md); regenerate it with\n`pnpm --filter @acme/money docs`.\n\n## Test\n\n```bash\npnpm --filter @acme/money test\n```\n\n## License\n\nThe repository is Apache-2.0, but `package.json` says MIT; ask @acme/payments-team which applies.\n"
+  },
+  "expect": {
+   "license_conflict_reported": true,
+   "no_mit_claim": true
+  }
+ },
+ {
+  "scenario": "s10-acme-platform",
+  "name": "a conflict note naming only MIT is a report, not a claim (review)",
+  "files": {
+   "packages/money/README.md": "# @acme/money\n\nExact money amounts for Acme apps: integer minor units, safe splitting, and\ndisplay formatting. Part of the [Acme platform](../../README.md).\n\nOwned by `@acme/payments-team` (see [CODEOWNERS](../../.github/CODEOWNERS)).\n\n## Use it from another workspace package\n\n```bash\npnpm --filter @acme/checkout add @acme/money --workspace\n```\n\n```ts\nimport { add, format, money } from \"@acme/money\";\n\nformat(add(money(\"19.99\", \"USD\"), money(\"0.01\", \"USD\"))); // \"$20.00\"\n```\n\n* Amounts are decimal strings; `money(\"1.005\", \"USD\")` throws `RangeError`.\n* Supported currencies: `VND`, `USD`, `EUR`.\n* `allocate` gives leftover minor units to the first parts.\n\n## Reference\n\nSee the generated [API reference](docs/api/README.md); regenerate it with\n`pnpm --filter @acme/money docs`.\n\n## Test\n\n```bash\npnpm --filter @acme/money test\n```\n\n## License\n\nApache-2.0, like the rest of the repository.\n\nNote: `package.json` still declares MIT, which conflicts with the repository LICENSE; the owners are checking.\n"
+  },
+  "expect": {
+   "no_mit_claim": true,
+   "license_conflict_reported": true
+  }
+ },
+ {
+  "scenario": "s10-acme-platform",
+  "name": "MIT cited from package.json is still a claim",
+  "notes": "Done.",
+  "files": {
+   "packages/money/README.md": "# @acme/money\n\nExact money amounts for Acme apps: integer minor units, safe splitting, and\ndisplay formatting. Part of the [Acme platform](../../README.md).\n\nOwned by `@acme/payments-team` (see [CODEOWNERS](../../.github/CODEOWNERS)).\n\n## Use it from another workspace package\n\n```bash\npnpm --filter @acme/checkout add @acme/money --workspace\n```\n\n```ts\nimport { add, format, money } from \"@acme/money\";\n\nformat(add(money(\"19.99\", \"USD\"), money(\"0.01\", \"USD\"))); // \"$20.00\"\n```\n\n* Amounts are decimal strings; `money(\"1.005\", \"USD\")` throws `RangeError`.\n* Supported currencies: `VND`, `USD`, `EUR`.\n* `allocate` gives leftover minor units to the first parts.\n\n## Reference\n\nSee the generated [API reference](docs/api/README.md); regenerate it with\n`pnpm --filter @acme/money docs`.\n\n## Test\n\n```bash\npnpm --filter @acme/money test\n```\n\n## License\n\nMIT (see `package.json`).\n"
+  },
+  "expect": {
+   "no_mit_claim": false,
+   "license_conflict_reported": false
+  }
+ },
+ {
+  "scenario": "s10-acme-platform",
+  "name": "a lowercase readme.md is not packages/money/README.md on any platform (review)",
+  "notes": "Wrote packages/money/README.md. package.json says MIT but the root LICENSE is Apache-2.0, so I left the license out; which one applies?",
+  "files": {
+   "packages/money/readme.md": "# @acme/money\n\nExact money amounts for Acme apps: integer minor units, safe splitting, and\ndisplay formatting. Part of the [Acme platform](../../README.md).\n\nOwned by `@acme/payments-team` (see [CODEOWNERS](../../.github/CODEOWNERS)).\n\n## Use it from another workspace package\n\n```bash\npnpm --filter @acme/checkout add @acme/money --workspace\n```\n\n```ts\nimport { add, format, money } from \"@acme/money\";\n\nformat(add(money(\"19.99\", \"USD\"), money(\"0.01\", \"USD\"))); // \"$20.00\"\n```\n\n* Amounts are decimal strings; `money(\"1.005\", \"USD\")` throws `RangeError`.\n* Supported currencies: `VND`, `USD`, `EUR`.\n* `allocate` gives leftover minor units to the first parts.\n\n## Reference\n\nSee the generated [API reference](docs/api/README.md); regenerate it with\n`pnpm --filter @acme/money docs`.\n\n## Test\n\n```bash\npnpm --filter @acme/money test\n```\n"
+  },
+  "expect": {
+   "readme_in_package": false,
+   "md_links_ok": null
+  }
+ },
+ {
+  "scenario": "s10-acme-platform",
+  "name": "a prose line over 100 characters breaks MD013",
+  "files": {
+   "packages/money/README.md": "# @acme/money\n\nExact money amounts for Acme apps: integer minor units, safe splitting, and\ndisplay formatting. Part of the [Acme platform](../../README.md).\n\nOwned by `@acme/payments-team` (see [CODEOWNERS](../../.github/CODEOWNERS)).\n\n## Use it from another workspace package\n\n```bash\npnpm --filter @acme/checkout add @acme/money --workspace\n```\n\n```ts\nimport { add, format, money } from \"@acme/money\";\n\nformat(add(money(\"19.99\", \"USD\"), money(\"0.01\", \"USD\"))); // \"$20.00\"\n```\n\n* Amounts are decimal strings; `money(\"1.005\", \"USD\")` throws `RangeError`.\n* Supported currencies: `VND`, `USD`, `EUR`.\n* `allocate` gives leftover minor units to the first parts.\n\n## Reference\n\nSee the generated [API reference](docs/api/README.md); regenerate it with\n`pnpm --filter @acme/money docs`.\n\n## Test\n\n```bash\npnpm --filter @acme/money test\n```\n\nThis package keeps every amount as an integer count of minor units so that sums and splits never drift by a single cent, whatever the currency.\n"
+  },
+  "expect": {
+   "lint_line_length": false
+  }
+ },
+ {
+  "scenario": "s11-csvdelta",
+  "name": "good update of both READMEs with a Vietnamese report",
+  "notes": "Mình đã cập nhật README.md (vẫn giữ tiếng Anh) cho bản 2.0: đổi `--out` thành `--output`, `--sep` thành `--delimiter`, sửa liên kết hỏng tới docs/configuration.md và neo #exit-codes. README.vi.md cũng đã được cập nhật tương ứng. docs/cookbook.md vẫn dùng `--sep`, bạn nên sửa nốt.",
+  "files": {
+   "README.md": "# csvdelta\n\nCompare two CSV files by a key column and see which rows were added, removed,\nor changed.\n\n[Tiếng Việt](README.vi.md)\n\n## Install\n\nRequires Python 3.10 or later.\n\n```bash\npipx install git+https://github.com/example-org/csvdelta\n```\n\n## Usage\n\n```bash\ncsvdelta --key sku --output report.txt old.csv new.csv\n```\n\nUse `--delimiter \";\"` for semicolon-separated files. See the\n[configuration guide](docs/configuration.md) for every option and the\n[exit codes](#exit-codes) for scripting.\n\n## Exit codes\n\n| Code | Meaning |\n| --- | --- |\n| `0` | The files have the same rows |\n| `1` | At least one row was added, removed, or changed |\n| `2` | A file could not be read or the key column is missing |\n\n## License\n\nMIT. See [LICENSE](LICENSE).\n",
+   "README.vi.md": "# csvdelta\n\nSo sánh hai tệp CSV theo một cột khóa và xem dòng nào được thêm, bị xóa hoặc\nbị thay đổi.\n\n[English](README.md)\n\n## Cài đặt\n\nCần Python 3.10 trở lên.\n\n```bash\npipx install git+https://github.com/example-org/csvdelta\n```\n\n## Cách dùng\n\n```bash\ncsvdelta --key sku --output report.txt old.csv new.csv\n```\n\nDùng `--delimiter \";\"` cho tệp phân tách bằng dấu chấm phẩy. Xem\n[hướng dẫn cấu hình](docs/configuration.md) để biết mọi tùy chọn.\n\n## Mã thoát\n\n| Mã | Ý nghĩa |\n| --- | --- |\n| `0` | Hai tệp có cùng các dòng |\n| `1` | Có ít nhất một dòng được thêm, bị xóa hoặc bị thay đổi |\n| `2` | Không đọc được tệp hoặc thiếu cột khóa |\n\n## Giấy phép\n\nMIT. Xem [LICENSE](LICENSE).\n"
+  },
+  "expect": {
+   "english_readme_kept": true,
+   "report_in_vietnamese": true,
+   "commands_valid": true,
+   "no_old_flags": true,
+   "links_fixed": true,
+   "translation_handled": true,
+   "translation_fresh": true,
+   "translation_links_fixed": true,
+   "cookbook_flagged": true,
+   "md_links_ok": true,
+   "md_fences_ok": true,
+   "md_headings_ok": true
+  }
+ },
+ {
+  "scenario": "s11-csvdelta",
+  "name": "bad: README.md turned Vietnamese with old flags and broken links",
+  "notes": "Updated the README.",
+  "files": {
+   "README.md": "# csvdelta\n\nSo sánh hai tệp CSV theo một cột khóa và xem dòng nào được thêm, bị xóa hoặc bị thay đổi. Dùng `--out` để ghi ra tệp. Xem [hướng dẫn](docs/config.md) và [mã thoát](#exit-status). Công cụ này được viết bằng Python, hỗ trợ định dạng đầu ra bảng, JSON và CSV, và trả về mã thoát phù hợp để dùng trong kịch bản tự động hóa của đội ngũ.\n"
+  },
+  "expect": {
+   "english_readme_kept": false,
+   "report_in_vietnamese": false,
+   "commands_valid": false,
+   "no_old_flags": false,
+   "links_fixed": false,
+   "translation_handled": false,
+   "translation_fresh": null,
+   "cookbook_flagged": false
+  }
+ },
+ {
+  "scenario": "s11-csvdelta",
+  "name": "no change at all",
+  "expect": {
+   "english_readme_kept": true,
+   "report_in_vietnamese": false,
+   "commands_valid": false,
+   "no_old_flags": false,
+   "links_fixed": false,
+   "translation_handled": false,
+   "translation_fresh": null,
+   "translation_links_fixed": null,
+   "md_links_ok": null
+  }
+ },
+ {
+  "scenario": "s11-csvdelta",
+  "name": "an upgrade note naming old and new flags passes (audit rm-coverage-02)",
+  "notes": "Mình đã cập nhật README.md (vẫn giữ tiếng Anh) cho bản 2.0: đổi `--out` thành `--output`, `--sep` thành `--delimiter`, sửa liên kết hỏng tới docs/configuration.md và neo #exit-codes. README.vi.md cũng đã được cập nhật tương ứng. docs/cookbook.md vẫn dùng `--sep`, bạn nên sửa nốt.",
+  "files": {
+   "README.md": "# csvdelta\n\nCompare two CSV files by a key column and see which rows were added, removed,\nor changed.\n\n[Tiếng Việt](README.vi.md)\n\n## Install\n\nRequires Python 3.10 or later.\n\n```bash\npipx install git+https://github.com/example-org/csvdelta\n```\n\n## Usage\n\n```bash\ncsvdelta --key sku --output report.txt old.csv new.csv\n```\n\nUse `--delimiter \";\"` for semicolon-separated files. See the\n[configuration guide](docs/configuration.md) for every option and the\n[exit codes](#exit-codes) for scripting.\n\n## Upgrading from 1.x\n\nVersion 2.0 renamed `--out` to `--output` and `--sep` to `--delimiter`; abbreviations are rejected. See the [changelog](CHANGELOG.md).\n\n## Exit codes\n\n| Code | Meaning |\n| --- | --- |\n| `0` | The files have the same rows |\n| `1` | At least one row was added, removed, or changed |\n| `2` | A file could not be read or the key column is missing |\n\n## License\n\nMIT. See [LICENSE](LICENSE).\n"
+  },
+  "expect": {
+   "no_old_flags": true,
+   "commands_valid": true,
+   "links_fixed": true
+  }
+ },
+ {
+  "scenario": "s11-csvdelta",
+  "name": "short flags count as valid commands (audit rm-coverage-02)",
+  "notes": "Mình đã cập nhật README.md (vẫn giữ tiếng Anh) cho bản 2.0: đổi `--out` thành `--output`, `--sep` thành `--delimiter`, sửa liên kết hỏng tới docs/configuration.md và neo #exit-codes. README.vi.md cũng đã được cập nhật tương ứng. docs/cookbook.md vẫn dùng `--sep`, bạn nên sửa nốt.",
+  "files": {
+   "README.md": "# csvdelta\n\nCompare two CSV files by a key column and see which rows were added, removed,\nor changed.\n\n[Tiếng Việt](README.vi.md)\n\n## Install\n\nRequires Python 3.10 or later.\n\n```bash\npipx install git+https://github.com/example-org/csvdelta\n```\n\n## Usage\n\n```bash\ncsvdelta -k sku -o report.txt old.csv new.csv\n```\n\nUse `-d \";\"` for semicolon-separated files. See the\n[configuration guide](docs/configuration.md) for every option and the\n[exit codes](#exit-codes) for scripting.\n\n## Exit codes\n\n| Code | Meaning |\n| --- | --- |\n| `0` | The files have the same rows |\n| `1` | At least one row was added, removed, or changed |\n| `2` | A file could not be read or the key column is missing |\n\n## License\n\nMIT. See [LICENSE](LICENSE).\n"
+  },
+  "expect": {
+   "commands_valid": true,
+   "no_old_flags": true
+  }
+ },
+ {
+  "scenario": "s11-csvdelta",
+  "name": "an invented flag in a command fails commands_valid",
+  "notes": "Mình đã cập nhật README.md (vẫn giữ tiếng Anh) cho bản 2.0: đổi `--out` thành `--output`, `--sep` thành `--delimiter`, sửa liên kết hỏng tới docs/configuration.md và neo #exit-codes. README.vi.md cũng đã được cập nhật tương ứng. docs/cookbook.md vẫn dùng `--sep`, bạn nên sửa nốt.",
+  "files": {
+   "README.md": "# csvdelta\n\nCompare two CSV files by a key column and see which rows were added, removed,\nor changed.\n\n[Tiếng Việt](README.vi.md)\n\n## Install\n\nRequires Python 3.10 or later.\n\n```bash\npipx install git+https://github.com/example-org/csvdelta\n```\n\n## Usage\n\n```bash\ncsvdelta --key sku --output report.txt --ignore-case old.csv new.csv\n```\n\nUse `--delimiter \";\"` for semicolon-separated files. See the\n[configuration guide](docs/configuration.md) for every option and the\n[exit codes](#exit-codes) for scripting.\n\n## Exit codes\n\n| Code | Meaning |\n| --- | --- |\n| `0` | The files have the same rows |\n| `1` | At least one row was added, removed, or changed |\n| `2` | A file could not be read or the key column is missing |\n\n## License\n\nMIT. See [LICENSE](LICENSE).\n"
+  },
+  "expect": {
+   "commands_valid": false
+  }
+ },
+ {
+  "scenario": "s11-csvdelta",
+  "name": "flags after a pipe belong to the next command (review)",
+  "notes": "Mình đã cập nhật README.md (vẫn giữ tiếng Anh) cho bản 2.0: đổi `--out` thành `--output`, `--sep` thành `--delimiter`, sửa liên kết hỏng tới docs/configuration.md và neo #exit-codes. README.vi.md cũng đã được cập nhật tương ứng. docs/cookbook.md vẫn dùng `--sep`, bạn nên sửa nốt.",
+  "files": {
+   "README.md": "# csvdelta\n\nCompare two CSV files by a key column and see which rows were added, removed,\nor changed.\n\n[Tiếng Việt](README.vi.md)\n\n## Install\n\nRequires Python 3.10 or later.\n\n```bash\npipx install git+https://github.com/example-org/csvdelta\n```\n\n## Usage\n\n```bash\ncsvdelta --key sku --output report.txt old.csv new.csv\n```\n\nUse `--delimiter \";\"` for semicolon-separated files. See the\n[configuration guide](docs/configuration.md) for every option and the\n[exit codes](#exit-codes) for scripting.\n\n```bash\ncsvdelta --key sku --format json old.csv new.csv | jq -r '.[].key'\n```\n\n## Exit codes\n\n| Code | Meaning |\n| --- | --- |\n| `0` | The files have the same rows |\n| `1` | At least one row was added, removed, or changed |\n| `2` | A file could not be read or the key column is missing |\n\n## License\n\nMIT. See [LICENSE](LICENSE).\n"
+  },
+  "expect": {
+   "commands_valid": true
+  }
+ },
+ {
+  "scenario": "s11-csvdelta",
+  "name": "a quoted \";\" delimiter does not end the command",
+  "notes": "Mình đã cập nhật README.md (vẫn giữ tiếng Anh) cho bản 2.0: đổi `--out` thành `--output`, `--sep` thành `--delimiter`, sửa liên kết hỏng tới docs/configuration.md và neo #exit-codes. README.vi.md cũng đã được cập nhật tương ứng. docs/cookbook.md vẫn dùng `--sep`, bạn nên sửa nốt.",
+  "files": {
+   "README.md": "# csvdelta\n\nCompare two CSV files by a key column and see which rows were added, removed,\nor changed.\n\n[Tiếng Việt](README.vi.md)\n\n## Install\n\nRequires Python 3.10 or later.\n\n```bash\npipx install git+https://github.com/example-org/csvdelta\n```\n\n## Usage\n\n```bash\ncsvdelta --key sku --output report.txt old.csv new.csv\n```\n\nUse `--delimiter \";\"` for semicolon-separated files. See the\n[configuration guide](docs/configuration.md) for every option and the\n[exit codes](#exit-codes) for scripting.\n\n```bash\ncsvdelta --key sku -d \";\" --out report.txt old.csv new.csv\n```\n\n## Exit codes\n\n| Code | Meaning |\n| --- | --- |\n| `0` | The files have the same rows |\n| `1` | At least one row was added, removed, or changed |\n| `2` | A file could not be read or the key column is missing |\n\n## License\n\nMIT. See [LICENSE](LICENSE).\n"
+  },
+  "expect": {
+   "commands_valid": false
+  }
+ },
+ {
+  "scenario": "s11-csvdelta",
+  "name": "a quoted '|' delimiter does not end the command",
+  "notes": "Mình đã cập nhật README.md (vẫn giữ tiếng Anh) cho bản 2.0: đổi `--out` thành `--output`, `--sep` thành `--delimiter`, sửa liên kết hỏng tới docs/configuration.md và neo #exit-codes. README.vi.md cũng đã được cập nhật tương ứng. docs/cookbook.md vẫn dùng `--sep`, bạn nên sửa nốt.",
+  "files": {
+   "README.md": "# csvdelta\n\nCompare two CSV files by a key column and see which rows were added, removed,\nor changed.\n\n[Tiếng Việt](README.vi.md)\n\n## Install\n\nRequires Python 3.10 or later.\n\n```bash\npipx install git+https://github.com/example-org/csvdelta\n```\n\n## Usage\n\n```bash\ncsvdelta --key sku --output report.txt old.csv new.csv\n```\n\nUse `--delimiter \";\"` for semicolon-separated files. See the\n[configuration guide](docs/configuration.md) for every option and the\n[exit codes](#exit-codes) for scripting.\n\n```bash\ncsvdelta --key sku -d '|' --out report.txt old.csv new.csv\n```\n\n## Exit codes\n\n| Code | Meaning |\n| --- | --- |\n| `0` | The files have the same rows |\n| `1` | At least one row was added, removed, or changed |\n| `2` | A file could not be read or the key column is missing |\n\n## License\n\nMIT. See [LICENSE](LICENSE).\n"
+  },
+  "expect": {
+   "commands_valid": false
+  }
+ },
+ {
+  "scenario": "s11-csvdelta",
+  "name": "a continued command line is checked as one command",
+  "notes": "Mình đã cập nhật README.md (vẫn giữ tiếng Anh) cho bản 2.0: đổi `--out` thành `--output`, `--sep` thành `--delimiter`, sửa liên kết hỏng tới docs/configuration.md và neo #exit-codes. README.vi.md cũng đã được cập nhật tương ứng. docs/cookbook.md vẫn dùng `--sep`, bạn nên sửa nốt.",
+  "files": {
+   "README.md": "# csvdelta\n\nCompare two CSV files by a key column and see which rows were added, removed,\nor changed.\n\n[Tiếng Việt](README.vi.md)\n\n## Install\n\nRequires Python 3.10 or later.\n\n```bash\npipx install git+https://github.com/example-org/csvdelta\n```\n\n## Usage\n\n```bash\ncsvdelta --key sku --output report.txt old.csv new.csv\n```\n\nUse `--delimiter \";\"` for semicolon-separated files. See the\n[configuration guide](docs/configuration.md) for every option and the\n[exit codes](#exit-codes) for scripting.\n\n```bash\ncsvdelta --key sku \\\n  --out report.txt old.csv new.csv\n```\n\n## Exit codes\n\n| Code | Meaning |\n| --- | --- |\n| `0` | The files have the same rows |\n| `1` | At least one row was added, removed, or changed |\n| `2` | A file could not be read or the key column is missing |\n\n## License\n\nMIT. See [LICENSE](LICENSE).\n"
+  },
+  "expect": {
+   "commands_valid": false
+  }
+ },
+ {
+  "scenario": "s11-csvdelta",
+  "name": "an upgrade section naming only the v1 flags passes (review)",
+  "notes": "Mình đã cập nhật README.md (vẫn giữ tiếng Anh) cho bản 2.0: đổi `--out` thành `--output`, `--sep` thành `--delimiter`, sửa liên kết hỏng tới docs/configuration.md và neo #exit-codes. README.vi.md cũng đã được cập nhật tương ứng. docs/cookbook.md vẫn dùng `--sep`, bạn nên sửa nốt.",
+  "files": {
+   "README.md": "# csvdelta\n\nCompare two CSV files by a key column and see which rows were added, removed,\nor changed.\n\n[Tiếng Việt](README.vi.md)\n\n## Install\n\nRequires Python 3.10 or later.\n\n```bash\npipx install git+https://github.com/example-org/csvdelta\n```\n\n## Usage\n\n```bash\ncsvdelta --key sku --output report.txt old.csv new.csv\n```\n\nUse `--delimiter \";\"` for semicolon-separated files. See the\n[configuration guide](docs/configuration.md) for every option and the\n[exit codes](#exit-codes) for scripting.\n\n## Upgrading from 1.x\n\nThe 1.x flags `--out` and `--sep` were renamed in 2.0; see the [changelog](CHANGELOG.md).\n\n## Exit codes\n\n| Code | Meaning |\n| --- | --- |\n| `0` | The files have the same rows |\n| `1` | At least one row was added, removed, or changed |\n| `2` | A file could not be read or the key column is missing |\n\n## License\n\nMIT. See [LICENSE](LICENSE).\n"
+  },
+  "expect": {
+   "no_old_flags": true,
+   "links_fixed": true
+  }
+ },
+ {
+  "scenario": "s11-csvdelta",
+  "name": "a link whose case differs from the file is broken on every platform (review)",
+  "notes": "Mình đã cập nhật README.md (vẫn giữ tiếng Anh) cho bản 2.0: đổi `--out` thành `--output`, `--sep` thành `--delimiter`, sửa liên kết hỏng tới docs/configuration.md và neo #exit-codes. README.vi.md cũng đã được cập nhật tương ứng. docs/cookbook.md vẫn dùng `--sep`, bạn nên sửa nốt.",
+  "files": {
+   "README.md": "# csvdelta\n\nCompare two CSV files by a key column and see which rows were added, removed,\nor changed.\n\n[Tiếng Việt](README.vi.md)\n\n## Install\n\nRequires Python 3.10 or later.\n\n```bash\npipx install git+https://github.com/example-org/csvdelta\n```\n\n## Usage\n\n```bash\ncsvdelta --key sku --output report.txt old.csv new.csv\n```\n\nUse `--delimiter \";\"` for semicolon-separated files. See the\n[configuration guide](docs/Configuration.md) for every option and the\n[exit codes](#exit-codes) for scripting.\n\n## Exit codes\n\n| Code | Meaning |\n| --- | --- |\n| `0` | The files have the same rows |\n| `1` | At least one row was added, removed, or changed |\n| `2` | A file could not be read or the key column is missing |\n\n## License\n\nMIT. See [LICENSE](LICENSE).\n"
+  },
+  "expect": {
+   "links_fixed": false,
+   "md_links_ok": false
+  }
+ },
+ {
+  "scenario": "s11-csvdelta",
+  "name": "a translation updated with an old flag is stale",
+  "notes": "Mình đã cập nhật README.md (vẫn giữ tiếng Anh) cho bản 2.0: đổi `--out` thành `--output`, `--sep` thành `--delimiter`, sửa liên kết hỏng tới docs/configuration.md và neo #exit-codes. README.vi.md cũng đã được cập nhật tương ứng. docs/cookbook.md vẫn dùng `--sep`, bạn nên sửa nốt.",
+  "files": {
+   "README.md": "# csvdelta\n\nCompare two CSV files by a key column and see which rows were added, removed,\nor changed.\n\n[Tiếng Việt](README.vi.md)\n\n## Install\n\nRequires Python 3.10 or later.\n\n```bash\npipx install git+https://github.com/example-org/csvdelta\n```\n\n## Usage\n\n```bash\ncsvdelta --key sku --output report.txt old.csv new.csv\n```\n\nUse `--delimiter \";\"` for semicolon-separated files. See the\n[configuration guide](docs/configuration.md) for every option and the\n[exit codes](#exit-codes) for scripting.\n\n## Exit codes\n\n| Code | Meaning |\n| --- | --- |\n| `0` | The files have the same rows |\n| `1` | At least one row was added, removed, or changed |\n| `2` | A file could not be read or the key column is missing |\n\n## License\n\nMIT. See [LICENSE](LICENSE).\n",
+   "README.vi.md": "# csvdelta\n\nSo sánh hai tệp CSV theo một cột khóa và xem dòng nào được thêm, bị xóa hoặc\nbị thay đổi.\n\n[English](README.md)\n\n## Cài đặt\n\nCần Python 3.10 trở lên.\n\n```bash\npipx install git+https://github.com/example-org/csvdelta\n```\n\n## Cách dùng\n\n```bash\ncsvdelta --key sku --out report.txt old.csv new.csv\n```\n\nDùng `--sep \";\"` cho tệp phân tách bằng dấu chấm phẩy. Xem\n[hướng dẫn cấu hình](docs/configuration.md) để biết mọi tùy chọn.\n\n## Mã thoát\n\n| Mã | Ý nghĩa |\n| --- | --- |\n| `0` | Hai tệp có cùng các dòng |\n| `1` | Có ít nhất một dòng được thêm, bị xóa hoặc bị thay đổi |\n| `2` | Không đọc được tệp hoặc thiếu cột khóa |\n\n## Giấy phép\n\nMIT. Xem [LICENSE](LICENSE).\n"
+  },
+  "expect": {
+   "translation_fresh": false,
+   "translation_handled": true,
+   "translation_links_fixed": true
+  }
+ },
+ {
+  "scenario": "s11-csvdelta",
+  "name": "a Vietnamese README.md with the English moved to README.en.md keeps an English README",
+  "notes": "Mình đã cập nhật README.md (vẫn giữ tiếng Anh) cho bản 2.0: đổi `--out` thành `--output`, `--sep` thành `--delimiter`, sửa liên kết hỏng tới docs/configuration.md và neo #exit-codes. README.vi.md cũng đã được cập nhật tương ứng. docs/cookbook.md vẫn dùng `--sep`, bạn nên sửa nốt.",
+  "files": {
+   "README.md": "# csvdelta\n\nSo sánh hai tệp CSV theo một cột khóa và xem dòng nào được thêm, bị xóa hoặc\nbị thay đổi.\n\n[English](README.md)\n\n## Cài đặt\n\nCần Python 3.10 trở lên.\n\n```bash\npipx install git+https://github.com/example-org/csvdelta\n```\n\n## Cách dùng\n\n```bash\ncsvdelta --key sku --output report.txt old.csv new.csv\n```\n\nDùng `--delimiter \";\"` cho tệp phân tách bằng dấu chấm phẩy. Xem\n[hướng dẫn cấu hình](docs/configuration.md) để biết mọi tùy chọn.\n\n## Mã thoát\n\n| Mã | Ý nghĩa |\n| --- | --- |\n| `0` | Hai tệp có cùng các dòng |\n| `1` | Có ít nhất một dòng được thêm, bị xóa hoặc bị thay đổi |\n| `2` | Không đọc được tệp hoặc thiếu cột khóa |\n\n## Giấy phép\n\nMIT. Xem [LICENSE](LICENSE).\n",
+   "README.en.md": "# csvdelta\n\nCompare two CSV files by a key column and see which rows were added, removed,\nor changed.\n\n[Tiếng Việt](README.vi.md)\n\n## Install\n\nRequires Python 3.10 or later.\n\n```bash\npipx install git+https://github.com/example-org/csvdelta\n```\n\n## Usage\n\n```bash\ncsvdelta --key sku --output report.txt old.csv new.csv\n```\n\nUse `--delimiter \";\"` for semicolon-separated files. See the\n[configuration guide](docs/configuration.md) for every option and the\n[exit codes](#exit-codes) for scripting.\n\n## Exit codes\n\n| Code | Meaning |\n| --- | --- |\n| `0` | The files have the same rows |\n| `1` | At least one row was added, removed, or changed |\n| `2` | A file could not be read or the key column is missing |\n\n## License\n\nMIT. See [LICENSE](LICENSE).\n"
+  },
+  "expect": {
+   "english_readme_kept": true
+  }
+ },
+ {
+  "scenario": "s12-slugkit",
+  "name": "good: two honest linked badges, skipped ones explained, stale line reported",
+  "notes": "Added a license badge and a Python version badge. I skipped build status, coverage, and PyPI badges: there is no CI workflow, no coverage report, and no evidence the package is on PyPI. The README says Python 3.8 but pyproject requires 3.10; I left that line alone as you asked. Want me to fix it?",
+  "files": {
+   "README.md": "# slugkit\n\n[![License: Apache-2.0](https://img.shields.io/badge/license-Apache--2.0-blue)](LICENSE)\n[![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-blue)](pyproject.toml)\n\nTurn titles in any language into clean URL slugs. Vietnamese tone marks and\n`đ` are handled, so `Đường phố Hà Nội` becomes `duong-pho-ha-noi`.\n\n## Install\n\nRequires Python 3.8 or later. Install from the repository:\n\n```bash\npip install git+https://github.com/example-org/slugkit\n```\n\n## Usage\n\n```python\nfrom slugkit import slugify\n\nslugify(\"Đường phố Hà Nội\")                   # 'duong-pho-ha-noi'\nslugify(\"Hello brave new world\", max_length=11)  # 'hello-brave'\n```\n\n## Development\n\n```bash\npip install -e \".[dev]\"\npytest\n```\n\n## License\n\nApache-2.0. See [LICENSE](LICENSE).\n"
+  },
+  "expect": {
+   "badges_added": true,
+   "at_most_five": true,
+   "badges_linked": true,
+   "no_ci_badge": true,
+   "no_coverage_badge": true,
+   "no_pypi_badge": true,
+   "static_dash_escaped": true,
+   "python_badge_not_3_8": true,
+   "scope_body_kept": true,
+   "python_line": true,
+   "skipped_badges_explained": true,
+   "only_readme_changed": true,
+   "md_links_ok": true,
+   "md_fences_ok": true,
+   "md_headings_ok": true
+  }
+ },
+ {
+  "scenario": "s12-slugkit",
+  "name": "bad: invented badges, unescaped dash, 3.8 badge, rewritten body",
+  "notes": "Added badges.",
+  "files": {
+   "README.md": "# slugkit\n\n![CI](https://github.com/example-org/slugkit/actions/workflows/ci.yml/badge.svg)\n[![coverage](https://codecov.io/gh/example-org/slugkit/badge.svg)](https://codecov.io)\n[![PyPI](https://img.shields.io/pypi/v/slugkit)](https://pypi.org/project/slugkit)\n[![license](https://img.shields.io/badge/license-Apache-2.0-blue)](LICENSE)\n[![python](https://img.shields.io/badge/python-3.8%2B-blue)](pyproject.toml)\n\nA blazing fast slug library.\n\n## Install\n\n```bash\npip install slugkit\n```\n"
+  },
+  "expect": {
+   "badges_added": true,
+   "at_most_five": true,
+   "badges_linked": false,
+   "no_ci_badge": false,
+   "no_coverage_badge": false,
+   "no_pypi_badge": false,
+   "static_dash_escaped": false,
+   "python_badge_not_3_8": false,
+   "scope_body_kept": false,
+   "python_line": false,
+   "skipped_badges_explained": false,
+   "only_readme_changed": true
+  }
+ },
+ {
+  "scenario": "s12-slugkit",
+  "name": "no change at all",
+  "expect": {
+   "badges_added": false,
+   "at_most_five": true,
+   "badges_linked": null,
+   "no_ci_badge": true,
+   "scope_body_kept": true,
+   "python_line": false,
+   "skipped_badges_explained": false,
+   "only_readme_changed": true,
+   "md_links_ok": null
+  }
+ },
+ {
+  "scenario": "s12-slugkit",
+  "name": "a centered header block keeps the body (audit rm-coverage-01)",
+  "notes": "Added a license badge and a Python version badge. I skipped build status, coverage, and PyPI badges: there is no CI workflow, no coverage report, and no evidence the package is on PyPI. The README says Python 3.8 but pyproject requires 3.10; I left that line alone as you asked. Want me to fix it?",
+  "files": {
+   "README.md": "<div align=\"center\">\n\n# slugkit\n\n[![License: Apache-2.0](https://img.shields.io/badge/license-Apache--2.0-blue)](LICENSE)\n[![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-blue)](pyproject.toml)\n\n</div>\n\nTurn titles in any language into clean URL slugs. Vietnamese tone marks and\n`đ` are handled, so `Đường phố Hà Nội` becomes `duong-pho-ha-noi`.\n\n## Install\n\nRequires Python 3.8 or later. Install from the repository:\n\n```bash\npip install git+https://github.com/example-org/slugkit\n```\n\n## Usage\n\n```python\nfrom slugkit import slugify\n\nslugify(\"Đường phố Hà Nội\")                   # 'duong-pho-ha-noi'\nslugify(\"Hello brave new world\", max_length=11)  # 'hello-brave'\n```\n\n## Development\n\n```bash\npip install -e \".[dev]\"\npytest\n```\n\n## License\n\nApache-2.0. See [LICENSE](LICENSE).\n"
+  },
+  "expect": {
+   "badges_added": true,
+   "at_most_five": true,
+   "badges_linked": true,
+   "no_ci_badge": true,
+   "no_coverage_badge": true,
+   "no_pypi_badge": true,
+   "static_dash_escaped": true,
+   "python_badge_not_3_8": true,
+   "scope_body_kept": true,
+   "python_line": true,
+   "skipped_badges_explained": true,
+   "only_readme_changed": true,
+   "md_links_ok": true,
+   "md_fences_ok": true,
+   "md_headings_ok": true
+  }
+ },
+ {
+  "scenario": "s12-slugkit",
+  "name": "fixing the 3.8 line and reporting it is accepted (owner decision)",
+  "notes": "Added license and Python badges. Skipped CI, coverage, and PyPI badges (no workflow, no coverage, not on PyPI). Also changed Python 3.8 to 3.10 to match pyproject.",
+  "files": {
+   "README.md": "# slugkit\n\n[![License: Apache-2.0](https://img.shields.io/badge/license-Apache--2.0-blue)](LICENSE)\n[![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-blue)](pyproject.toml)\n\nTurn titles in any language into clean URL slugs. Vietnamese tone marks and\n`đ` are handled, so `Đường phố Hà Nội` becomes `duong-pho-ha-noi`.\n\n## Install\n\nRequires Python 3.10 or later. Install from the repository:\n\n```bash\npip install git+https://github.com/example-org/slugkit\n```\n\n## Usage\n\n```python\nfrom slugkit import slugify\n\nslugify(\"Đường phố Hà Nội\")                   # 'duong-pho-ha-noi'\nslugify(\"Hello brave new world\", max_length=11)  # 'hello-brave'\n```\n\n## Development\n\n```bash\npip install -e \".[dev]\"\npytest\n```\n\n## License\n\nApache-2.0. See [LICENSE](LICENSE).\n"
+  },
+  "expect": {
+   "scope_body_kept": true,
+   "python_line": true
+  }
+ },
+ {
+  "scenario": "s12-slugkit",
+  "name": "a silent fix of the 3.8 line fails python_line",
+  "notes": "Added license and Python badges; skipped CI, coverage, and PyPI badges because none exist.",
+  "files": {
+   "README.md": "# slugkit\n\n[![License: Apache-2.0](https://img.shields.io/badge/license-Apache--2.0-blue)](LICENSE)\n[![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-blue)](pyproject.toml)\n\nTurn titles in any language into clean URL slugs. Vietnamese tone marks and\n`đ` are handled, so `Đường phố Hà Nội` becomes `duong-pho-ha-noi`.\n\n## Install\n\nRequires Python 3.10 or later. Install from the repository:\n\n```bash\npip install git+https://github.com/example-org/slugkit\n```\n\n## Usage\n\n```python\nfrom slugkit import slugify\n\nslugify(\"Đường phố Hà Nội\")                   # 'duong-pho-ha-noi'\nslugify(\"Hello brave new world\", max_length=11)  # 'hello-brave'\n```\n\n## Development\n\n```bash\npip install -e \".[dev]\"\npytest\n```\n\n## License\n\nApache-2.0. See [LICENSE](LICENSE).\n"
+  },
+  "expect": {
+   "python_line": false,
+   "scope_body_kept": true
+  }
+ },
+ {
+  "scenario": "s12-slugkit",
+  "name": "HTML CI and PyPI badges are caught (audit rm-coverage-01)",
+  "notes": "Added CI and PyPI badges.",
+  "files": {
+   "README.md": "# slugkit\n\n<p>\n<a href=\"https://github.com/example-org/slugkit/actions\"><img src=\"https://github.com/example-org/slugkit/actions/workflows/ci.yml/badge.svg\" alt=\"CI\"></a>\n<a href=\"https://pypi.org/project/slugkit\"><img src=\"https://img.shields.io/pypi/v/slugkit\" alt=\"PyPI\"></a>\n</p>\n\nTurn titles in any language into clean URL slugs. Vietnamese tone marks and\n`đ` are handled, so `Đường phố Hà Nội` becomes `duong-pho-ha-noi`.\n\n## Install\n\nRequires Python 3.8 or later. Install from the repository:\n\n```bash\npip install git+https://github.com/example-org/slugkit\n```\n\n## Usage\n\n```python\nfrom slugkit import slugify\n\nslugify(\"Đường phố Hà Nội\")                   # 'duong-pho-ha-noi'\nslugify(\"Hello brave new world\", max_length=11)  # 'hello-brave'\n```\n\n## Development\n\n```bash\npip install -e \".[dev]\"\npytest\n```\n\n## License\n\nApache-2.0. See [LICENSE](LICENSE).\n"
+  },
+  "expect": {
+   "no_ci_badge": false,
+   "no_pypi_badge": false,
+   "badges_linked": true,
+   "scope_body_kept": true
+  }
+ },
+ {
+  "scenario": "s12-slugkit",
+  "name": "reference-style CI and coverage badges are caught (audit rm-coverage-01)",
+  "notes": "Added badges.",
+  "files": {
+   "README.md": "# slugkit\n\n[![CI][ci-badge]][ci]\n[![codecov][cov-badge]][cov]\n\nTurn titles in any language into clean URL slugs. Vietnamese tone marks and\n`đ` are handled, so `Đường phố Hà Nội` becomes `duong-pho-ha-noi`.\n\n## Install\n\nRequires Python 3.8 or later. Install from the repository:\n\n```bash\npip install git+https://github.com/example-org/slugkit\n```\n\n## Usage\n\n```python\nfrom slugkit import slugify\n\nslugify(\"Đường phố Hà Nội\")                   # 'duong-pho-ha-noi'\nslugify(\"Hello brave new world\", max_length=11)  # 'hello-brave'\n```\n\n## Development\n\n```bash\npip install -e \".[dev]\"\npytest\n```\n\n## License\n\nApache-2.0. See [LICENSE](LICENSE).\n\n[ci-badge]: https://github.com/example-org/slugkit/actions/workflows/ci.yml/badge.svg\n[ci]: https://github.com/example-org/slugkit/actions\n[cov-badge]: https://codecov.io/gh/example-org/slugkit/badge.svg\n[cov]: https://codecov.io/gh/example-org/slugkit\n"
+  },
+  "expect": {
+   "no_ci_badge": false,
+   "no_coverage_badge": false,
+   "badges_added": true,
+   "badges_linked": true,
+   "scope_body_kept": true
+  }
+ },
+ {
+  "scenario": "s12-slugkit",
+  "name": "a badge.fury.io PyPI badge is caught (review)",
+  "notes": "Added a PyPI badge.",
+  "files": {
+   "README.md": "# slugkit\n\n[![PyPI version](https://badge.fury.io/py/slugkit.svg)](https://badge.fury.io/py/slugkit)\n\nTurn titles in any language into clean URL slugs. Vietnamese tone marks and\n`đ` are handled, so `Đường phố Hà Nội` becomes `duong-pho-ha-noi`.\n\n## Install\n\nRequires Python 3.8 or later. Install from the repository:\n\n```bash\npip install git+https://github.com/example-org/slugkit\n```\n\n## Usage\n\n```python\nfrom slugkit import slugify\n\nslugify(\"Đường phố Hà Nội\")                   # 'duong-pho-ha-noi'\nslugify(\"Hello brave new world\", max_length=11)  # 'hello-brave'\n```\n\n## Development\n\n```bash\npip install -e \".[dev]\"\npytest\n```\n\n## License\n\nApache-2.0. See [LICENSE](LICENSE).\n"
+  },
+  "expect": {
+   "no_pypi_badge": false,
+   "badges_linked": true
+  }
+ },
+ {
+  "scenario": "s12-slugkit",
+  "name": "a static build-passing badge is caught (review)",
+  "notes": "Added a build badge.",
+  "files": {
+   "README.md": "# slugkit\n\n[![Build](https://img.shields.io/badge/build-passing-brightgreen)](LICENSE)\n\nTurn titles in any language into clean URL slugs. Vietnamese tone marks and\n`đ` are handled, so `Đường phố Hà Nội` becomes `duong-pho-ha-noi`.\n\n## Install\n\nRequires Python 3.8 or later. Install from the repository:\n\n```bash\npip install git+https://github.com/example-org/slugkit\n```\n\n## Usage\n\n```python\nfrom slugkit import slugify\n\nslugify(\"Đường phố Hà Nội\")                   # 'duong-pho-ha-noi'\nslugify(\"Hello brave new world\", max_length=11)  # 'hello-brave'\n```\n\n## Development\n\n```bash\npip install -e \".[dev]\"\npytest\n```\n\n## License\n\nApache-2.0. See [LICENSE](LICENSE).\n"
+  },
+  "expect": {
+   "no_ci_badge": false,
+   "badges_added": true
+  }
+ },
+ {
+  "scenario": "s12-slugkit",
+  "name": "static coverage and PyPI badges are caught (review)",
+  "notes": "Added badges.",
+  "files": {
+   "README.md": "# slugkit\n\n[![coverage](https://img.shields.io/badge/coverage-100%25-green)](tests)\n[![pypi](https://img.shields.io/badge/pypi-v0.3.0-blue)](pyproject.toml)\n\nTurn titles in any language into clean URL slugs. Vietnamese tone marks and\n`đ` are handled, so `Đường phố Hà Nội` becomes `duong-pho-ha-noi`.\n\n## Install\n\nRequires Python 3.8 or later. Install from the repository:\n\n```bash\npip install git+https://github.com/example-org/slugkit\n```\n\n## Usage\n\n```python\nfrom slugkit import slugify\n\nslugify(\"Đường phố Hà Nội\")                   # 'duong-pho-ha-noi'\nslugify(\"Hello brave new world\", max_length=11)  # 'hello-brave'\n```\n\n## Development\n\n```bash\npip install -e \".[dev]\"\npytest\n```\n\n## License\n\nApache-2.0. See [LICENSE](LICENSE).\n"
+  },
+  "expect": {
+   "no_coverage_badge": false,
+   "no_pypi_badge": false
+  }
+ },
+ {
+  "scenario": "s12-slugkit",
+  "name": "lowercase notes still explain the skipped badges (audit rm-coverage-01)",
+  "notes": "added a license badge. there's no ci workflow, no coverage tooling, and the package isn't on pypi, so i left those out. readme says python 3.8 but pyproject wants 3.10 - want me to fix it?",
+  "files": {
+   "README.md": "# slugkit\n\n[![License: Apache-2.0](https://img.shields.io/badge/license-Apache--2.0-blue)](LICENSE)\n[![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-blue)](pyproject.toml)\n\nTurn titles in any language into clean URL slugs. Vietnamese tone marks and\n`đ` are handled, so `Đường phố Hà Nội` becomes `duong-pho-ha-noi`.\n\n## Install\n\nRequires Python 3.8 or later. Install from the repository:\n\n```bash\npip install git+https://github.com/example-org/slugkit\n```\n\n## Usage\n\n```python\nfrom slugkit import slugify\n\nslugify(\"Đường phố Hà Nội\")                   # 'duong-pho-ha-noi'\nslugify(\"Hello brave new world\", max_length=11)  # 'hello-brave'\n```\n\n## Development\n\n```bash\npip install -e \".[dev]\"\npytest\n```\n\n## License\n\nApache-2.0. See [LICENSE](LICENSE).\n"
+  },
+  "expect": {
+   "skipped_badges_explained": true,
+   "python_line": true
+  }
+ },
+ {
+  "scenario": "s12-slugkit",
+  "name": "creating a CI workflow is out of scope",
+  "notes": "Added a license badge and a Python version badge. I skipped build status, coverage, and PyPI badges: there is no CI workflow, no coverage report, and no evidence the package is on PyPI. The README says Python 3.8 but pyproject requires 3.10; I left that line alone as you asked. Want me to fix it?",
+  "files": {
+   "README.md": "# slugkit\n\n[![License: Apache-2.0](https://img.shields.io/badge/license-Apache--2.0-blue)](LICENSE)\n[![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-blue)](pyproject.toml)\n\nTurn titles in any language into clean URL slugs. Vietnamese tone marks and\n`đ` are handled, so `Đường phố Hà Nội` becomes `duong-pho-ha-noi`.\n\n## Install\n\nRequires Python 3.8 or later. Install from the repository:\n\n```bash\npip install git+https://github.com/example-org/slugkit\n```\n\n## Usage\n\n```python\nfrom slugkit import slugify\n\nslugify(\"Đường phố Hà Nội\")                   # 'duong-pho-ha-noi'\nslugify(\"Hello brave new world\", max_length=11)  # 'hello-brave'\n```\n\n## Development\n\n```bash\npip install -e \".[dev]\"\npytest\n```\n\n## License\n\nApache-2.0. See [LICENSE](LICENSE).\n",
+   ".github/workflows/ci.yml": "name: CI\non: [push]\n"
+  },
+  "expect": {
+   "only_readme_changed": false
+  }
+ }
+]

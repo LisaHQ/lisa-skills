@@ -13,17 +13,32 @@ def git_trust_env(base: dict) -> dict:
     some RAM disks) otherwise fail git's dubious-ownership check. This adds
     safe.directory=* in command scope, so the user's git config stays untouched.
     """
+    return git_config_env(base, {"safe.directory": "*"})
+
+
+def git_config_env(base: dict, settings: dict[str, str]) -> dict:
+    """Add command-scope git config entries (GIT_CONFIG_KEY_n/VALUE_n) to an environment."""
     env = dict(base)
     n = int(env.get("GIT_CONFIG_COUNT", "0"))
-    env[f"GIT_CONFIG_KEY_{n}"] = "safe.directory"
-    env[f"GIT_CONFIG_VALUE_{n}"] = "*"
-    env["GIT_CONFIG_COUNT"] = str(n + 1)
+    for key, value in settings.items():
+        env[f"GIT_CONFIG_KEY_{n}"] = key
+        env[f"GIT_CONFIG_VALUE_{n}"] = value
+        n += 1
+    env["GIT_CONFIG_COUNT"] = str(n)
     return env
 
 
-# Fixed identity and dates make every build produce the same commits.
+# Variables that would point git at another repository or index.
+GIT_REDIRECTS = ("GIT_DIR", "GIT_WORK_TREE", "GIT_INDEX_FILE", "GIT_OBJECT_DIRECTORY", "GIT_COMMON_DIR",
+                 "GIT_ALTERNATE_OBJECT_DIRECTORIES", "GIT_NAMESPACE")
+
+# Fixed identity and dates make every build produce the same commits. Global
+# and system git config are ignored, so hooks, templates, or status settings
+# on the building machine cannot change the fixtures.
 ENV = dict(
-    git_trust_env(os.environ),
+    git_trust_env({k: v for k, v in os.environ.items() if k not in GIT_REDIRECTS}),
+    GIT_CONFIG_GLOBAL=os.devnull,
+    GIT_CONFIG_NOSYSTEM="1",
     GIT_AUTHOR_NAME="Example Dev",
     GIT_AUTHOR_EMAIL="dev@example.invalid",
     GIT_COMMITTER_NAME="Example Dev",
@@ -43,14 +58,20 @@ def wb(path: Path, data: bytes) -> None:
     path.write_bytes(data)
 
 
+def _run_git(cwd: Path, args: tuple[str, ...]) -> subprocess.CompletedProcess:
+    proc = subprocess.run(["git", *args], cwd=cwd, env=ENV, capture_output=True, text=True,
+                          encoding="utf-8", errors="replace")
+    if proc.returncode != 0:
+        raise SystemExit(f"git {' '.join(args)} failed in {cwd} (exit {proc.returncode}):\n{proc.stderr.strip()}")
+    return proc
+
+
 def git(cwd: Path, *args: str) -> None:
-    subprocess.run(["git", *args], cwd=cwd, env=ENV, check=True,
-                   stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    _run_git(cwd, args)
 
 
 def git_out(cwd: Path, *args: str) -> str:
-    return subprocess.run(["git", *args], cwd=cwd, env=ENV, check=True,
-                          capture_output=True, text=True).stdout
+    return _run_git(cwd, args).stdout
 
 
 def commit_all(cwd: Path, message: str) -> None:
@@ -60,7 +81,8 @@ def commit_all(cwd: Path, message: str) -> None:
 
 def expect_status(cwd: Path, expected: list[str]) -> None:
     """Fail the build unless `git status --porcelain` lists exactly the expected entries."""
-    actual = sorted(line for line in git_out(cwd, "status", "--porcelain").splitlines() if line)
+    actual = sorted(line for line in git_out(cwd, "status", "--porcelain", "--untracked-files=normal",
+                                             "--renames").splitlines() if line)
     if actual != sorted(expected):
         raise SystemExit(f"{cwd.name}: unexpected git status\n  expected {sorted(expected)}\n  actual   {actual}")
 

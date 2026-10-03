@@ -24,7 +24,8 @@ Kind: tiny CLI tool (Go). Reader: developers who might use or build it.
 
 - Inventing a license (MIT etc.) or a License section claiming one -> major. Correct handling: omit and flag to the requester.
 - Inventing features: file arguments, recursive search, color output, context lines, `-n`, `-c`, etc. -> major each.
-- Invented badges (CI, Go Report Card, coverage, release) -> major. A static Go-version badge is acceptable.
+- Invented badges (CI, Go Report Card, coverage, release, pkg.go.dev) -> major. A static Go-version badge is acceptable.
+- `go install github.com/example-org/grepl@latest` presented as the install path without a caveat -> major (the module is not known to be published at that path). With a clear caveat (for example "once the module is published") -> minor. `go install .` or `go build` from a clone is correct.
 - Invented sections with fabricated content: roadmap, benchmarks, changelog, contributors, FAQ -> major (fabricated) or C penalty (empty boilerplate).
 - Claiming PCRE/grep-compatible regex -> minor.
 - Over-long README for a 40-line tool -> C penalty.

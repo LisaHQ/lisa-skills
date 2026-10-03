@@ -42,4 +42,5 @@ Kind: library (TypeScript, npm). Reader: JS/TS developers calling HTTP JSON APIs
 
 - Verify against `src/`, `package.json`, `CHANGELOG.md`, the workflow, and `LICENSE`; the original `README.md` is the stale input.
 - With `baseUrl` "https://api.example.com/v1/", a path with a leading slash such as "/users" resolves to https://api.example.com/users (dropping /v1), so examples must use relative paths.
+- A `baseUrl` with a path must end with `/`: "users" against "https://api.example.com/v1" resolves to https://api.example.com/users. The doc comment in `src/index.ts` shows the base URL without the slash; the test uses it with the slash. Count an example that relies on the slash-less form as a major error.
 - Only `get`, `post`, `put`, `patch`, and `delete` exist on the client; HEAD and OPTIONS cannot be sent.

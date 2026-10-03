@@ -4,9 +4,15 @@
   "c3-csvtool": "Can you write the commit message for what I've got here?",
   "c4-dashboard": "Write a commit message for these changes.",
   "c5-ledger": "Write a commit message for my changes.",
-  "c6-todo-cli": "Write a commit message for my staged changes only - I'll commit the rest later.",
+  "c6-todo-cli": "Commit my staged changes with a good message - I'll commit the rest later.",
   "c7-catalog-api": "Viết commit message cho các thay đổi hiện tại giúp mình nhé.",
   "c8-invoices": "I'm going to squash my last three commits into one. Write the commit message for HEAD~3..HEAD.",
   "c9-notifier": "Write a commit message for my changes.",
-  "c10-reports": "Write a commit message for my staged changes."
+  "c10-reports": "Write a commit message for my staged changes.",
+  "c11-meter": "Write a commit message for my changes. Use auto scope with auto-priority staged,unstaged,working-tree.",
+  "c12-labelgen": "Viết commit message bằng tiếng Việt cho các thay đổi chưa stage (unstaged) giúp mình nhé.",
+  "c13-shopapp": "Write a commit message for my changes in src/billing/ only.",
+  "c14-pressline": "Write a commit message for my changes.",
+  "c15-paygate": "Write a commit message for my changes. It has to pass our commitlint hook.",
+  "c16-inventory": "Write a commit message for my changes."
 }

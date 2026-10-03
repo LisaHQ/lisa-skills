@@ -1,15 +1,24 @@
 {
-  "project": "s6-grepl",
+  "project": "s2-fetchkit",
   "queries": [
     ["write a README for this repo", true],
     ["Viết README cho project này giúp mình nhé", true],
     ["can you review my readme and tell me what's wrong with it? don't change anything", true],
-    ["our README.md is outdated since we renamed the CLI flags, please update it", true],
+    ["our README.md is outdated since we renamed the API, please update it", true],
     ["document this folder so new people know what the files are and how to use them", true],
     ["make the readme look more professional, maybe add some badges", true],
+    ["add a README to the test/ folder explaining how the tests are organized", true],
+    ["rewrite the README's usage section with a working example", true],
+    ["add an installation section to the README", true],
     ["write a CONTRIBUTING.md that explains how to send pull requests", false],
-    ["add doc comments to every function in main.go", false],
+    ["add doc comments to every function in src/index.ts", false],
     ["write a commit message for my staged changes", false],
-    ["explain in two sentences what this repo does", false]
+    ["explain in two sentences what this repo does", false],
+    ["add an entry to CHANGELOG.md for the changes since the last tag", false],
+    ["draft the GitHub release notes for v2.1.0", false],
+    ["Viết release notes cho phiên bản 2.1.0 giúp mình", false],
+    ["set up a docs site with mkdocs and write its docs/index.md landing page", false],
+    ["write a SECURITY.md that tells people how to report vulnerabilities", false],
+    ["generate API reference docs for the exported functions into docs/api.md", false]
   ]
 }

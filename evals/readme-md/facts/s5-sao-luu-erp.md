@@ -13,7 +13,7 @@ Expected README language: **Vietnamese** (request, comments, and schedule doc ar
 - Schedule (`lich-chay.md`, Task Scheduler on ERP-SQL01, account `svc_backup`): ERP Backup at **23:30** daily; ERP Backup Verify at **06:00** daily; command `powershell.exe -NoProfile -ExecutionPolicy Bypass -File D:\Scripts\sao-luu-erp\backup-db.ps1`.
 - Requirements: Windows PowerShell **5.1+** (`#Requires -Version 5.1`), `sqlcmd` (SQL Server Command Line Utilities), **7-Zip** at `SevenZipPath` (`C:\Program Files\7-Zip\7z.exe`), access to the NAS share, SQL login with backup/restore rights, SMTP server reachable.
 - config.json keys: ServerInstance, Database, SqlUser, **SqlPassword (plain text secret)**, BackupDir, NasPath, RetentionDays, SevenZipPath, Smtp.Server/From/To.
-- Sample log: backup of ~3.2 GB took about 11 minutes to compress and ~15 minutes overall (23:30:02 -> 23:44:53).
+- Sample log (`logs/2024-09-30.log`): the compressed `.7z` was 3.2 GB; the SQL backup plus 7-Zip compression took about 11 minutes (23:30:02 -> 23:41:15) and the whole run about 15 minutes (-> 23:44:53).
 
 ## Core points a strong README highlights
 
@@ -30,6 +30,9 @@ Expected README language: **Vietnamese** (request, comments, and schedule doc ar
 - Wrong schedule times, retention, or verify window (26 h) -> major each.
 - Inventing steps/features (e.g., encryption, differential backups, cloud upload) -> major.
 - Optional deep catch (not required): restoring to a new database name without `WITH MOVE` may fail on the same server.
+- Optional deep catch (not required): `-SkipCopy` skips only the copy; the retention loop still lists `NasPath`, so with the NAS offline the run logs `LỖI`, emails, and exits 1 after a good local backup.
+- Optional deep catch (not required): `kiem-tra.ps1` lists `NasPath` outside any error handling, so when the NAS is unreachable it stops with an unhandled error and sends no email.
+- Flagging either deep catch is correct, not a false claim.
 
 ## Judge notes
 

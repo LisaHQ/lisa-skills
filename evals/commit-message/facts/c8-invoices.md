@@ -50,3 +50,10 @@ Add CSV export for invoices
   that is not part of the net change).
 - Listing the three commits one by one instead of the net change → C or D
   deduction.
+
+## Judge notes
+
+- `export_csv` has no caller outside `tests/test_export.py`. Stating that
+  nothing calls it yet is a minor plus; omitting it is neutral, since it is
+  a library function.
+- An attribution trailer such as `Co-Authored-By:` is neutral.

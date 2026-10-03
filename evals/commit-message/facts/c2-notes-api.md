@@ -52,3 +52,4 @@ Add an endpoint to fetch a note by id
 ## Judge notes
 
 - Compare `git diff --cached` (the selection) with `git diff` (excluded).
+- An attribution trailer such as `Co-Authored-By:` is neutral.

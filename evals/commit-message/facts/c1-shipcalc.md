@@ -54,3 +54,4 @@ Add express shipping option
 
 - `git diff --cached shipcalc/rates.py` shows 4.95; `git diff HEAD` shows 6.25.
   The untracked test appears only in `git status`; read it directly.
+- An attribution trailer such as `Co-Authored-By:` is neutral.
