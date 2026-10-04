@@ -26,6 +26,7 @@ queued runs and stops running sessions. The script prints a cost estimate
 from earlier rounds before it starts and a usage summary at the end, and
 exits 1 while any run is failed or missing.
 """
+import hashlib
 import json
 import shutil
 import statistics
@@ -41,10 +42,15 @@ from evalenv import (DENIED_TOOLS, HARNESS_VERSION, INFRA_FAILURES, ISOLATION_FL
 
 NOTE = ("(You are running non-interactively, so you cannot ask me follow-up questions. "
         "If something is unclear, make the most reasonable choice and say so in your final message. "
-        "Your current directory is the project root; run commands from it without cd. "
+        "Your current directory is the project root; run commands from it without cd. {writer_note}"
         "Do not mention instruction files you were given.)")
-# Settings that must be the same for every run of a round.
-ROUND_KEYS = ("model", "max_turns", "effort", "budget", "harness")
+# Settings that must be the same for every run of a round; "note" fingerprints the suite's writer_note.
+ROUND_KEYS = ("model", "max_turns", "effort", "budget", "harness", "note")
+
+
+def note_for(suite) -> str:
+    """The closing note of every writer prompt, with the suite's optional writer_note (suite.json)."""
+    return NOTE.format(writer_note=suite.writer_note + " " if suite.writer_note else "")
 
 
 def resolve_skill(suite, spec: str) -> Path | None:
@@ -142,7 +148,7 @@ def run_one(suite, it, scen, arm, skill, opts, action) -> dict:
     run_dir = suite.work / "runs" / it / scen / arm
     if action == "reset":
         reset(suite, it, scen, arm)
-    prompt = suite.requests[scen] + "\n\n" + NOTE
+    prompt = suite.requests[scen] + "\n\n" + note_for(suite)
     args = [*ISOLATION_FLAGS, "--model", opts["model"], "--max-turns", str(opts["max_turns"]),
             "--allowedTools", *suite.writer_tools, "--disallowedTools", *DENIED_TOOLS]
     if skill:
@@ -194,7 +200,9 @@ def main() -> None:
     only = parse_only(only, suite.requests)
     opts = {"model": model, "max_turns": positive_int(max_turns, "--max-turns"),
             "timeout": positive_int(timeout, "--timeout"), "effort": effort, "budget": budget,
-            "harness": HARNESS_VERSION, "hashes": {arm: snapshot_hash(path) for arm, path in arms.items()}}
+            "harness": HARNESS_VERSION,
+            "note": hashlib.sha256(suite.writer_note.encode()).hexdigest()[:12] if suite.writer_note else None,
+            "hashes": {arm: snapshot_hash(path) for arm, path in arms.items()}}
     if not (suite.work / "runs" / it).is_dir():
         raise SystemExit(f"no round {it}; run prep_runs.py first")
     check_round(suite, it, opts, allow_mixed)

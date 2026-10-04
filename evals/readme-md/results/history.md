@@ -2,11 +2,14 @@
 
 Results of the rounds run while creating the skill on 2026-10-02 (iter1-iter5
 and probes, harness v1), the first harness v2 baseline (iter6), and the v10
-and v11 revision of 2026-10-03 (iter7-iter11). The raw material is in
+and v11 revision of 2026-10-03 (iter7-iter11), the harness v3 baseline
+(iter12, p3, iter13), and the judge command guidance of 2026-10-04 (p4 and
+two re-judges of iter13). The raw material is in
 `archive/readme-md-eval-2026-10-02.zip` (snapshots v1-v9, blinded outcomes,
 verdicts, mappings, run notes), `archive/readme-md-eval-2026-10-02-v2.zip`
-(iter6), and `archive/readme-md-eval-2026-10-03.zip` (iter6-iter11), kept in
-Dropbox only.
+(iter6), `archive/readme-md-eval-2026-10-03.zip` (iter6-iter11), and
+`archive/readme-md-eval-2026-10-04.zip` (iter6-iter13, p3, p4, and every
+judgment set), kept in Dropbox only.
 
 Scores are weighted rubric scores from 1 to 5 (see `rubric.md`). One outcome
 varies by about ±0.3 (SD), so decide from paired differences across rounds
@@ -27,6 +30,12 @@ varies by about ±0.3 (SD), so decide from paired differences across rounds
 | iter7 | v2 | Headless, isolated | Sonnet | B = HEAD (v9), C = v10 draft | Opus, headless, pairwise |
 | iter8, iter9 | v2 | Headless, isolated | Sonnet | B = HEAD (v9), C = v10 | Opus, headless, pairwise |
 | iter10, iter11 | v2 | Headless, isolated | Sonnet | B = HEAD (v9), C = v11 | Opus, headless, pairwise |
+| iter12 | v3 | Headless, isolated, no writer note | Sonnet | A = no skill, B = HEAD (v11) | Opus, headless, pairwise |
+| p3 | v3 | Headless, isolated | Sonnet | A = no skill, B = HEAD (v11); s1, s11, s12 only | `checks.py` assertions |
+| iter13 | v3 | Headless, isolated | Sonnet | A = no skill, B = HEAD (v11) | Opus, headless, pairwise |
+| p4 | v3 | Headless, isolated | Sonnet | B1-B6 = HEAD (v11); s8 only | `checks.py` assertions |
+| iter13-rj0 | v3 | (iter13 outcomes) | — | A, B | Opus, headless; control re-judge with the same judge prompt |
+| iter13-j2 | v3 | (iter13 outcomes) | — | A, B | Opus, headless; judge prompt of 2026-10-04 |
 
 iter1 is not comparable with later rounds: the writers inherited this
 repository's `AGENTS.md`, which made the no-skill baseline unrealistically
@@ -187,7 +196,7 @@ iter7-iter11):
 | s11 `upgrade_note` | 3 of 6 | 5 of 5 |
 | s8 `example_label` | 0 of 6 | 5 of 5 |
 | s8 `example_flat` | 0 of 6 | 0 of 5 |
-| s11 `example_output` | 0 of 6 | 0 of 5 (the draft's wrong output fails) |
+| s11 `example_output` | 1 of 6 (iter11, traced by hand) | 0 of 5 (the draft's wrong output fails) |
 | s1 `no_bare_pypi_install` | 6 of 6 | 4 of 5 (v11 in iter10) |
 
 The total is inconclusive, so v11 was kept on the dimension the revision
@@ -212,7 +221,7 @@ Still open:
   `node -e`, `go`) was denied; the allowed `python -m <package>` calls lacked
   `src` on the path, and the one allowed `python -m pytest` found pytest not
   installed. These rounds test only the branch where a writer cannot run
-  examples.
+  examples; harness v3 lifts that for the src-layout packages (below).
 
 ### Eval changes made with the revision
 
@@ -238,6 +247,158 @@ Still open:
 - **s12:** the fact sheet does not require the static badge, but the judges
   preferred it in iter6, iter8, and iter9.
 
+## Harness v3 boundary and baseline (iter12, p3, iter13)
+
+Never pool iter12 or later with iter6-iter11. Harness v3 starts every writer
+and judge session with `PYTHONPATH` listing `src` and `scenario/src`, and
+with `PYTHONDONTWRITEBYTECODE=1`, so the src-layout packages of s1, s11,
+and s12 import without a path prefix, and `python -m logslice` and
+`python -m csvdelta` run (s12's `slugkit` is a library with no `__main__`).
+Scenarios, requests, and the rubric are unchanged. The s1 and s11 fact
+sheets now tell judges how to run the package from the sandbox root, and add
+a minor trap: documenting `python -m` or `PYTHONPATH=src` as the way to use
+an uninstalled checkout. No judge ran a package in iter12 or in iter13's
+first judging: the s1 judge in both and the s11 judge in iter13 prefixed
+`PYTHONPATH` or used `python -c`, and the CLI denied each attempt, because
+the judge prompt then had no counterpart of `writer_note` (see the judge
+command guidance below); iter12's s11 judge did not try. Those verdicts
+rest on the code and the fact sheets.
+
+- **iter12, a pilot without a note:** writers still prefixed
+  `PYTHONPATH=src`, which the CLI denies, and gave up. No session ran a
+  package. Since then every writer prompt in this suite, in both arms,
+  carries the suite's `writer_note` in its closing note: "Commands cannot
+  start with environment-variable assignments; PYTHONPATH already includes
+  src."
+  iter12's s1 and s11 verdicts also used earlier drafts of those fact
+  sheets.
+- **p3, a writer-only probe with the note (s1, s11, s12):** the sentence
+  was then hard-coded in the shared prompt, before `writer_note` and its
+  fingerprint existed, so p3's `round.json` and `meta.json` carry no
+  `note`. HEAD ran `python -m logslice` and `python -m csvdelta`, and its
+  s11 README passed `example_output`; the no-skill arm ran neither.
+
+iter13, the v3 baseline (HEAD is v11 as committed in `18b16b2`; judgment set
+`iter13`, made before the judge command guidance below):
+
+| Arm | Mean | Firsts | Accuracy | Highlighting | Concision | Presentation | Friendliness | Usefulness |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| No skill | 4.06 | 0/12 | 4.17 | 3.92 | 4.58 | 4.00 | 3.75 | 3.58 |
+| HEAD (v11) | 4.67 | 12/12 | 4.58 | 5.00 | 4.42 | 4.83 | 4.17 | 4.92 |
+
+Paired HEAD − no skill: +0.61, 95% interval [+0.32, +0.90], wins/ties/losses
+12/0/0 (iter12: +0.41 [+0.16, +0.65], 10/1/1). `checks.py`: HEAD 128 of
+128, no skill 111 of 125 with 3 not applicable.
+
+The same version under both harnesses (separate rounds, judges, and
+opponents: v9 in iter10-iter11, no skill in iter13, so the means are not
+paired):
+
+| v11 | v2 (iter10 + iter11) | v3 (iter13) |
+| --- | --- | --- |
+| Runs | 24 | 12 |
+| Judged mean | 4.60 | 4.67 |
+| Denied calls per run | 1.00 | 0.83 |
+| Runs that ran the scenario's package | 0 (6 attempts in s1 and s11, all denied) | 2 (s1, s11) |
+| Checks passed | 250 of 255 | 128 of 128 |
+| s11 `example_output` | 0 of 2 | 1 of 1 |
+| s8 `example_flat` | 0 of 2 | 1 of 1 (iter12 too) |
+
+The no-skill arm scored 4.04 (iter6), 4.09 (iter12), and 4.06 (iter13) and
+never ran a package.
+
+What the v3 rounds show:
+
+- **The skill now verifies examples when it can.** HEAD's s11 README showed
+  output from a real run for the first time; the only earlier pass of any
+  version (v9 in iter11) was a correct hand trace.
+- **The space form of relative times still slips through.** In s1 both
+  arms wrote `--from -15m` and `--from -1h` from the code. HEAD ran only
+  absolute-time examples, and its notes list the examples that use the form
+  as not run. The judge counted the fact sheet's minor error in both arms:
+  the form fails on the argparse of Python 3.10, the project's minimum. The
+  local Python 3.14 accepts it, so a run here would not have caught it
+  either.
+- **HEAD's remaining denials** are commands outside the allowed list,
+  `go` (s6, not installed), `pnpm` (s10), and `pdftotext` and `xxd` (s9),
+  and forms the CLI denies: inline `python -c` and `python -` heredocs (s3,
+  s8, s9, s11) and a `for` loop (s3).
+- **s8's flat example** passed in both v3 HEAD runs (iter12, iter13) after
+  failing in all 11 skill runs of iter6-iter11. s8 has nothing to run, so v3
+  does not explain it, and a six-run probe of HEAD on s8 (p4) showed chance:
+  `example_flat` passed in 2 of 6. Over its ten runs, v11 flattened the
+  example in 4, added the label in 6, and dropped the TIP alert in 1; three
+  p4 runs left the stale example as it was. The skill's audit of sample
+  outputs is not yet reliable in a polish request.
+
+## Judge command guidance (2026-10-04)
+
+The judge logs of iter13 showed why judges ran so little: their prompt said
+nothing about command forms, so most judges opened with `cd "<sandbox>";
+...` or a `for` loop and were denied. The prompt also told judges to copy
+`scenario/` to a folder such as `work/` without naming a command, and the
+`cp -r` that judges used for it in iter6-iter11 was always denied (the CLI
+rejects `cp` with any flag). The prompt now names the forms that run:
+`git -C scenario <command>`, `python -m <package>` on the preset path, a
+script file run with `python <file>`, and `mkdir` with flag-free `cp` for
+copies. Judges may run
+every allowed git command as `git -C scenario ...`. `judge.py` also rejects
+an attempt in which the judge changed `scenario/`, audits the files a
+judge writes, and records a digest of the judge's session arguments in each
+verdict's provenance; `collect.py` warns when one set mixes judge prompts.
+
+The same blinded iter13 outcomes, judged three times:
+
+| Judgment set | Judge prompt | Denied calls per session | Ran git | Ran a package or script | Turns per session | No skill | HEAD | Paired HEAD − no skill | W/T/L | Judges, USD |
+| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | --- | --- | ---: |
+| `iter13` | earlier | 1.50 | 1 of 12 | 1 of 12 | 18.0 | 4.06 | 4.67 | +0.61 [+0.32, +0.90] | 12/0/0 | 2.74 |
+| `iter13-rj0`, control | earlier | 2.00 | 2 of 12 | 1 of 12 | 14.2 | 4.08 | 4.61 | +0.53 [+0.21, +0.85] | 10/1/1 | 2.62 |
+| `iter13-j2` | 2026-10-04 | 0.58 | 6 of 12 | 3 of 12 | 6.0 | 4.06 | 4.59 | +0.53 [+0.23, +0.84] | 10/1/1 | 2.01 |
+
+The accept rule, written before the new pass: denied calls per session at
+most half the earlier level (0.9 here); no denial of a form the prompt
+names; no reach flag; `scenario/` unchanged; one attempt per scenario on the
+same CLI and model; and the mean score and the paired gap within a noise
+band of the mean of the two earlier passes, else a second new-prompt pass.
+The band is twice the SD of the differences between the two earlier passes,
+divided by √n (outcomes for scores, scenarios for the gap). Outcomes that
+move by 0.3 or more are reviewed one by one; they do not fail the rule.
+
+- **Judge noise, measured by the control:** the two earlier-prompt passes
+  differ by an SD of 0.14 per outcome, so one judgment's own SD is about
+  0.10; the paired gap moved by −0.08 and one ranking flipped (s5).
+- **The accept rule held.** Denied calls fell to a third; no `iter13-j2`
+  session was flagged for reach or changed `scenario/` (the earlier sets
+  did not record the latter); every verdict of the three sets came from one
+  attempt on the same CLI and model. Against the mean of the two earlier
+  passes, scores moved by −0.02 (band ±0.06) and the paired gap by −0.04
+  (band ±0.08).
+- **The control's one reach warning is a false positive.** `collect.py`
+  flags s10 in `iter13-rj0` for a denied `cat > verdict.json <<'EOF'` whose
+  verdict text quotes the README's `../../README.md` link; the judge read
+  nothing outside its sandbox.
+- **What judges now run:** the s1 and s11 judges ran the packages
+  (`python -m logslice`, `python -m csvdelta`), and the s3 judge ran a
+  count script. The seven remaining denials were git sub-commands outside
+  the allowed list (`branch`, `show-ref`), two `cd scenario; ...` chains, an
+  output redirect, and one long compound command.
+- **Four outcomes moved by 0.3 or more** from the earlier mean (s3, s4, s9,
+  and s10, all in the no-skill arm) and were reviewed. None of the changes
+  rests on command output: no error list holds a finding the earlier passes
+  lacked (s9's adds a notes claim the control gave as a weakness, and s10's
+  grades one notes claim major instead of minor), and s9's accuracy score
+  of 2 contradicts the judge's own error list (one major and two minor
+  accuracy errors suggest 3). The new pass differs from the earlier mean by
+  an SD of 0.17 per outcome, against about 0.12 expected from the control,
+  and the new prompt's own noise has no second pass to measure it.
+
+Use `iter13-j2` when pooling iter13 with later rounds, which are judged with
+this prompt (`aggregate.py readme-md iter13-j2:A=none,B=head3 ...`); `iter13`
+stays as the record of the earlier prompt. Do not rerun `judge.py readme-md
+iter13` (or `--out iter13-rj0`) without a new `--out`: their digests no
+longer match, so all 12 scenarios would be re-judged in place with the new
+prompt.
+
 ## Token use and cost
 
 Recorded by the harness for iter6 (API list prices):
@@ -262,6 +423,21 @@ The 2026-10-03 revision, by round (writers Sonnet, judges Opus):
 | iter11 | 36 | 2.37 | 2.83 | 5.20 |
 | total | 181 | 11.72 | 14.37 | 26.11 |
 
+The harness v3 rounds:
+
+| Round | Sessions | Writers | Judges | USD |
+| --- | ---: | ---: | ---: | ---: |
+| iter12 (pilot) | 36 | 1.76 | 2.69 | 4.45 |
+| p3 (writers only) | 6 | 0.41 | — | 0.41 |
+| iter13 | 36 | 1.79 | 2.74 | 4.53 |
+| p4 (writers only, s8) | 6 | 0.75 | — | 0.75 |
+| iter13-rj0 (re-judge) | 12 | — | 2.62 | 2.62 |
+| iter13-j2 (re-judge) | 12 | — | 2.01 | 2.01 |
+| total | 108 | 4.71 | 10.05 | 14.76 |
+
+Totals come from the unrounded records, so they can differ from the column
+sums by a cent.
+
 The diagnosis and review agents of the interactive session are not included.
 
 Earlier spend, before token tracking existed. Recorded figures are the CLI's
@@ -285,6 +461,11 @@ the recorded figures with `python usage.py readme-md`.
 
 ## Lessons
 
+- Make sure writers can run what the skill tells them to check, and tell
+  them how: presetting `PYTHONPATH` changed nothing until the prompt said
+  that it was set and that prefixes are denied. Judges needed the same:
+  once their prompt named the forms that run, their denied calls fell from
+  1.5-2.0 to 0.6 per session and a judge pass cost about a quarter less.
 - A verification rule needs a fallback for when the check cannot run: "trace
   each example" alone produced a confidently wrong traced output in s11, the
   costliest error of the revision.

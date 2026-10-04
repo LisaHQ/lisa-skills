@@ -71,8 +71,7 @@ BREAKING CHANGE: `ledger export --out FILE` no longer works; use
 
 ## Judge notes
 
-- Verify on a copy: `python -c "from ledger import cli;
-  cli.main(['export','--out','x.csv'])"` exits 2 ("the following arguments
-  are required: -o/--output"), while `--output x.csv` and `-o x.csv` work. In
-  HEAD, `--out x.csv` works.
+- Verified in the working tree: `cli.main(['export','--out','x.csv'])` exits
+  2 ("the following arguments are required: -o/--output"), while
+  `--output x.csv` and `-o x.csv` work. In HEAD, `--out x.csv` works.
 - An attribution trailer such as `Co-Authored-By:` is neutral.

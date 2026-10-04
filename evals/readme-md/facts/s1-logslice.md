@@ -26,6 +26,7 @@ Kind: CLI tool (Python). Reader: developers/operators who need to cut log files 
 
 ## Traps (judge explicitly)
 
+- `python -m logslice` or `PYTHONPATH=src` documented as usage from a checkout without an install -> minor: it works only in the eval session, whose PYTHONPATH lists `src`. After `pip install .` it is correct.
 - Calling the command `logslice` instead of `lslice` -> major.
 - A PyPI install of the package with no clear caveat in the README that it is not published, such as `pip install logslice`, `python -m pip install logslice`, `pipx install logslice`, `uv tool install logslice`, or `pip install 'logslice[zstd]'` -> major when it is the install path (not evidenced; the name may belong to someone else on PyPI). Count minor instead when only the notes flag it as unverified, or when it appears only for the optional `zstd` extra. A local `pip install '.[zstd]'` or a Git URL install is correct.
 - Claiming binary search / speed applies to `.gz`/`.zst`/stdin -> major.
@@ -36,7 +37,7 @@ Kind: CLI tool (Python). Reader: developers/operators who need to cut log files 
 
 ## Judge notes
 
-- Run the documented commands on a copy of `scenario/`: `PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=src python -m logslice ...` stands in for `lslice`.
+- Run the documented commands from the sandbox root, where `scenario/src` is on the Python path: `python -m logslice ... scenario/examples/nginx-access.log` stands in for `lslice`.
 - Relative times written with a space (`--from -15m`) fail on at least Python 3.9-3.12 argparse ("expected one argument"); Python 3.14 accepts them, and `--from=-15m` works everywhere. Judge against the 3.10 minimum: count the space form as one minor error per outcome, and do not accept a writer's successful local run on 3.14 as proof.
 - A malformed time or unknown `--tz` crashes with a traceback and exit code 1, not 2.
-- On Windows without the `tzdata` package, any `--tz` or `LOGSLICE_TZ` other than UTC raises `ZoneInfoNotFoundError`, because the package declares no dependencies. This is an environment limit, not a README error; a README that notes it is an optional deep catch. Judging on Windows, set `PYTHONTZPATH` to a tz database or skip such commands.
+- On Windows without the `tzdata` package, any `--tz` or `LOGSLICE_TZ` other than UTC raises `ZoneInfoNotFoundError`, because the package declares no dependencies. This is an environment limit, not a README error; a README that notes it is an optional deep catch. Judging on Windows, skip such commands: a session cannot set environment variables such as `PYTHONTZPATH`.

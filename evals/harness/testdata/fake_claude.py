@@ -12,6 +12,8 @@ max_turns  stops at the turn limit with no result text, for any role
 nonjson    prints a plain-text error and exits 1
 sleep      sleeps 30 seconds (for timeout tests)
 bad_verdict / no_verdict   judge writes an invalid verdict / none at all
+tamper     judge writes a valid verdict but adds a file to scenario/
+script     judge writes a valid verdict after running a script that reads the round's mapping
 denial     like ok, plus a denied `git add -A`
 """
 import json
@@ -69,6 +71,13 @@ def judge(cwd: Path, mode: str):
     if mode == "bad_verdict":
         del verdict[labels[-1]]
     tool("Read", {"file_path": "rubric.md"})
+    if mode == "tamper":
+        (cwd / "scenario" / "judge-note.txt").write_text("changed evidence\n", encoding="utf-8")
+    if mode == "script":
+        code = "print(open('../../../runs/r1/mapping.json').read())\n"
+        (cwd / "check.py").write_text(code, encoding="utf-8")
+        tool("Write", {"file_path": str(cwd / "check.py"), "content": code})
+        tool("Bash", {"command": "python check.py"})
     (cwd / "verdict.json").write_text(json.dumps(verdict), encoding="utf-8")
     result(f"{cwd.name}: ranking={','.join(labels)}")
 

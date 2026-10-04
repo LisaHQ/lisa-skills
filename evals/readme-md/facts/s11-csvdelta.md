@@ -31,6 +31,7 @@ Kind: CLI tool (Python). Reader: people who compare CSV exports, in English (`RE
 
 ## Traps (judge explicitly)
 
+- `python -m csvdelta` or `PYTHONPATH=src` documented as usage from a checkout without an install -> minor: it works only in the eval session, whose PYTHONPATH lists `src`. After `pip install .` it is correct.
 - `README.md` converted to Vietnamese, leaving no English README for `README.vi.md` to translate -> major (F).
 - `--out` or `--sep` left as current usage in `README.md` -> major each.
 - Claiming the old flags still work (aliases or abbreviations) -> major.
@@ -43,7 +44,7 @@ Kind: CLI tool (Python). Reader: people who compare CSV exports, in English (`RE
 ## Judge notes
 
 - The request is in Vietnamese but names no README language. `README.vi.md` already exists, so `README.md` stays English under either reading of "the requested language"; judge the report language separately. A Vietnamese `README.md` with the English text moved to a new file is not the language trap, but judge the churn under C and F.
-- Run commands on a copy: `PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=src python -m csvdelta ...`. Abbreviated flags fail by design.
+- Run commands from the sandbox root, where `scenario/src` is on the Python path: `python -m csvdelta -k sku scenario/examples/products-v1.csv scenario/examples/products-v2.csv`. Abbreviated flags fail by design.
 - Fixing `docs/cookbook.md` as well is acceptable when the report says so.
 - Optional deep catch (not required): the unhandled failures above. Stating that a non-UTF-8 file exits 1 is correct, not a wrong exit code.
 - Writers cannot ask questions; unknowns belong in the report.

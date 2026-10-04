@@ -65,8 +65,8 @@ Thêm dòng mã vạch Code 39 vào nhãn
   hunk's context and removed line show `MAX_PART_WIDTH` and
   `part_no[:width]`: they come from the index, not from the selected change.
   Read the untracked test directly.
-- On a copy, `python -c "from labelgen.label import render;
-  print(render('ab-12', 3))"` prints `['PART ab-12', 'QTY  3', '*AB-12*']`.
+- Verified: in the working tree, `render('ab-12', 3)` returns
+  `['PART ab-12', 'QTY  3', '*AB-12*']`.
 - A translated label before the message block (for example
   `Mô tả commit:`) is acceptable (owner decision); the English
   `Commit description:` is too.

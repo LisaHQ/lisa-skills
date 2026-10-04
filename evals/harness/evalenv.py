@@ -26,8 +26,11 @@ REPO = EVALS.parent
 WORK_ROOT = Path(os.environ.get("LISA_EVAL_WORK") or Path(tempfile.gettempdir()) / "lisa-evals").resolve()
 
 # Bump when a change to the harness makes new rounds incomparable with older
-# ones (session flags, prompts, blinding). Recorded in every session record.
-HARNESS_VERSION = 2
+# ones (session flags, writer prompts, blinding, session environment). Recorded
+# in every session record. v3 presets the Python path for src-layout packages.
+# Changes to the judge's prompt or permissions need no bump: every verdict's
+# provenance carries their digests (judge.py).
+HARNESS_VERSION = 3
 
 if hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(encoding="utf-8", errors="replace")
@@ -53,6 +56,10 @@ SESSION_COUPLING = {
 # work directories on drives without ownership records, must not reach the
 # network (a scenario remote could expose answers), must not look for a
 # repository above the work root, and shows no line-ending warnings.
+# The CLI denies `PYTHONPATH=src python ...` and `python -c` even when listed,
+# so src-layout packages get their path here: `src` for writers at the project
+# root, `scenario/src` for judges at the sandbox root. Then the allowed plain
+# `python -m <package>` runs them, and no bytecode lands in the run folder.
 SESSION_ENV = dict(
     git_config_env({k: v for k, v in os.environ.items() if k not in SESSION_COUPLING},
                    {"safe.directory": "*", "core.autocrlf": "false"}),
@@ -60,6 +67,8 @@ SESSION_ENV = dict(
     GIT_TERMINAL_PROMPT="0",
     GCM_INTERACTIVE="never",
     GIT_CEILING_DIRECTORIES=str(WORK_ROOT),
+    PYTHONPATH=os.pathsep.join(["src", "scenario/src"]),
+    PYTHONDONTWRITEBYTECODE="1",
 )
 
 # Commands a headless writer may run without approval: reading, counting,
@@ -68,7 +77,7 @@ SESSION_ENV = dict(
 # the network, so the harness detects repository changes after each run
 # instead of preventing them. Suites add read-only extras in suite.json.
 WRITER_BASH = [
-    "python", "python3", "node", "PYTHONPATH=src python", "PYTHONPATH=src python3",
+    "python", "python3", "node",
     "cd", "echo", "printf", "sed -n", "tr", "od", "diff", "cmp",
     "powershell", "pwsh", "git log", "git status", "git remote", "git tag", "git describe",
     "git show", "git diff", "git ls-files", "ls", "cat", "head", "tail", "wc", "find", "grep",
@@ -119,6 +128,8 @@ class Suite:
         self.weights: dict[str, float] = config["weights"]
         self.extra_bash: list[str] = config.get("extra_bash", [])
         self.repo_ref: str | None = config.get("repo_ref")
+        # A sentence about the writer environment appended to every writer prompt (both arms).
+        self.writer_note: str = config.get("writer_note", "")
         self.skill_dir = REPO / "skills" / self.skill
         self.work = WORK_ROOT / name
         self.requests: dict[str, str] = json.loads((self.dir / "requests.json").read_text(encoding="utf-8"))
@@ -132,7 +143,10 @@ class Suite:
 
     @property
     def judge_tools(self) -> list[str]:
-        return self.writer_tools + ["Bash(mkdir:*)", "Bash(cp:*)"]
+        # A judge works one folder above the checkout, and the CLI denies `cd scenario && git ...`,
+        # so every allowed git command is also allowed as `git -C scenario ...` (judge_prompt.md).
+        git = [c[4:] for c in WRITER_BASH + self.extra_bash if c.startswith("git ")]
+        return self.writer_tools + ["Bash(mkdir:*)", "Bash(cp:*)", *(f"Bash(git -C scenario {c}:*)" for c in git)]
 
     def snapshot(self, label: str) -> Path:
         return self.work / "skill-snapshots" / check_name("snapshot label", label, dashes=True) / self.skill
@@ -543,7 +557,11 @@ def reach_flags(calls: list[dict], allowed: list[Path]) -> list[str]:
             text = _norm_path_text(value)
             for r in roots:
                 text = text.replace(r, "<own>")
-            if REACH.search(text) or root in text:
-                flagged.append(f"{call.get('tool')}: {value[:300]}")
+            hit = REACH.search(text)
+            at = hit.start() if hit else text.find(root)
+            if at >= 0:
+                # A long value is cut, so show the part that matched as well.
+                cause = f" ... [matched: {text[max(0, at - 60):at + 100]}]" if len(value) > 300 else ""
+                flagged.append(f"{call.get('tool')}: {value[:300]}{cause}")
                 break
     return flagged

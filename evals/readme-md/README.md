@@ -98,7 +98,8 @@ hand-traced output with a wrong row fails.
 [`results/history.md`](results/history.md) records every round, version
 scores, and lessons. The raw material is in `archive/` (Dropbox only):
 `readme-md-eval-2026-10-02.zip` (harness v1), `-2026-10-02-v2.zip` (iter6),
-and `-2026-10-03.zip` (iter6-iter11). To revisit the first one, unzip
+`-2026-10-03.zip` (iter6-iter11), and `-2026-10-04.zip` (iter6-iter13 with
+every judgment set, harness v2 and v3). To revisit the first one, unzip
 it into a separate work root (`LISA_EVAL_WORK=<other folder>`, under
 `<that folder>/readme-md/`) so its older scenario build does not replace the
 current one, and run `collect.py`, `aggregate.py`, `checks.py`, or `usage.py`

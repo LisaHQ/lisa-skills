@@ -96,6 +96,60 @@ class Units(unittest.TestCase):
         url = "https://github.com/o/r/actions/runs/42/jobs/7/logs"
         self.assertEqual(scrub(url, "r1", "c1-shipcalc", "B"), url)
 
+    def test_session_python_path(self):
+        """Harness v3: plain `python -m <package>` imports a src-layout package from a writer's project
+        root and from a judge's sandbox root, writes no bytecode, and a build refuses stdlib shadows."""
+        for root, pkg in ((TMP / "pp" / "project", TMP / "pp" / "project" / "src" / "pkgx"),
+                          (TMP / "pp" / "box", TMP / "pp" / "box" / "scenario" / "src" / "pkgx")):
+            w(pkg / "__init__.py", "")
+            w(pkg / "__main__.py", "print('ok')\n")
+            out = subprocess.run([sys.executable, "-m", "pkgx"], cwd=root, env=evalenv.SESSION_ENV,
+                                 capture_output=True, text=True)
+            self.assertEqual(out.stdout.strip(), "ok", out.stderr)
+            self.assertFalse(list(root.rglob("__pycache__")))
+        from build_scenarios import stdlib_shadows
+        w(TMP / "pp" / "built" / "s1" / "src" / "json.py", "")
+        w(TMP / "pp" / "built" / "s2" / "src" / "mypkg" / "__init__.py", "")
+        self.assertEqual(stdlib_shadows(TMP / "pp" / "built"), ["s1/src/json.py"])
+
+    def test_judge_commands(self):
+        """Judges may run every allowed git command as `git -C scenario ...`, writers may not; the judge
+        prompt names the forms that run, and a subagent judge gets its own paragraph instead."""
+        import judge
+        for name in evalenv.suites():
+            suite = evalenv.Suite(name)
+            git = [c[4:] for c in evalenv.WRITER_BASH + suite.extra_bash if c.startswith("git ")]
+            self.assertLessEqual({"status", "diff", "log", "show"}, set(git), name)
+            for sub in git:
+                self.assertIn(f"Bash(git -C scenario {sub}:*)", suite.judge_tools, name)
+            self.assertFalse([t for t in suite.writer_tools if "-C scenario" in t], name)
+            self.assertIn("Bash(git -C scenario status:*)", judge.session_args(suite), name)
+        prompt = judge.TEMPLATE.format(count=2, labels="X, Y", scenario="s1-demo")
+        for phrase in ("git -C scenario <command>", "`cp` with any flag", "`scenario/src`", "s1-demo: ranking="):
+            self.assertIn(phrase, prompt)
+        printed = judge.subagent_prompt(prompt, "D:/box")
+        self.assertNotIn("The session denies", printed)
+        self.assertIn('`cd "D:/box" && `', printed)
+        self.assertIn("s1-demo: ranking=", printed)
+
+    def test_script_reach(self):
+        """A file written by a judge is audited like a command: `python <file>` alone shows nothing."""
+        import judge
+        box = TMP / "work" / "demo" / "judge-sandbox" / "r1" / "s1"
+        reach = "open('../../../runs/r1/mapping.json').read()"
+        w(box / "check.py", "# " + "x" * 400 + "\n" + reach + "\n")  # the file on disk, not the logged text
+        w(box / "fine.py", "print(open('scenario/README.md').read())\n")
+        calls = [{"tool": "Write", "input": {"file_path": str(box / "check.py"), "content": "x = 1"}},
+                 {"tool": "Write", "input": {"file_path": "gone.mts", "content": reach}},  # deleted since
+                 {"tool": "Write", "input": {"file_path": "fine.py", "content": "y = 2"}},
+                 {"tool": "Write", "input": {"file_path": "verdict.json", "content": "../../README.md"}},
+                 {"tool": "Bash", "input": {"command": "python check.py; python fine.py"}}]
+        self.assertEqual(evalenv.reach_flags(calls, [box]), [])
+        flags = evalenv.reach_flags(calls + judge.script_calls(box, calls), [box])
+        self.assertEqual(len(flags), 2, flags)
+        self.assertIn("[matched:", flags[0])  # a long script shows the line that matched
+        self.assertIn("mapping.json", flags[0].split("[matched:")[1])
+
     def test_vcs_fingerprint(self):
         repo = TMP / "vcs" / "repo"
         w(repo / "a.txt", "a\n")
@@ -256,6 +310,14 @@ class FakeRound(unittest.TestCase):
         code, out = script("blind.py", s, "r1", "B", "A", "--tag", "noise", check=False)
         self.assertEqual(code, 1, out)
         self.assertIn("judgments/r1-noise holds verdicts of blind set r1", out)
+        # A judge that changes scenario/ is rejected; a script that reaches toward the mapping is flagged.
+        code, out = script("judge.py", s, "r1", "--out", "r1-tamper", "--only", "c1-shipcalc", "--retries", "0",
+                           env={"FAKE_CLAUDE_MODE": "tamper"}, check=False)
+        self.assertEqual(code, 1, out)
+        self.assertIn("the judge changed scenario/", out)
+        _, out = script("judge.py", s, "r1", "--out", "r1-script", "--only", "c1-shipcalc",
+                        env={"FAKE_CLAUDE_MODE": "script"})
+        self.assertIn("WARNING reached outside the sandbox", out)
         # Another judge model is not 'already judged'.
         _, out = script("judge.py", s, "r1", "--only", "c1-shipcalc", "--model", "sonnet")
         self.assertNotIn("already judged", out)

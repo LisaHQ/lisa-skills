@@ -20,6 +20,12 @@ import sys
 from evalenv import force_rmtree, load_suite, pop_switch, positional, read_json, split_flag, tree_digest
 
 
+def stdlib_shadows(base) -> list[str]:
+    """Top-level names under each scenario's src/ that a session's PYTHONPATH would put ahead of the stdlib."""
+    return sorted(f"{src.parent.name}/src/{entry.name}" for src in base.glob("*/src") for entry in src.iterdir()
+                  if (entry.stem if entry.suffix == ".py" else entry.name) in sys.stdlib_module_names)
+
+
 def main() -> None:
     suite, args = load_suite(sys.argv[1:], __doc__)
     ref, args = split_flag(args, "--ref", suite.repo_ref)
@@ -36,6 +42,9 @@ def main() -> None:
     try:
         for name in suite_build.build_all(staging, ref):
             print("built", name)
+        shadows = stdlib_shadows(staging)
+        if shadows:  # sessions put src/ ahead of the standard library (evalenv.SESSION_ENV)
+            raise SystemExit(f"scenario src/ entries shadow standard-library modules: {', '.join(shadows)}")
         conflicts = []
         for prints in sorted((suite.work / "runs").glob("*/scenarios.json")):
             changed = [scen for scen, info in read_json(prints).items()

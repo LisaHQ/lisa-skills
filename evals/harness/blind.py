@@ -181,7 +181,7 @@ def settings_warnings(runs, scens: list[str], arms: list[str]) -> list[str]:
         seen = {}
         for scen in scens:
             meta = read_json(runs / scen / arm / "meta.json")
-            for key in ("model", "max_turns", "effort", "skill_sha256"):
+            for key in ("model", "max_turns", "effort", "skill_sha256", "note"):
                 if key in meta:
                     seen.setdefault(key, set()).add(json.dumps(meta[key]))
         notes += [f"arm {arm} mixes {key}: {', '.join(sorted(v))}" for key, v in seen.items() if len(v) > 1]

@@ -4,9 +4,10 @@ Scores are weighted rubric scores from 1 to 5 (see `rubric.md`). One outcome
 varies by about ±0.3 (SD), so decide from paired differences across rounds
 (`aggregate.py --pair`), not from single runs. The raw material is in
 `archive/commit-message-eval-2026-10-02.zip` (r1-r2, harness v1) and
-`archive/commit-message-eval-2026-10-02-v2.zip` (r3, harness v2), and
-`archive/commit-message-eval-2026-10-03.zip` (r3-r6 and probes p0-p2), kept in
-Dropbox only.
+`archive/commit-message-eval-2026-10-02-v2.zip` (r3, harness v2),
+`archive/commit-message-eval-2026-10-03.zip` (r3-r6 and probes p0-p2), and
+`archive/commit-message-eval-2026-10-04.zip` (r3-r7, the probes, and every
+judgment set), kept in Dropbox only.
 
 ## Rounds
 
@@ -20,11 +21,14 @@ Dropbox only.
 | r4 | v2 | 16 | Sonnet, isolated | B = HEAD, C = cand | — (checks only) | First candidate, read mechanically |
 | p1, p2 | v2 | c10 only | Sonnet, isolated | C1-C4 = cand, cand2 | — | c10 probes of each candidate |
 | r5, r6 | v2 | 16 | Sonnet, isolated | B = HEAD, C = cand2 | Opus, headless, pairwise | The revision's A/B rounds |
+| r7 | v3 | 16 | Sonnet, isolated | A = no skill, B = HEAD (cand2) | Opus, headless, pairwise | Baseline for harness v3 |
+| r7-rj0 | v3 | 16 | (r7 outcomes) | A, B | Opus, headless | Control re-judge with the same judge prompt |
+| r7-j2 | v3 | 16 | (r7 outcomes) | A, B | Opus, headless | Re-judge with the judge prompt of 2026-10-04 |
 
 HEAD is the skill as committed in `668ba4f`; it is unchanged through
 `ba87af4` (content hash `5b706b2d9989`). cand (`7a1ba2b6d3b1`) and cand2
 (`5ed79aea9501`) are the 2026-10-03 working-tree revisions; cand2 is the one
-kept.
+kept, committed in `18b16b2`, and HEAD in r7.
 
 ## Harness v2 boundary
 
@@ -168,6 +172,126 @@ What the rounds show:
   c15's C error; other scores moved by ±1 on single dimensions, which is the
   judge noise. Do not pool c9 and c13-c16 verdicts from before this revision.
 
+## Harness v3 boundary and baseline (r7)
+
+Never pool r7 or later with r3-r6. Harness v3 starts every writer and judge
+session with `PYTHONPATH` listing `src` and `scenario/src`, and with
+`PYTHONDONTWRITEBYTECODE=1`. This suite's writer prompts are unchanged (it
+has no `writer_note`), and no writer in r3-r7 ran Python, so the change
+could reach only the judges. In r7 one judge tried `python -c` (c11) and
+was denied, so no r7 session ran Python. The c5 and c12 fact sheets now
+state results
+verified by running the working-tree code (`cli.main(['export', '--out',
+'x.csv'])` exits 2; what `render('ab-12', 3)` returns), so judges need not
+run it.
+
+r7 compares the committed skill (cand2, in `18b16b2`) with no skill
+(judgment set `r7`, made before the judge command guidance below):
+
+| Arm | Mean | Without E | Firsts | Accuracy | Selection | Classification | Concision | Format | Communication |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| No skill | 3.59 | 3.72 | 0/16 | 4.38 | 3.88 | 2.56 | 3.50 | 2.19 | 4.06 |
+| HEAD (cand2) | 4.75 | 4.73 | 16/16 | 4.88 | 4.94 | 4.75 | 4.12 | 4.94 | 4.88 |
+
+Paired HEAD − no skill: +1.16, 95% interval [+0.79, +1.52], wins/ties/losses
+16/0/0; without the format dimension E: +1.01 [+0.64, +1.39]. `checks.py`:
+HEAD 269 of 273 (c4 `dependency_with_feature`, c5 `breaking_names_module`,
+c12 `no_staged_width`, c15 `supporting_folded`), no skill 175 of 219 with 54
+not applicable.
+
+r3's +0.86 measured the previous HEAD. The same versions under both
+harnesses (separate rounds and judges, so the means are not paired):
+
+| Same version | v2 | v3 (r7) |
+| --- | --- | --- |
+| cand2 judged mean | 4.78 (r5 + r6, 32 runs) | 4.75 (16 runs) |
+| No skill judged mean | 3.72 (r3 with r3-facts for c9 and c13-c16, 16 runs) | 3.59 (16 runs) |
+| cand2 denied calls per run | 0.22 | 0.25 |
+| cand2 checks passed | 540 of 545 | 269 of 273 |
+
+Scenario by scenario, no skill moved by −0.13 [−0.37, +0.11] from r3
+(with r3-facts) to r7, within noise. Under the revised fact sheets r3's
+paired gap is +0.88 [+0.62, +1.13]; the rise to r7's +1.16 can come only
+from the 2026-10-03 revision, the c5 and c12 fact-sheet edits, and
+round-to-round noise.
+
+**Check change:** c9's `credential_warned` failed both r7 reports, which did
+warn about the credential in words the pattern missed. It now also accepts
+a sentence that names the secret and says it goes into (or ends up in) the
+history, as r7's no-skill report does, and keep-out advice two sentences
+after the one that names the secret when that sentence gives advice
+("consider", "should", "instead"), as r7's HEAD report does. Next-sentence
+advice already counted; "keeping" and "leaving" now count like "keep" and
+"leave". "Keep it out of the message" no longer counts as keep-out advice.
+Re-checking every c9 outcome of r3-r7 changed only those two r7 values. The
+self-test has 169 cases.
+
+## Judge command guidance (2026-10-04)
+
+No commit-message judge had run a git command since harness v2. A judge
+works one folder above the checkout, and the CLI denies both
+`cd scenario && git ...` and, without a matching rule, `git -C scenario ...`.
+In r3 and r5-r7 judges were denied about four commands per session, only
+the SVN scenarios' judges reached their working copy (c10, c14), and the
+Git scenarios' version-control claims were judged from the fact sheets
+alone, with one exception: the r6 judge of c7, denied git and `python -c`,
+wrote a script that decoded the Git objects with `zlib` and cited the HEAD
+blobs in its verdict.
+
+The judge prompt now names the forms that run: `git -C scenario <command>`,
+`svn <command> scenario`, `python -m <package>` on the preset path, a script
+file run with `python <file>`, and `mkdir` with flag-free `cp` for copies
+(the earlier prompt asked for a copy without naming a command, and the CLI
+rejects `cp` with any flag, so the `cp -r` judges used for it was always
+denied). Judges may run every allowed git command as
+`git -C scenario ...`. `judge.py` also rejects an attempt in which the judge
+changed `scenario/`, audits the files a judge writes, and records a digest
+of the judge's session arguments in each verdict's provenance; `collect.py`
+warns when one set mixes judge prompts.
+
+The same blinded r7 outcomes, judged three times:
+
+| Judgment set | Judge prompt | Denied calls per session | Ran git or svn | Turns per session | No skill | HEAD | Paired HEAD − no skill | Without E | Judges, USD |
+| --- | --- | ---: | ---: | ---: | ---: | ---: | --- | --- | ---: |
+| `r7` | earlier | 4.19 | 2 of 16 | 11.4 | 3.59 | 4.75 | +1.16 [+0.79, +1.52] | +1.01 [+0.64, +1.39] | 2.46 |
+| `r7-rj0`, control | earlier | 4.31 | 1 of 16 | 10.9 | 3.55 | 4.80 | +1.25 [+0.95, +1.55] | +1.12 [+0.81, +1.44] | 2.29 |
+| `r7-j2` | 2026-10-04 | 0.50 | 16 of 16 | 5.2 | 3.62 | 4.78 | +1.16 [+0.82, +1.49] | +1.01 [+0.67, +1.34] | 1.72 |
+
+HEAD won all 16 scenarios in every set.
+
+The accept rule, written before the new pass: denied calls per session at
+most half the earlier level (2.1 here); no denial of a form the prompt
+names; no reach flag; `scenario/` unchanged; one attempt per scenario on the
+same CLI and model; and the mean score and the paired gap within a noise
+band of the mean of the two earlier passes, else a second new-prompt pass.
+The band is twice the SD of the differences between the two earlier passes,
+divided by √n (outcomes for scores, scenarios for the gap). Outcomes that
+move by 0.3 or more are reviewed one by one; they do not fail the rule.
+
+- **Judge noise, measured by the control:** the two earlier-prompt passes
+  differ by an SD of 0.19 per outcome, so one judgment's own SD is about
+  0.14; the paired gap moved by +0.09. The new prompt has one pass, so its
+  own noise is not measured.
+- **The accept rule held.** Denied calls fell to an eighth; no session of
+  any set was flagged for reach, and no `r7-j2` session changed `scenario/`
+  (the earlier sets did not record the latter); every verdict came from one
+  attempt on the same CLI and model. Against the mean of the two earlier
+  passes, scores moved by +0.03 (band ±0.07) and the paired gap by −0.05
+  (band ±0.14). No outcome moved by 0.3 or more, so none needed review.
+- **Judges now check the evidence.** By a keyword scan of the verdicts'
+  evidence fields, 18 of 84 error items cite git or svn output, against 3
+  of 89 and 1 of 85 before. The number of errors found did not change, so
+  the fact sheets had been carrying the judging.
+- **The eight remaining denials** are seven `for` loops over `outcomes/`
+  and one `git -C scenario grep`, a sub-command outside the allowed list.
+
+Use `r7-j2` when pooling r7 with later rounds, which are judged with this
+prompt (`aggregate.py commit-message r7-j2:A=none,B=head3 ...`). `r7` stays
+the set to compare with r3-r6, which share its judge prompt. Do not rerun
+`judge.py commit-message r7` (or `--out r7-rj0`) without a new `--out`:
+their digests no longer match, so all 16 scenarios would be re-judged in
+place with the new prompt.
+
 ## Token use and cost
 
 Recorded by the harness for r3 (API list prices; on the subscription used,
@@ -192,7 +316,18 @@ The 2026-10-03 revision, by round (writers Sonnet, judges Opus):
 | r6 | 48 | 1.42 | 2.35 | 3.77 |
 | total | 145 | 4.68 | 5.29 | 9.97 |
 
-The diagnosis and review agents of the interactive session are not included.
+The harness v3 baseline:
+
+| Round | Sessions | Writers | Judges | USD |
+| --- | ---: | ---: | ---: | ---: |
+| r7 | 48 | 0.95 | 2.46 | 3.41 |
+| r7-rj0 (re-judge) | 16 | — | 2.29 | 2.29 |
+| r7-j2 (re-judge) | 16 | — | 1.72 | 1.72 |
+| total | 80 | 0.95 | 6.47 | 7.42 |
+
+Permission probes for harness v3 and for the judge prompt (Haiku, outside
+the harness) cost about $0.17. The diagnosis and review agents of the
+interactive session are not included.
 
 Earlier spend, before token tracking existed: recorded figures come from the
 harness's cost output; estimates price token counts recovered from Claude Code
@@ -210,6 +345,14 @@ Reproduce or extend the recorded figures with `python usage.py commit-message`.
 
 ## What to improve next
 
+- **SVN judge notes:** the c10 and c14 fact sheets still give the svn
+  commands as run inside `scenario/`. With the next fact-sheet revision,
+  write them as the judge prompt does (`svn status scenario`,
+  `svn proplist -v scenario/scripts/export.sh`); both r7-j2 judges already
+  used that form.
+- **Judges' opening loop:** 7 of 16 r7-j2 judges still tried a `for` loop
+  over `outcomes/` first, and git sub-commands outside the allowed list
+  (`git grep`) stay denied.
 - **Test status in reports:** 27 of 32 cand2 reports still say the tests
   were not run (HEAD 25 of 32 in the same rounds; the no-skill arm 0 of 16
   in r3). Three wordings failed; the next lever is the report's slot list
@@ -244,6 +387,12 @@ HEAD`, `snapshot_skill.py commit-message cand`, then a round with arms
 - The CLI denies compound `cd <dir> && git ...` commands. Under v1 these
   denials fell mostly on skill arms; telling every arm to run from the
   project root cut them to 6 across r3.
+- Read the judges' session logs, not only their verdicts: for four rounds
+  no judge could run git, and nothing in the scores showed it.
+- Read the outcomes a check fails before trusting a round's totals, even
+  when the check is old: c9's `credential_warned` passed all eight c9
+  outcomes of r3-r6 but failed both r7 reports, which did warn in wordings
+  the pattern missed.
 - Fact sheets need execution, not only reading: c5's claim that `--out` no
   longer worked was false because argparse accepts unambiguous prefixes, and
   both r2 judges missed it.

@@ -127,12 +127,13 @@ For example, with the `commit-message` skill:
 >
 > **Agent:** Scope: staged (HEAD → index) — 3 files selected.
 >
+> Commit description:
+>
 > ```text
 > Support per-job retry limits
 >
-> - feat(retries): Allow each job to override its retry limit.
->   + Treat zero as an explicit request to disable retries.
->   + Preserve the configured default when no override is provided.
+> - feat(retries): Honor per-job retry limits, including zero to disable
+>   retries, and use the configured default for null or omitted overrides.
 > ```
 
 The skill only drafts the message. It never stages, commits, or pushes without

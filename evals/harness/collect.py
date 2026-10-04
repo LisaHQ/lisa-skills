@@ -56,6 +56,7 @@ def main() -> None:
     firsts, points = defaultdict(int), defaultdict(int)
     rows: dict[str, dict[str, float]] = {}
     missing, warnings = [], []
+    judge_harness, judge_setup = set(), defaultdict(set)
     sessions = defaultdict(list)
     for scen, labels in sorted(mapping.items()):
         path = suite.work / "judgments" / jname / f"{scen}.json"
@@ -70,7 +71,13 @@ def main() -> None:
             missing.append(scen)
             continue
         warnings += [f"{scen}: {w}" for w in verdict_warnings(verdict, list(labels), suite)]
-        reach = read_json(path.with_name(f"{scen}.meta.json")).get("reach")
+        judge_meta = read_json(path.with_name(f"{scen}.meta.json"))
+        judge_harness.add(str(judge_meta.get("harness") or "unrecorded"))
+        for key in ("judge_prompt", "session", "rubric"):
+            judge_setup[key].add(str((judge_meta.get("provenance") or {}).get(key) or "unrecorded")[:12])
+        if path.with_name(f"{scen}.failed.meta.json").exists():
+            warnings.append(f"{scen}: the last judge run failed; this is the earlier verdict it kept")
+        reach = judge_meta.get("reach")
         if reach:
             warnings.append(f"{scen}: the judge reached outside its sandbox: {reach[:3]}")
         parts = [f"{scen:24}"]
@@ -121,6 +128,13 @@ def main() -> None:
                 diffs = [rows[s][b] - rows[s][a] for s in rows if a in rows[s] and b in rows[s]]
                 print(stats.paired_line(f"{b} - {a}", diffs))
     warnings += settings_warnings(suite.work / "runs" / it, sorted(rows), arms)
+    if len(judge_harness) > 1:
+        warnings.append(f"judged under harness versions {', '.join(sorted(judge_harness))}; "
+                        "re-judge into a fresh --out")
+    for key, values in judge_setup.items():
+        if len(values) > 1:
+            warnings.append(f"verdicts in this set differ in {key} ({', '.join(sorted(values))}); "
+                            "rerun judge.py on it to refresh the stale ones")
     for w in warnings:
         print("warning:", w)
     judged = len(mapping) - len(missing)

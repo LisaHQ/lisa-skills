@@ -9,49 +9,99 @@ Usage: python judge.py <suite> <name> [--only <scenario>,...] [--model opus] [--
 runs in its own sandbox, <work>/<suite>/judge-sandbox/<out>/<scenario>/,
 holding only the rubric, the fact sheet, the request, a copy of the pristine
 scenario, and the blinded outcomes. File tools and shell reads are confined
-to the sandbox; interpreter commands are not, so tool calls that reach toward
-runs, mappings, or snapshots are flagged afterwards. A verdict must be valid
-(every label scored 1-5 on every rubric key, a full ranking); a failed or
+to the sandbox; interpreter commands are not, so tool calls and the files a
+judge writes that reach toward runs, mappings, or snapshots are flagged
+afterwards. A verdict must be valid (every label scored 1-5 on every rubric
+key, a full ranking) and the judge must leave scenario/ unchanged; a failed or
 invalid judge is rerun up to --retries times.
 
 Saved to <work>/<suite>/judgments/<out>/ (default <out> = <name>):
 <scenario>.json (the verdict), .txt (the judge's last message), .meta.json
-(status, tokens, cost, the hashes of the outcomes, rubric, prompt, and facts
-it judged, and flagged tool calls), .tools.jsonl, every attempt's record in
-<scenario>.attempts/, and _set.json naming the blind set. Reruns skip
-scenarios whose verdict still matches the same outcomes, rubric, prompt, and
-facts (--rejudge forces them); a replaced verdict is kept as .prev.json. A
-scenario whose pristine copy differs from the one its round was prepared from
-is skipped unless --allow-baseline-change. Exits 1 when any scenario has no
-valid verdict.
+(status, tokens, cost, the hashes of the outcomes, rubric, prompt, session
+arguments, and facts it judged, and flagged tool calls), .tools.jsonl, every
+attempt's record in <scenario>.attempts/, and _set.json naming the blind set.
+Reruns skip scenarios whose verdict still matches the same outcomes, rubric,
+prompt, session arguments, facts, and harness version (--rejudge forces
+them); a replaced verdict is kept as .prev.json. A scenario whose pristine
+copy differs from the one its round was prepared from is skipped unless
+--allow-baseline-change. Exits 1 when any scenario has no valid verdict.
 
 --print-prompts builds the sandboxes and prints one prompt per scenario
 instead of running judges, for judging with subagents in an interactive
-session; such verdicts are not validated and their cost is not recorded.
+session; such verdicts are not validated and their cost is not recorded. The
+printed prompt replaces the paragraph about a headless session's command
+forms, which does not hold for a subagent.
 """
+import hashlib
 import json
 import shutil
 import subprocess
 import sys
 from concurrent.futures import ThreadPoolExecutor
+from pathlib import Path
 
 import session
 from blind import tree_hash
-from evalenv import (DENIED_TOOLS, HARNESS, ISOLATION_FLAGS, blind_set_info, check_name, file_digest, force_rmtree,
-                     load_suite, parse_only, pop_switch, positional, positive_int, reach_flags, read_json, split_flag,
-                     tree_digest, verdict_problems)
+from evalenv import (DENIED_TOOLS, HARNESS, HARNESS_VERSION, ISOLATION_FLAGS, blind_set_info, check_name,
+                     file_digest, force_rmtree, load_suite, parse_only, pop_switch, positional, positive_int,
+                     reach_flags, read_json, split_flag, tree_digest, verdict_problems)
 
 TEMPLATE = (HARNESS / "judge_prompt.md").read_text(encoding="utf-8")
+# The template's paragraph about command forms describes headless sessions (their permissions and
+# preset PYTHONPATH); --print-prompts replaces it for subagent judges.
+HEADLESS_ONLY = "Run commands from the current directory, with paths relative to it."
+SUBAGENT_NOTE = ('Your working directory is {box}: use absolute paths, or start each command with `cd "{box}" && `. '
+                 "`PYTHONPATH` is not preset: run a src-layout package from that directory with "
+                 "`PYTHONPATH=scenario/src PYTHONDONTWRITEBYTECODE=1 python -m <package>`.")
+
+
+def session_args(suite) -> list[str]:
+    """The CLI arguments every judge of a suite runs with, apart from model, effort, and budget."""
+    return [*ISOLATION_FLAGS, "--max-turns", "120", "--allowedTools", *suite.judge_tools,
+            "--disallowedTools", *DENIED_TOOLS]
 
 
 def provenance(suite, name: str, scen: str, opts: dict) -> dict:
     """What a verdict depends on; a verdict is current while all of it is unchanged."""
-    return {"blind": name, "model": opts["model"], "effort": opts["effort"],
+    return {"blind": name, "model": opts["model"], "effort": opts["effort"], "harness": HARNESS_VERSION,
             "outcomes": tree_hash(suite.work / "blind" / name / scen),
             "rubric": file_digest(suite.dir / "rubric.md"),
             "judge_prompt": file_digest(HARNESS / "judge_prompt.md"),
+            "session": hashlib.sha256(json.dumps(session_args(suite)).encode()).hexdigest(),
             "facts": file_digest(suite.dir / "facts" / f"{scen}.md"),
             "request": suite.requests[scen]}
+
+
+def subagent_prompt(prompt: str, box) -> str:
+    """The prompt for a subagent judge (--print-prompts), which has no headless permissions or environment."""
+    paragraphs = prompt.split("\n\n")
+    swapped = [SUBAGENT_NOTE.format(box=box) if p.startswith(HEADLESS_ONLY) else p for p in paragraphs]
+    if swapped == paragraphs:
+        raise SystemExit("judge_prompt.md: the paragraph about command forms was not found")
+    return "\n\n".join(swapped)
+
+
+def script_calls(box, calls: list[dict]) -> list[dict]:
+    """Files a judge wrote, as pseudo tool calls for the reach audit.
+
+    `python <file>` hides what the file does from an audit of commands, so the text of every file
+    written with Write or Edit, except the verdict, is audited too: the file when it still exists,
+    else the logged input, which the tool log cuts at 2000 characters.
+    """
+    box, texts = Path(box).resolve(), []
+    for call in calls:
+        data = call.get("input") or {}
+        if call.get("tool") not in ("Write", "Edit") or not data.get("file_path"):
+            continue
+        path = Path(str(data["file_path"]))
+        target = (path if path.is_absolute() else box / path).resolve()
+        if target == box / "verdict.json":
+            continue
+        if target.is_file() and box in target.parents:
+            texts.append(target.read_bytes().decode("utf-8", "replace"))
+        else:
+            texts += [str(data.get(key) or "") for key in ("content", "new_string")]
+    return [{"tool": "written file", "input": {"command": text}} for text in dict.fromkeys(texts) if text]
 
 
 def build_sandbox(suite, name: str, out: str, scen: str):
@@ -78,8 +128,8 @@ def read_verdict(path):
 
 def judge_once(suite, name, out, scen, opts):
     box, labels, prompt = build_sandbox(suite, name, out, scen)
-    args = [*ISOLATION_FLAGS, "--model", opts["model"], "--max-turns", "120",
-            "--allowedTools", *suite.judge_tools, "--disallowedTools", *DENIED_TOOLS]
+    evidence = tree_digest(box / "scenario")
+    args = [*session_args(suite), "--model", opts["model"]]
     if opts["effort"]:
         args += ["--effort", opts["effort"]]
     if opts["budget"]:
@@ -101,8 +151,13 @@ def judge_once(suite, name, out, scen, opts):
             problems = verdict_problems(verdict, labels, suite.weights)
         except ValueError as exc:  # undecodable bytes or invalid JSON
             problems = [f"verdict.json is unreadable ({exc})"]
+    # Some allowed commands can write (git tag, a program's output file); a judge that changed its
+    # evidence is rejected like an invalid verdict.
+    record["scenario_changed"] = tree_digest(box / "scenario") != evidence
+    if record["scenario_changed"]:
+        problems.append("the judge changed scenario/")
     calls = [json.loads(line) for line in log.read_text(encoding="utf-8").splitlines()]
-    record["reach"] = reach_flags(calls, [box])
+    record["reach"] = reach_flags(calls + script_calls(box, calls), [box])
     record["labels"] = labels
     record["verdict_problems"] = problems
     record["provenance"] = provenance(suite, name, scen, opts)
@@ -198,6 +253,7 @@ def main() -> None:
     if print_prompts:
         for scen in scenarios:
             box, _, prompt = build_sandbox(suite, name, out, scen)
+            prompt = subagent_prompt(prompt, box)
             print(f"===== {scen}\nWorking directory: {box}\n----- prompt -----\n{prompt}\n----- end prompt -----\n"
                   f"Dispatcher (not part of the prompt): when the subagent finishes, copy "
                   f"{box / 'verdict.json'} to {dest / (scen + '.json')}\n")

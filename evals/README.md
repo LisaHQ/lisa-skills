@@ -26,8 +26,9 @@ Run the skill's suite before you ship any behavior change.
    denied repository mutations. Labels stay fixed once assigned.
 5. **Judge** each scenario with a separate, equally isolated headless model
    whose sandbox holds only the rubric, the fact sheet, the pristine scenario,
-   and the blinded outcomes. Invalid verdicts are rejected and retried, and
-   reruns skip scenarios already judged on the same inputs.
+   and the blinded outcomes. Invalid verdicts, and judges that changed their
+   copy of the scenario, are rejected and retried; reruns skip scenarios
+   already judged on the same inputs.
 6. **Collect** per-arm scores, paired differences, and the round's token use
    and cost, and **check** known traps mechanically.
 
@@ -83,11 +84,17 @@ readme-md round (12 scenarios), ±0.22 for one commit-message round (16), and
 ±0.15-0.18 for two. Compare only rounds with the same scenario set and
 harness version.
 
-Writer and judge noise are not yet separated. To measure judge noise once per
-suite (about one judge pass of cost), re-judge a finished round under a new
-name, `python judge.py <suite> r1 --out r1-rj`, and compare the per-outcome
-scores that `collect.py <suite> r1` and `collect.py <suite> r1 --judgments r1-rj`
-print; the judge's own SD is the SD of those differences divided by √2.
+Little of that comes from the judges: re-judging the same outcomes with the
+judge prompt in use before 2026-10-04 put the judge's own SD at about 0.14
+per outcome in commit-message (`r7` against `r7-rj0`) and 0.10 in readme-md
+(`iter13` against `iter13-rj0`), so in readme-md the writers account for
+most of the variation. The current prompt has one pass per suite, so its
+own SD is not yet measured. To measure it (about one judge pass of cost),
+re-judge a finished round
+under a new name, `python judge.py <suite> r1 --out r1-rj`, and compare the
+per-outcome scores that `collect.py <suite> r1` and `collect.py <suite> r1
+--judgments r1-rj` print; the judge's own SD is the SD of those differences
+divided by √2.
 
 Each suite's README lists its scenarios, traps, and recorded results.
 
@@ -113,9 +120,14 @@ Measured under harness v2, per session at list prices: Sonnet writers
 $0.01-0.06 (commit-message) and $0.02-0.13 (readme-md), Opus pairwise judges
 $0.13-0.20 and $0.13-0.31, and trigger queries $0.05-0.14. One two-arm round
 of both suites with their trigger tests cost $11.30 (commit-message $4.86,
-readme-md $6.44). Opus writers cost $0.21-0.88 under harness v1. Quote the
-`--estimate` figures for writers and judges, then ask for approval before a
-round.
+readme-md $6.44). Opus writers cost $0.21-0.88 under harness v1. A judge
+pass costs about a quarter less since the judge prompt of 2026-10-04 named
+the command forms that run ($1.72 for r7's 16 scenarios, $2.01 for iter13's
+12; $0.08-0.14 and $0.10-0.25 per session). Quote the `--estimate` figures
+for writers and judges, then ask for approval before a round. `--estimate`
+takes its median over every recorded session, so its judge figure runs
+about a third high until sessions under the newer prompt make up most of
+the history.
 
 ## Requirements
 
@@ -154,7 +166,8 @@ Git ignores `archive/`, so the zip lives in Dropbox only.
 ## Add a suite
 
 1. Create `evals/<skill>/` with `suite.json` (skill name, rubric weights,
-   extra read-only Bash commands), `rubric.md`, `requests.json`, `facts/`,
+   extra read-only Bash commands, and an optional `writer_note` sentence for
+   every writer prompt), `rubric.md`, `requests.json`, `facts/`,
    `trigger.json`, `suite_checks.py`, `check_cases.json`, and
    `scenarios/suite_build.py` exposing `build_all(base, ref)`.
 2. Write the rubric and fact sheets before the first run, and keep them fixed
@@ -169,23 +182,71 @@ Git ignores `archive/`, so the zip lives in Dropbox only.
 - **Never run writer arms as subagents inside this repository.** They inherit
   `AGENTS.md` and `CLAUDE.md`, which inflate the no-skill baseline. Subagent
   judging (`judge.py --print-prompts`) is not blind-equivalent either; use it
-  only from a neutral folder, and say so in the history.
+  only from a neutral folder, and say so in the history. Its printed prompt
+  replaces the paragraph about a headless session's command forms.
 - **Harness version boundary:** v2 (2026-10-02) changed session isolation,
   prompts, label rotation, and several scenarios. Do not pool v2 rounds with
   earlier ones; every record carries its `harness` version. v1 sessions also
   inherited the launching session's `CLAUDE_EFFORT`; v2 removes it, so
-  sessions run at the CLI's default effort unless you pass `--effort`.
+  sessions run at the CLI's default effort unless you pass `--effort`. v3
+  (2026-10-03) presets `PYTHONPATH` and `PYTHONDONTWRITEBYTECODE` for every
+  writer and judge session in both suites, so src-layout packages import
+  without a path prefix and `python -m <package>` runs those with a
+  `__main__` (readme-md's s1 and s11). v2 rounds tested only the branch
+  where writers could not run them, so expect example-output checks and
+  run-dependent traps to shift between v2 and v3 for reasons other than the
+  skill. Do not pool v3 rounds with v2 ones, and re-judge an
+  older round into a fresh `--out`: a verdict's provenance now records the
+  judge's harness version, and `collect.py` and `aggregate.py` warn when one
+  set mixes versions. Changes to the judge's prompt or permissions need no
+  version bump: each verdict's provenance records digests of the judge
+  prompt and of the judge's session arguments, `judge.py` re-judges verdicts
+  whose digests no longer match, and `collect.py` and `aggregate.py` warn
+  when a set or a pool mixes them. The judge prompt of 2026-10-04 names the
+  command forms that run (Permissions, below); the v3 sets judged before it
+  (iter12, `r7`, `r7-rj0`, `iter13`, `iter13-rj0`) do not pool with later
+  ones, and `r7-j2` and `iter13-j2` hold the baseline rounds judged with
+  it. Rerunning `judge.py` on a set judged with an earlier prompt, without
+  a new `--out`, re-judges every scenario in place with the current prompt
+  (the earlier verdict survives only as `<scenario>.prev.json` and in
+  `<scenario>.attempts/`). In readme-md, v3 writer prompts also carry the
+  suite's `writer_note` (below); from iter13 on, its fingerprint is recorded
+  as `note` in `round.json` and every run's `meta.json`. The pilot iter12 ran
+  without the note and does not count as the v3 baseline; the probe p3 ran
+  with it before the fingerprint existed.
 - **Permissions:** writers may read, inspect version control, and run the
   commands in `WRITER_BASH` (`harness/evalenv.py`) plus the suite's extras.
   Other commands are denied and listed in each run's `meta.json`. Claude
   Code's matching is narrower than that list: under CLI 2.1.285, inline
-  interpreter code (`python -c`, `node -e`), `PYTHONPATH=src python -m`,
-  and shell `for` loops were denied even when every part is listed, while
-  `python <script>` ran; harness v1 rounds also saw compound commands that
-  start with `cd` denied. A writer's check that needs inline code usually
-  cannot run. Interpreters and the write forms of some allowed commands
-  (`git tag`, `git branch`, `git remote`, `find -delete`, `sort -o`) could
-  still write or reach the network, so the harness detects repository
+  interpreter code (`python -c`, `node -e`), commands with an
+  environment-variable prefix, shell `for` loops, `cd <dir> && git ...`
+  compounds, `python -` heredocs, and `cp` with any flag were denied even
+  when every part is listed, and an explicit `Bash(python -c:*)` rule did
+  not help. Plain
+  `python -m <package>`, `python <script>`, and `cd <dir> && cat ...`
+  chains run. Since v3, every session's `PYTHONPATH` lists
+  `src` and `scenario/src`, relative to the directory Python starts in (the
+  project root for writers, the sandbox root for judges) and ahead of the
+  standard library, so `python -m <package>` imports src-layout packages.
+  Writers rarely find that on their own: without being told, they kept
+  prefixing `PYTHONPATH=src` and gave up when it was denied. readme-md's
+  `writer_note` therefore says "Commands cannot start with
+  environment-variable assignments; PYTHONPATH already includes src." in
+  both arms. Judges never see `writer_note`; their prompt
+  (`harness/judge_prompt.md`) names the forms that run instead. A judge
+  works one folder above the checkout, where `cd scenario && git ...` is
+  denied, so judges may also run every allowed git command as
+  `git -C scenario <command>` and pass `scenario` as the path to svn.
+  Before the prompt said so (2026-10-04), commit-message judges were denied
+  about four commands per session and none of them ran git; see the suites'
+  histories. An attempt in which a judge changed `scenario/` is rejected,
+  and the files a judge writes, except its verdict, are audited like its
+  commands.
+  `go` is not listed, and it was not installed on the machine that ran the
+  v2 and v3 rounds, so s6's binary cannot be built. Interpreters and the
+  write forms of some allowed commands (`git tag`, `git branch`,
+  `git remote`, `find -delete`, `sort -o`) could still write or reach the
+  network, so the harness detects repository
   changes after the run (HEAD, branches, tags, index, stash, config, hooks;
   SVN schedule and repository head) instead of preventing them. Git network
   transports are blocked.

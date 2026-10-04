@@ -99,14 +99,15 @@ def main() -> None:
                 continue
             meta = read_json(path.with_name(f"{scen}.meta.json"))
             prov = meta.get("provenance") or {}
-            for key in ("rubric", "judge_prompt"):
+            for key in ("rubric", "judge_prompt", "session"):
                 provenance[key].add(prov.get(key) or "unrecorded")
             provenance[f"facts of {scen}"].add(prov.get("facts") or "unrecorded")
             provenance["judge models"].add(",".join(meta.get("models") or []) or "unrecorded")
+            provenance["judge harness"].add(str(meta.get("harness") or "unrecorded"))
             for arm in labels.values():
                 if arm in versions and it:
                     wmeta = read_json(suite.work / "runs" / it / scen / arm / "meta.json")
-                    for key in ("skill_sha256", "models", "effort", "max_turns", "harness"):
+                    for key in ("skill_sha256", "models", "effort", "max_turns", "harness", "note"):
                         writer_setup[versions[arm]][key].add(json.dumps(wmeta.get(key)))
             cells[(name, scen)] = [(versions[arm], verdict[label]) for label, arm in sorted(labels.items())
                                    if arm in versions]
