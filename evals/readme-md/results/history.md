@@ -3,13 +3,15 @@
 Results of the rounds run while creating the skill on 2026-10-02 (iter1-iter5
 and probes, harness v1), the first harness v2 baseline (iter6), and the v10
 and v11 revision of 2026-10-03 (iter7-iter11), the harness v3 baseline
-(iter12, p3, iter13), and the judge command guidance of 2026-10-04 (p4 and
-two re-judges of iter13). The raw material is in
+(iter12, p3, iter13), the judge command guidance of 2026-10-04 (p4 and two
+re-judges of iter13), and the v12 revision of the same day (p5, iter14,
+iter15). The raw material is in
 `archive/readme-md-eval-2026-10-02.zip` (snapshots v1-v9, blinded outcomes,
 verdicts, mappings, run notes), `archive/readme-md-eval-2026-10-02-v2.zip`
-(iter6), `archive/readme-md-eval-2026-10-03.zip` (iter6-iter11), and
+(iter6), `archive/readme-md-eval-2026-10-03.zip` (iter6-iter11),
 `archive/readme-md-eval-2026-10-04.zip` (iter6-iter13, p3, p4, and every
-judgment set), kept in Dropbox only.
+judgment set), and `archive/readme-md-eval-2026-10-04-v12.zip` (p5, iter14,
+iter15), kept in Dropbox only.
 
 Scores are weighted rubric scores from 1 to 5 (see `rubric.md`). One outcome
 varies by about ±0.3 (SD), so decide from paired differences across rounds
@@ -36,6 +38,8 @@ varies by about ±0.3 (SD), so decide from paired differences across rounds
 | p4 | v3 | Headless, isolated | Sonnet | B1-B6 = HEAD (v11); s8 only | `checks.py` assertions |
 | iter13-rj0 | v3 | (iter13 outcomes) | — | A, B | Opus, headless; control re-judge with the same judge prompt |
 | iter13-j2 | v3 | (iter13 outcomes) | — | A, B | Opus, headless; judge prompt of 2026-10-04 |
+| p5 | v3 | Headless, isolated | Sonnet | H1-H4 = HEAD (v11), A1-A10 = candA (v12), B1-B10 = candB; s8 only | `checks.py` assertions |
+| iter14, iter15 | v3 | Headless, isolated | Sonnet | B = HEAD (v11), C = v12 | Opus, headless, pairwise |
 
 iter1 is not comparable with later rounds: the writers inherited this
 repository's `AGENTS.md`, which made the no-skill baseline unrealistically
@@ -108,6 +112,7 @@ Until iter6, v9 was validated only by probe9 and the trigger test.
 | v9 | Keep content marked for a narrower audience out of the README | iter5: v8 copied answer-key wording in s9 |
 | v10 | v9 plus: build examples from tested calls and show output only from a run or a recording file; compare sample outputs line by line with their producer's format; an upgrade note for breaking changes; a static license badge; and five rules without discriminating evidence (translated outline section names, CODEOWNERS, trace a file-changing script instead of running it, absolute claims name their limits, a rules slot in the materials outline) | iter6 audit; iter7-iter9 |
 | v11 | v10 without the five unevidenced rules; First success shows output only when a run or a file records it; the upgrade note follows the audit rather than the update scale | iter8-iter9 (v10 tied, concision fell); iter10-iter11 |
+| v12 | In improve mode, treat each sample output as a copy of the producer's own passage for the same case: replace the lines that original covers, keep the rest, and add the label or wrapper the format requires | iter10-iter13 and p4 (v11 fixed s8's example in 3 of 10 runs); p5, iter14-iter15 |
 
 ## Harness v2 boundary
 
@@ -210,7 +215,8 @@ Still open:
 
 - **s8's nested `+` sub-bullets:** every version adds the missing label but
   keeps the nesting, although the producer's own example of that change is
-  one flat bullet.
+  one flat bullet. v12 replaced the body with that flat bullet in all 12 of
+  its runs (revision of 2026-10-04, below).
 - **s11's real example:** with runs denied, no version shows verified
   output, which is now the intended behaviour.
 - **One conduct slip:** in iter9 s3, v10 left a helper script,
@@ -329,7 +335,7 @@ What the v3 rounds show:
   `example_flat` passed in 2 of 6. Over its ten runs, v11 flattened the
   example in 4, added the label in 6, and dropped the TIP alert in 1; three
   p4 runs left the stale example as it was. The skill's audit of sample
-  outputs is not yet reliable in a polish request.
+  outputs was not reliable in a polish request until v12 (below).
 
 ## Judge command guidance (2026-10-04)
 
@@ -399,6 +405,144 @@ iter13` (or `--out iter13-rj0`) without a new `--out`: their digests no
 longer match, so all 12 scenarios would be re-judged in place with the new
 prompt.
 
+## Revision of 2026-10-04 (v12: p5, iter14, iter15)
+
+v11 brought s8's stale Usage example fully up to date in 3 of its 10 runs
+(one each in iter10-iter13 and six in p4, above). A diagnosis of those runs
+found that every writer had read the producer, and that the outcome
+followed the question the writer asked. The four that replaced the body
+named the producer's own example of the same change. The six that did not
+had checked the sample against the producer's rules, which its body obeys:
+nested sub-bullets are still allowed. The sample as a whole does not obey
+them, because it lacks the required label, which three of the six added and
+three missed. v11's sentence asks for exactly that conformance check ("Compare each
+sample output, line by line, with the format its producer ... defines,
+including the producer's own examples"). Label and body also failed
+independently, because the producer's same-case example carries no label.
+
+Three diagnosis agents, three proposals, and two refuting reviewers per
+proposal led to one replacement inside the improve-mode paragraph (v12,
+content hash `45b247e16189`):
+
+> Treat each sample output as a copy: search the project for its title,
+> command, or first line to find where its producer (the code or rules that
+> generate it) shows the same case. Where that original differs, replace the
+> lines it covers with its current text, even when the producer's rules still
+> allow the old form, and keep the sample's other lines. Also add any label or
+> wrapper the producer's format requires around the output. Update any other
+> stale example from its current source.
+
+A second candidate (candB) added an end state to Verify item 9 and a report
+line naming each sample's original. Two reviewers of the final texts found
+both additions defective (whole-sample equality contradicts "keep the
+sample's other lines"; the report line scripts a claim about a search), and
+the probe showed no gain from them, so they were dropped.
+
+Probe p5 (writers only, s8, one batch):
+
+| Arm | Runs | Both example checks | `example_current` | `example_label` | `scope_line_kept` | `tip_kept` | Changed lines, median | Runs changing nothing else |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| base (v11) | 4 | 2 | 4 | 2 | 3 | 1 | 20 | 0 |
+| candA (v12) | 10 | 10 | 10 | 10 | 10 | 10 | 7 | 6 |
+| candB | 10 | 10 | 10 | 10 | 9 | 10 | 9 | 6 |
+
+The accept rule written before the probe asked for both example checks in
+at least 8 of 10 runs with the kept-checks intact; candA met it and is the
+smaller text. The base arm of this batch behaved unlike its ten earlier
+runs: it replaced the body in 4 of 4 and dropped the TIP alert in 3 of 4,
+with the same CLI and model alias. Only same-batch comparisons count.
+
+Rounds iter14 and iter15 (B = v11, C = v12):
+
+| Round | v11 | v12 | Paired v12 − v11 | W/T/L | Checks v11 | Checks v12 | s8 judged, v11 / v12 |
+| --- | ---: | ---: | --- | --- | --- | --- | --- |
+| iter14 | 4.69 | 4.52 | −0.18 [−0.35, −0.01] | 3/1/8 | 129 of 132 | 131 of 132 | 4.73 / 4.91 |
+| iter15 | 4.47 | 4.66 | +0.19 [+0.01, +0.38] | 7/2/3 | 127 of 132 | 130 of 131 | 4.18 / 4.91 |
+| pooled | 4.58 | 4.59 | +0.01 [−0.13, +0.15] | 10/3/11 | 256 of 264 | 261 of 263 | |
+
+Per dimension, pooled: A +0.08, B −0.12, C −0.04, D +0.12, E −0.21, F +0.12;
+every paired interval includes 0. Errors: v11 one major and 15 minor, v12 no
+major and 11 minor. README lines in total (the judges' `lines`, as in the
+v11 table above; s7 writes none): 2047 against 2049 (+0.1%; iter14 +2.6%,
+iter15 −2.3%).
+
+- **Target met.** v12 passed `example_current` and `example_label` in all 12
+  of its runs (p5 and both rounds); v11 passed both in 2 of its 6 runs of the
+  same batches. In iter15, v11 left the example untouched and told the owner
+  it "follows the skill's own format", which the judge counted as a major
+  error.
+- **iter14 looked like a regression; iter15 did not reproduce it.** Its
+  interval excluded 0, which tripped a guard of the accept rule written
+  before iter14; that rule said to stop there and revise the text. The
+  deficit sat in the seven create-mode scenarios (mean −0.29), where the
+  edited sentence does not apply. v12 had more judged errors than v11 in
+  four of them (s1, s4, s5, s9; five errors), and four of the five repeat
+  slips of earlier rounds: s1's zstd hint (v11 in iter10), s9's file order
+  (v11 in iter10, iter11, and iter13), s5's sample log shown after a
+  `-SkipCopy` run (v11 in iter13), and s4's `gen:types` (earlier versions
+  and the no-skill arm; v11 itself in iter15). The fifth, an invented
+  reading time in s9, is new. A revision therefore had no target, and the
+  rule was amended with iter14's result known and before iter15 ran: iter15
+  would run as a replication, and v12 would be kept only if the pooled
+  intervals of the total and of accuracy included 0 or lay above it and the
+  s8 target held in both rounds. iter15 reversed the sign. Pooled by mode:
+  improve-mode scenarios (s2, s8, s11, s12) +0.09 [−0.35, +0.52], the seven
+  create-mode scenarios −0.04 [−0.25, +0.18]; s7, the review scenario, is in
+  neither.
+- **One guard was missed by its letter.** v12 alone failed two checks, one
+  per round (s1 `no_bare_pypi_install` in iter14, s8 `tip_kept` in iter15),
+  where the rule allowed one. Both are slips of v11 as well: v11 failed the
+  s1 check in iter15 and dropped the TIP alert in 3 of its 6 same-batch s8
+  runs, against 1 of 12 for v12. v11 alone failed eight checks.
+
+v12 was kept on that amended rule, not on the rule as first written, which
+iter14 had failed: the pooled intervals of the total and of accuracy
+include 0, and the target held in both rounds.
+
+Limits:
+
+- **The two rounds disagree.** Per scenario, iter15's paired difference
+  exceeds iter14's by 0.37 on average (95% interval [+0.11, +0.63]) with
+  identical settings, so no cause is identified. The pooled interval treats
+  the 24 pairs as independent and allows for no shift shared by a whole
+  round. Read [−0.13, +0.15] as "no regression shown", not as a bound of
+  ±0.14; the accept rule only needs the interval to include 0.
+- **The search never ran.** No writer in any arm searched for the sample;
+  all read the producer whole and paired the two by reading. Whatever v12
+  gained came from the rest of the sentence, so the search clause has no
+  evidence. The runs cannot split that gain between the copy framing and the
+  label clause: in the same batches v11 replaced the body in 4 of 6 runs (4
+  of 4 in p5) and added the label in 3 of 6, where v12 did each in 12 of 12.
+  Prune the search clause, or add a scenario whose producer is too large to
+  read whole.
+- **Lighter polish.** In p5, 6 of 10 v12 runs changed nothing outside the
+  example, where every v11 run changed something else. Both judged v12
+  outcomes scored 4.91 with 1 and 3 changed lines outside it: a reworded
+  sentence in iter14, and in iter15 the TIP alert turned into a pointer (the
+  `tip_kept` slip above). Both judges called that change near-neutral churn
+  and listed light polish as a weakness ("Polish is very light"; "Did little
+  to make the first screen more inviting, though it was already strong");
+  neither counted an error for it. The iter14 judge, at low confidence, also
+  named two improvements v11 made and v12 missed. s8 is the suite's only
+  polish request, on an already strong README, so the suite cannot tell
+  whether v12 under-polishes a weaker one.
+- **Computed wrappers.** A producer that prints a label from a format string
+  has no text to copy; no scenario has that shape.
+- **Friendliness** is the dimension to watch: −0.21 pooled, [−0.49, +0.08].
+
+### Eval changes made with the v12 revision
+
+- **Checks:** s8 gained `example_kept`, `example_current` (the example
+  contains the producer's bullet; every run that passes it here holds
+  exactly the producer's example), `scope_line_kept`, and
+  `safety_sentence_kept`, added with their cases before any candidate ran. Under them, v11's ten
+  earlier runs pass `example_current` in 4, both example checks in 3, and
+  `scope_line_kept` in 9. The self-test has 188 cases.
+- **Work root:** p5, iter14, and iter15 ran with `LISA_EVAL_WORK` on another
+  drive (`D:\lisa-skills-tmp\lisa-evals`), because the system temp drive
+  was full. The scenarios rebuilt there have the tree digests recorded for
+  iter13.
+
 ## Token use and cost
 
 Recorded by the harness for iter6 (API list prices):
@@ -435,6 +579,16 @@ The harness v3 rounds:
 | iter13-j2 (re-judge) | 12 | — | 2.01 | 2.01 |
 | total | 108 | 4.71 | 10.05 | 14.76 |
 
+The v12 revision (work root on drive D, so `usage.py` there lists only these
+rounds):
+
+| Round | Sessions | Writers | Judges | USD |
+| --- | ---: | ---: | ---: | ---: |
+| p5 (writers only, s8) | 24 | 2.81 | — | 2.81 |
+| iter14 | 36 | 2.34 | 2.08 | 4.42 |
+| iter15 | 36 | 2.31 | 1.93 | 4.24 |
+| total | 96 | 7.47 | 4.00 | 11.47 |
+
 Totals come from the unrounded records, so they can differ from the column
 sums by a cent.
 
@@ -461,6 +615,18 @@ the recorded figures with `python usage.py readme-md`.
 
 ## Lessons
 
+- Name what a sample is a copy of, not what it must conform to. Asked to
+  compare a sample "with the format its producer ... defines", writers
+  checked that the stale sample was still allowed and called it a match in
+  6 of v11's 10 earlier runs; asked to treat it as a copy of the producer's
+  own passage, 12 of 12 replaced it (v11 in the same batches: 4 of 6).
+- One round can mislead in either direction: iter14 and iter15 compared the
+  same two versions and gave −0.18 [−0.35, −0.01] and +0.19 [+0.01, +0.38].
+  Write the decision rule down first, and say in it what happens when one
+  round trips a guard: here the rule had to be amended with iter14's result
+  known. Replicate before acting on a single interval, check where a deficit
+  sits before blaming the edit, and do not read the pooled interval of two
+  rounds that disagree as a tight bound.
 - Make sure writers can run what the skill tells them to check, and tell
   them how: presetting `PYTHONPATH` changed nothing until the prompt said
   that it was set and that prefixes are denied. Judges needed the same:

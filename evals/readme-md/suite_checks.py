@@ -387,6 +387,12 @@ def commit_examples(t: str) -> list[list[str]]:
     return found
 
 
+# The body of the producer's own example of the change the README's Usage example shows
+# (skills/commit-message/SKILL.md in the clone), with its line wrap flattened.
+S8_EXAMPLE_BODY = ("- feat(retries): Honor per-job retry limits, including zero to disable retries, "
+                   "and use the configured default for null or omitted overrides.")
+
+
 def s8(ctx):
     t, orig = text(ctx, "README.md"), ctx.original("README.md")
     examples = commit_examples(t)
@@ -404,6 +410,12 @@ def s8(ctx):
         "header_layout_kept": t.lstrip("\ufeff \t\r\n").startswith('<div align="center">'),
         "example_flat": not any(SUB_BULLET.match(x) for e in examples for x in e) if examples else None,
         "example_label": "Commit description:" in t,
+        # A removed example fixes nothing; a current one reads as the producer's example does, and the
+        # owner's report line and safety sentence beside it stay.
+        "example_kept": "Support per-job retry limits" in t,
+        "example_current": any(S8_EXAMPLE_BODY in " ".join(x.strip() for x in e) for e in examples),
+        "scope_line_kept": "Scope: staged (HEAD → index) — 3 files selected." in t,
+        "safety_sentence_kept": "never stages, commits, or pushes" in _flat(t),
         "changed": _flat(t) != _flat(orig),
         **markdown(ctx),
     }

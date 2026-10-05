@@ -98,14 +98,18 @@ deeper docs instead of copying them, and fold long optional detail into
 
 When improving, treat the existing README as the owner's design. Audit it
 first: check every claim, command, link, and example against the evidence.
-Compare each sample output, line by line, with the format its producer (the
-code or rules that generate it) defines, including the producer's own
-examples; update a stale example from its current source. Then scale the
-edit to the request: an update fixes what is wrong, stale, or missing; a
-polish also sharpens the first screen and unclear wording; a rewrite may
-restructure. When the audit traces stale text to breaking changes in the
-changelog, add a short upgrade note that names each change existing users
-must act on and links the changelog.
+Treat each sample output as a copy: search the project for its title,
+command, or first line to find where its producer (the code or rules that
+generate it) shows the same case. Where that original differs, replace the
+lines it covers with its current text, even when the producer's rules still
+allow the old form, and keep the sample's other lines. Also add any label or
+wrapper the producer's format requires around the output. Update any other
+stale example from its current source. Then scale the edit to the request:
+an update fixes what is wrong, stale, or missing; a polish also sharpens the
+first screen and unclear wording; a rewrite may restructure. When the audit
+traces stale text to breaking changes in the changelog, add a short upgrade
+note that names each change existing users must act on and links the
+changelog.
 Keep correct, readable text and deliberate choices such as layout, badges,
 emoji, alerts, credits, and headings that others link to; remove one only
 when it is broken or misleading. Keep facts only the owner can know, such as

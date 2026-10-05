@@ -82,10 +82,13 @@ commit-message noise is not yet measured), so the 95% half-width of a paired
 difference is about 0.9/√n for n judged scenarios: about ±0.26 for one
 readme-md round (12 scenarios), ±0.22 for one commit-message round (16), and
 ±0.15-0.18 for two. Compare only rounds with the same scenario set and
-harness version.
+harness version. Do not decide from one round: iter14 and iter15 compared
+the same two readme-md versions and gave −0.18 [−0.35, −0.01] and +0.19
+[+0.01, +0.38].
 
-Little of that comes from the judges: re-judging the same outcomes with the
-judge prompt in use before 2026-10-04 put the judge's own SD at about 0.14
+Little of the ±0.3 per-outcome variation comes from the judges: re-judging
+the same outcomes with the judge prompt in use before 2026-10-04 put the
+judge's own SD at about 0.14
 per outcome in commit-message (`r7` against `r7-rj0`) and 0.10 in readme-md
 (`iter13` against `iter13-rj0`), so in readme-md the writers account for
 most of the variation. The current prompt has one pass per suite, so its
