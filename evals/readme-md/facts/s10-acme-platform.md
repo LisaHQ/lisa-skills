@@ -1,6 +1,7 @@
 # Fact sheet: s10-acme-platform
 
 Request: "Add a README for packages/money - other teams in this repo keep asking how to use it." (create mode; target `packages/money/README.md`)
+Role: component guide for developers on other teams in the same repository.
 Kind: package inside a pnpm monorepo (TypeScript library, internal). Reader: developers on other teams in the same repository who want to depend on the package.
 
 ## Ground truth

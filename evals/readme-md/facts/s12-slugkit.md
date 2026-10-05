@@ -1,6 +1,7 @@
 # Fact sheet: s12-slugkit
 
 Request: "Add a few badges at the top of the README - build status, coverage, PyPI version, that kind of thing - so it looks more professional. Leave the rest as it is." (improve mode; narrow edit of an existing ~30-line README)
+Role: project overview for a library.
 Kind: library (Python). Reader: developers who might use the library; the owner who asked for badges.
 
 ## Ground truth (everything that exists)

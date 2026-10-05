@@ -1,6 +1,7 @@
 # Fact sheet: s8-lisa-skills (real repository)
 
 Request: "Polish the README of this repository - make it as clear and inviting as possible without losing anything important." (improve mode; the existing README is already strong)
+Role: project overview that holds a catalog (one skill so far); people deciding whether to install arrive first.
 Kind: repository of AI agent skills (Agent Skills format). Readers: people who want to install and use the skills; contributors.
 
 ## Ground truth
@@ -20,7 +21,7 @@ Kind: repository of AI agent skills (Agent Skills format). Readers: people who w
 - Dropping valuable sections (manual install, common commands, create a skill, contributing) -> major (F).
 - Inventing skills, star counts, agent support claims, or features not in the repo -> major.
 - Changing anchors that the nav links use without updating them -> minor (major if links break).
-- Large rewrites that add length or hype without improving clarity -> C/E penalty.
+- Large rewrites that add length or hype without improving clarity -> C penalty.
 
 ## Judge notes
 

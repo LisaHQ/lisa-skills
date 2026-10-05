@@ -1,6 +1,7 @@
 # Fact sheet: s7-tasklog
 
 Request: "Can you review my README and tell me what to fix? Don't edit anything yet." (review mode; **no file changes allowed**)
+Role of the README under review: project overview for a command-line tool. Judge the review itself for the owner who asked for it; use the role only to weigh which defects matter most.
 Kind: Node CLI. Output to judge: the findings in the writer's notes (no README produced). The README in the repo must be unchanged; any modification is a major process failure (F = 1).
 
 ## Defects in the existing README (ground truth)

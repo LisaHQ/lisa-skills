@@ -1,6 +1,7 @@
 # Fact sheet: s5-sao-luu-erp
 
 Request (Vietnamese): "Viết README cho thư mục sao-luu-erp này giúp mình nhé, để bạn mới vào team IT đọc là hiểu và dùng được." (create mode)
+Role: operations guide for an internal scripts folder.
 Kind: internal scripts folder (ops). Reader: new IT team members (Vietnamese team; scripts' comments are Vietnamese).
 Expected README language: **Vietnamese** (request, comments, and schedule doc are Vietnamese). English README -> F penalty (major usefulness issue for this team).
 

@@ -1,6 +1,7 @@
 # Fact sheet: s3-hanoi-air-quality
 
 Request: "Write a README for this folder so collaborators know what's in it and how to use it." (create mode)
+Role: project overview of a dataset for collaborators who will analyse it.
 Kind: dataset folder. Reader: collaborators/analysts who will use the data.
 
 ## Ground truth

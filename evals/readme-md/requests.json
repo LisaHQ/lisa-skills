@@ -10,5 +10,9 @@
   "s9-cnc-onboarding": "Create a README for the cnc-onboarding folder. New operators will open it on their first day.",
   "s10-acme-platform": "Add a README for packages/money - other teams in this repo keep asking how to use it.",
   "s11-csvdelta": "README của công cụ này đã lỗi thời từ khi bọn mình lên bản 2.0 và đổi tên mấy cờ dòng lệnh. Cập nhật lại giúp mình nhé.",
-  "s12-slugkit": "Add a few badges at the top of the README - build status, coverage, PyPI version, that kind of thing - so it looks more professional. Leave the rest as it is."
+  "s12-slugkit": "Add a few badges at the top of the README - build status, coverage, PyPI version, that kind of thing - so it looks more professional. Leave the rest as it is.",
+  "s13-plantware": "packages/shiftcal has no README, so its PyPI page is empty. Can you write one?",
+  "s14-hookshelf": "We're making this repository public next week and it still has no README. Please write one.",
+  "s15-wattlog": "Before I replace our README, I want to compare it with a fresh take. Write a new README for this project from scratch and save it as drafts/README.new.md. Leave README.md alone.",
+  "s16-linegate": "This repo has no README. Can you write one? New people on the on-call rota keep asking where to start."
 }

@@ -1,6 +1,7 @@
 # Fact sheet: s2-fetchkit
 
 Request: "Our README is out of date. Please update it." (improve mode; stale v1 README exists)
+Role: project overview for a library.
 Kind: library (TypeScript, npm). Reader: JS/TS developers calling HTTP JSON APIs; also v1 users upgrading.
 
 ## Ground truth (v2.1.0)
@@ -39,7 +40,7 @@ Kind: library (TypeScript, npm). Reader: JS/TS developers calling HTTP JSON APIs
 - Keeping "Works everywhere (Node 14+, browsers, Deno)" or claiming browser/Deno support as fact -> major (Node 14 wrong) / minor (browsers unverified).
 - Keeping the Travis badge (CI is GitHub Actions) or an npm badge for unscoped `fetchkit` -> minor each.
 - Dropping the Sponsors or Contributors acknowledgments silently -> process failure (F), minor.
-- Hype left in ("blazing fast", 🚀🚀🚀) -> C/E penalty.
+- Hype left in ("blazing fast", 🚀🚀🚀) -> C penalty.
 
 ## Judge notes
 

@@ -1,6 +1,7 @@
 # Fact sheet: s1-logslice
 
 Request: "Write a README for this project." (create mode; no README exists)
+Role: project overview for a command-line tool.
 Kind: CLI tool (Python). Reader: developers/operators who need to cut log files by time.
 
 ## Ground truth

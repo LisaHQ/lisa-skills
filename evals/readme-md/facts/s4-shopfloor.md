@@ -1,6 +1,7 @@
 # Fact sheet: s4-shopfloor
 
 Request: "We need a README at the root of this monorepo." (create mode)
+Role: project overview combined with a development guide; developers joining the team of an internal system arrive first.
 Kind: monorepo root (internal app). Reader: developers joining the team.
 
 ## Ground truth

@@ -1,6 +1,7 @@
 # Fact sheet: s11-csvdelta
 
 Request (Vietnamese): "README của công cụ này đã lỗi thời từ khi bọn mình lên bản 2.0 và đổi tên mấy cờ dòng lệnh. Cập nhật lại giúp mình nhé." ("This tool's README has been out of date since we moved to 2.0 and renamed some command-line flags. Please update it.") (improve mode; stale English `README.md` and stale `README.vi.md` exist)
+Role: project overview for a command-line tool.
 Kind: CLI tool (Python). Reader: people who compare CSV exports, in English (`README.md`) and Vietnamese (`README.vi.md`).
 
 ## Ground truth (v2.0.0)

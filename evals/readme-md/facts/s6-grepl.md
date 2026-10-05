@@ -1,6 +1,7 @@
 # Fact sheet: s6-grepl
 
 Request: "Make a nice, professional README for this repo." (create mode; thin evidence)
+Role: project overview for a tiny command-line tool.
 Kind: tiny CLI tool (Go). Reader: developers who might use or build it.
 
 ## Ground truth (everything that exists)

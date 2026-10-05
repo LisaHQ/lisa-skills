@@ -6,7 +6,7 @@ Run the skill's suite before you ship any behavior change.
 
 | Suite | Skill | Scenarios | Measures |
 | --- | --- | --- | --- |
-| [readme-md](readme-md/README.md) | [`readme-md`](../skills/readme-md/SKILL.md) | 12 projects, folders, and material collections | Accuracy, core highlighting, concision, presentation, friendliness, usefulness |
+| [readme-md](readme-md/README.md) | [`readme-md`](../skills/readme-md/SKILL.md) | 16 projects, folders, and material collections | Accuracy, core highlighting, concision, presentation, friendliness, usefulness |
 | [commit-message](commit-message/README.md) | [`commit-message`](../skills/commit-message/SKILL.md) | 16 Git and SVN repositories | Accuracy, change selection, classification, concision, format, communication |
 
 ## How a round works
@@ -77,12 +77,14 @@ The paired section compares two versions only where the same judge scored
 both in the same scenario. A 95% interval that excludes 0 is evidence of a
 change; otherwise the result is inconclusive, and you decide from the
 dimension the edit targets, probes, and checks. One outcome's score varies by
-about ±0.3 (SD) for the same scenario and version (measured on readme-md;
+about ±0.3 (SD) for the same scenario and version (measured on readme-md
+before its rubric's role revision of 2026-10-05, and not re-measured since;
 commit-message noise is not yet measured), so the 95% half-width of a paired
-difference is about 0.9/√n for n judged scenarios: about ±0.26 for one
-readme-md round (12 scenarios), ±0.22 for one commit-message round (16), and
-±0.15-0.18 for two. Compare only rounds with the same scenario set and
-harness version. Do not decide from one round: iter14 and iter15 compared
+difference is about 0.9/√n for n judged scenarios: about ±0.26 for a
+readme-md round of 12 scenarios (up to iter15), ±0.22 for a round of 16
+(commit-message, and readme-md from iter16), and ±0.15-0.18 for two. Compare
+only rounds with the same scenario set, rubric revision, and harness
+version. Do not decide from one round: iter14 and iter15 compared
 the same two readme-md versions and gave −0.18 [−0.35, −0.01] and +0.19
 [+0.01, +0.38].
 

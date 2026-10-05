@@ -5,7 +5,8 @@ and probes, harness v1), the first harness v2 baseline (iter6), and the v10
 and v11 revision of 2026-10-03 (iter7-iter11), the harness v3 baseline
 (iter12, p3, iter13), the judge command guidance of 2026-10-04 (p4 and two
 re-judges of iter13), and the v12 revision of the same day (p5, iter14,
-iter15). The raw material is in
+iter15). The role revision of 2026-10-05 (v13 candidate) has no round yet;
+its yardstick and decision rule are fixed below. The raw material is in
 `archive/readme-md-eval-2026-10-02.zip` (snapshots v1-v9, blinded outcomes,
 verdicts, mappings, run notes), `archive/readme-md-eval-2026-10-02-v2.zip`
 (iter6), `archive/readme-md-eval-2026-10-03.zip` (iter6-iter11),
@@ -113,6 +114,7 @@ Until iter6, v9 was validated only by probe9 and the trigger test.
 | v10 | v9 plus: build examples from tested calls and show output only from a run or a recording file; compare sample outputs line by line with their producer's format; an upgrade note for breaking changes; a static license badge; and five rules without discriminating evidence (translated outline section names, CODEOWNERS, trace a file-changing script instead of running it, absolute claims name their limits, a rules slot in the materials outline) | iter6 audit; iter7-iter9 |
 | v11 | v10 without the five unevidenced rules; First success shows output only when a run or a file records it; the upgrade note follows the audit rather than the update scale | iter8-iter9 (v10 tied, concision fell); iter10-iter11 |
 | v12 | In improve mode, treat each sample output as a copy of the producer's own passage for the same case: replace the lines that original covers, keep the rest, and add the label or wrapper the format requires | iter10-iter13 and p4 (v11 fixed s8's example in 3 of 10 runs); p5, iter14-iter15 |
+| v13 (candidate) | Decide the README's role in step 1 and let it set the opening, depth, tone, and visual emphasis; outlines for a collection of items and for a system to operate; a layout check; links computed from the target directory | None yet: an audit and two refuting reviews of the text (role revision, below) |
 
 ## Harness v2 boundary
 
@@ -542,6 +544,135 @@ Limits:
   drive (`D:\lisa-skills-tmp\lisa-evals`), because the system temp drive
   was full. The scenarios rebuilt there have the tree digests recorded for
   iter13.
+
+## Role revision of 2026-10-05: boundary and pre-registration (v13 candidate)
+
+No round has run under this revision. This section fixes the yardstick and
+the decision rule before the first one.
+
+**What prompted it.** The owner compared this repository's README with two
+READMEs that Sonnet and Opus wrote from scratch with v12: the drafts
+introduce the skills better, and the existing README is presented more
+attractively. Six audit reviewers, one lens each, traced the gap to one
+cause: the skill decides a README's kind and reader but never the job the
+README does, so no later step can choose a layout, a tone, or a depth. In
+create mode every design rule was a limit, the one positive pattern sat in a
+syntax reference and was keyed to public visibility, no outline fits a
+collection of items, Verify checked Markdown syntax but not the page a
+reader sees, and about 30% of both drafts is maintainer material that linked
+documents already hold.
+
+**What that comparison is not.** The two drafts are not A/B evidence. They
+were written in one interactive session inside this repository, after that
+session had edited the README; the Sonnet request said its readers already
+know agent skills; and the existing README was first written without the
+skill, on a request for an attractive, professional presentation. The
+`../../../` link prefixes in the archived copies came from moving the files
+into `archive/`: both writers had linked from the repository root.
+
+**The candidate** (content hash `83d13adfd37d`) therefore rests on inspection
+and on two passes of seven refuting reviewers over its text, and needs the
+rounds below before it counts as evidenced:
+
+- Step 1 decides the README's role (project overview, component guide,
+  development or operations guide, collection or catalog; roles combine)
+  from the request and the evidence about readers, with a default for the
+  place when they leave it open.
+- The lead, highlights, tone, detail, and first screen follow the role.
+- In create mode or a rewrite, an overview for readers new to the project
+  opens with emphasis and a guide opens plainly; a visual element is added
+  only when it tells the reader something on the surface that shows the
+  README.
+- `references/outlines.md` routes each role to an outline and gains outlines
+  for a collection of items and for scripts, jobs, or a system to operate.
+  The subfolder outline became the component outline, and a package with
+  outside users takes the library, CLI, or app outline instead.
+- Verify gains a layout check on the rendered page, and links are computed
+  from the target directory, also for a draft saved elsewhere.
+- In improve mode the owner's sections and their order stay outside a
+  rewrite, and the report names any restructuring left for one. A review
+  judges the README against its role.
+
+`SKILL.md` grew from 1755 to 2636 words and the two references from 1116 to
+2112, so concision and README length are the costs to watch.
+
+**Boundary.** Never pool iter16 or later with iter6-iter15. Between them:
+
+- **Rubric:** the role revision (`rubric.md`): B to F are judged for the
+  reader of the README's role, D scores reading and finding rather than
+  visual elements, and one weakness lowers one score.
+- **Fact sheets:** every sheet names the README's role, and the s2 and s8
+  sheets count hype under C alone, so all twelve digests changed. Rerunning
+  `judge.py` on an older set without a new `--out` re-judges it in place
+  under the new rubric.
+- **Scenarios:** four new ones, each written by an agent that did not read
+  the skill and fact-checked by a second one: a published package in a
+  subfolder (s13), a create-mode catalog (s14), a draft saved outside its
+  target directory (s15), and an operations guide at an internal repository
+  root (s16). All 16 scenarios build to the same trees twice, and s1-s12
+  still match the fingerprints recorded for iter15.
+- **Checks:** s5's `headings_translated` also rejects the English labels of
+  an operations outline; the Python-minimum patterns accept "3.10 and later"
+  and "at least Python 3.10"; "no PyPI release" counts as a caveat. Under
+  the changed checks iter14 and iter15 give the totals recorded above (129
+  of 132 and 131 of 132; 127 of 132 and 130 of 131). The self-test has 695
+  cases, 500 of them for s13-s16, and takes about a minute.
+- **In-sample scenarios:** the operations, catalog, and component outlines
+  were written with the s5, s8, and s10 fact sheets known, so those three
+  count as regression checks only. Evidence for the role guidance comes from
+  s13-s16.
+
+**Decision rule, written before any v13 run.** Arms: B = v12
+(`snapshot_skill.py readme-md v12 --ref b4f8a59`, content hash
+`45b247e16189`), C = v13 (the working tree, or the commit that holds it).
+Sonnet writers at the CLI's default effort, Opus judges, harness v3, the
+judge prompt of 2026-10-04, all 16 scenarios, and the same requests and
+writer note for both arms.
+
+0. **Control for the rubric** (one judge pass): re-judge the blinded iter15
+   outcomes into a new set, `judge.py readme-md iter15 --out iter15-role`.
+   v11 and v12 differ only in how they treat sample outputs, so expect the
+   paired v12 - v11 difference to stay within 0.25 of iter15's +0.19 and no
+   dimension mean of either arm to move by more than 0.5. Otherwise review
+   the rubric's wording before any comparison.
+1. **Probe** (writers only, three runs per arm in one batch) on s13-s16, s6,
+   s8, s2, and s12, read with `checks.py`:
+   - Targets, which v13 passes in at least 2 of 3 runs: s13 `pypi_install`,
+     `no_checkout_install_first`, `no_relative_links`, `no_internal_leak`;
+     s14 `all_hooks_listed`, `deprecated_marked`, `experimental_marked`,
+     `links_hook_docs`, `install_targets_repo`; s15 `links_for_root`,
+     `no_parent_links`, `readme_unchanged`; s16 `dry_run_noted`,
+     `rollback_loss_warned`, `frozen_noted`, `links_runbooks`, `no_badges`,
+     `no_live_run`. A check that v12 already passes in 3 of 3 runs shows no
+     gain and is recorded as such.
+   - Guards, none of which v13 fails in 2 or more runs where v12 passes all
+     3: s8 every `*_kept` check, `example_current`, and `example_label`; s12
+     `scope_body_kept`, `only_readme_changed`, and the three badge checks; s2
+     `sponsors_kept`, `contributors_kept`, and `no_hype`; s6
+     `no_service_badges`, `no_license_claim`, and `no_unverified_go_install`.
+   - Length: v13's median README lines in s6 stay within 25% of v12's.
+
+   A failed guard stops the round and sends the text back for revision.
+2. **Two judged rounds** (iter16, iter17). Keep v13 when all of these hold
+   over both rounds pooled:
+   - the paired interval of the total, and of accuracy, includes 0 or lies
+     above it;
+   - over s13-s16 the paired mean of the total is above 0, and v13 passes
+     each target check in more runs than v12, or in all of them;
+   - over s1-s12 the paired interval of the total includes 0 or lies above
+     it, v13 alone fails no preservation check (s8 `*_kept`, s12
+     `scope_body_kept`, s2 `sponsors_kept`) in both rounds, and its README
+     lines in total stay within 10% of v12's;
+   - the decision does not rest on C or D alone.
+
+   Report s1-s12 and s13-s16 separately. When one round's total interval
+   excludes 0 on either side, read where the difference sits and run a third
+   round before deciding.
+
+At the recorded medians ($0.110 per Sonnet writer session and $0.167 per
+Opus judge session at list prices) the control costs about $2.0, the probe
+about $5.3 (48 sessions), and each judged round about $6.2 (32 writers and
+16 judges): about $20 in all before any third round.
 
 ## Token use and cost
 

@@ -1,8 +1,18 @@
-# Outlines by kind
+# Outlines
 
-Pick the closest kind; combine two when the project spans them, such as a
-library that ships a CLI. Bracketed sections are optional: include them only
-when the evidence fills them.
+Start from the outline for the README's role, then add the sections from
+another outline that this reader needs, such as a library that ships a CLI.
+Bracketed sections are optional: include them only when the evidence fills
+them.
+
+- **Project overview:** the outline for the closest kind below.
+- **Component guide:** "Component of a larger repository".
+- **Development or operations guide:** "Scripts, jobs, or a system to
+  operate" when the reader runs it. When the reader builds or changes a
+  project that has an outline of its own kind, such as an app, a library, or
+  a monorepo, keep that outline in the order the work is done: setup and run
+  first, then development, with what only a new user needs cut to a line.
+- **Collection or catalog:** "Collection of items".
 
 ## App or service
 
@@ -55,17 +65,74 @@ when the evidence fills them.
 6. [Conventions: where new code goes, how to add a package]
 7. Contributing, license
 
-## Subfolder or package in a larger repository
+## Component of a larger repository
+
+A folder, package, or service whose readers already work in the larger
+project.
 
 1. Title (folder or package name) and purpose; where it fits, linking the
-   root README
+   root README or the nearest README above it
 2. [Status (stable, experimental, deprecated) and owners, when stated]
-3. Usage from the rest of the repository: import path or commands, and the
-   directory to run them from
-4. Key files: a short annotated list
-5. Testing this part
+3. [What to know first: the limits and pitfalls a caller must respect]
+4. Usage from the rest of the repository: how to depend on or call it, the
+   import path or commands, and the directory to run them from
+5. [Interface, prerequisites, and configuration, when usage alone does not
+   show them]
+6. Key files: a short annotated list
+7. Testing this part
 
-Link up to the root README instead of repeating it.
+Link up to that README instead of repeating it. A package in a subfolder
+that outside users install on its own, such as one the evidence shows is
+published to a registry, takes the library, CLI, or app outline instead.
+
+## Scripts, jobs, or a system to operate
+
+1. Title and pitch: what it does, where it runs, and for whom
+2. At a glance, whichever apply: when it runs, on which hosts or
+   environments, what it produces, and the limits to know before starting
+3. Before you start: access, tools with versions, and configuration. Name
+   where secrets live, never their values
+4. Procedures: one numbered procedure per task the files support, each with
+   where to run it, the command, and the result to expect when a log or
+   document records it
+5. Checks: how to tell that a run worked; where logs and alerts go
+6. [When something fails: only the failure modes that the scripts, logs, or
+   runbooks document, each with its fix or a link to its runbook]
+7. [Known gaps], [owner or contact, when stated], links to deeper docs
+
+Warn before each destructive step.
+
+## Collection of items
+
+Independent items that a reader picks from and uses one at a time, such as
+plugins, templates, workflows, snippets, or agent skills. Parts that run
+together as one system belong to a monorepo root; material that one audience
+reads or works through is a document or material collection.
+
+1. Title, pitch for the whole collection, [badges]
+2. [Lead: also what one item is and how any item is used, when this kind of
+   item may be new to the reader]
+3. [Highlights]
+4. Get an item: the command or steps for one item, and for the whole set when
+   the files support that; then one item in use
+5. Catalog: one row per item in the files: its name, linked to the item's own
+   document or folder; what it does or when to pick it, in a line from the
+   item's own description; [status, version, or requirements, when the files
+   state them and they differ]
+6. [Item notes, when a row cannot show which item to pick or an item's own
+   document is not written for this reader: per item, a typical use, the
+   options that change how you use it, and the limit most likely to rule it
+   out]
+7. [Using items: what they share, such as how to run, update, and remove
+   them]
+8. [Add an item: where it goes, the files it needs, and how to check it, or a
+   link to the contributor guide]
+9. Contributing, license
+
+A short catalog can come before "Get an item"; a long one follows it,
+grouped by purpose. Name the sections with the collection's own noun. Each
+item's own document keeps the rest, and a deprecated item keeps its row,
+with its replacement when the files name one.
 
 ## Dataset
 

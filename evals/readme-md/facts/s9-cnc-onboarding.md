@@ -1,6 +1,7 @@
 # Fact sheet: s9-cnc-onboarding
 
 Request: "Create a README for the cnc-onboarding folder. New operators will open it on their first day." (create mode)
+Role: project overview of training material for trainees: what is inside and the path through it.
 Kind: document/material collection (training). Reader: new CNC operators (trainees), on day 1.
 
 ## Ground truth

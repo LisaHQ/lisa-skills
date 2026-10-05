@@ -1,4 +1,4 @@
-"""Build the twelve readme-md scenarios (called by evals/harness/build_scenarios.py)."""
+"""Build the readme-md scenarios (called by evals/harness/build_scenarios.py)."""
 import importlib
 import subprocess
 
@@ -6,7 +6,8 @@ from evalenv import REPO, force_rmtree
 from fixture import ENV
 
 BUILDERS = ["s1_logslice", "s2_fetchkit", "s3_air", "s4_shopfloor", "s5_saoluu", "s6_grepl",
-            "s7_tasklog", "s9_cnc", "s10_acme", "s11_csvdelta", "s12_slugkit"]
+            "s7_tasklog", "s9_cnc", "s10_acme", "s11_csvdelta", "s12_slugkit", "s13_plantware",
+            "s14_hookshelf", "s15_wattlog", "s16_linegate"]
 
 # Paths that must not exist anywhere in the s8 clone's history: the eval suite
 # (rubric, fact sheets, results) and the skill under test.

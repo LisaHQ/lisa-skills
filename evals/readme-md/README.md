@@ -13,7 +13,7 @@ evals/readme-md/
 ├── rubric.md          # Pre-registered scoring criteria and verdict format
 ├── requests.json      # The user request for each scenario
 ├── facts/             # Ground truth, traps, and judge notes per scenario
-├── scenarios/         # Deterministic builders for the twelve test projects
+├── scenarios/         # Deterministic builders for the sixteen test projects
 ├── suite_checks.py    # Mechanical checks, one function per scenario
 ├── mdcheck.py         # Link, anchor, fence, and heading checks for any README
 ├── check_cases.json   # Self-test cases with expected check results
@@ -45,7 +45,10 @@ model usage. Run a second round with fresh runs and pool them before deciding:
 ## Improvement loop
 
 1. **Pin the yardstick.** Leave `rubric.md` unchanged during a comparison; add
-   new traps to `facts/` before you run, never after you see results.
+   new traps to `facts/` before you run, never after you see results. After a
+   rubric revision, re-judge one archived round under it before any
+   comparison (`python judge.py readme-md <round> --out <round>-<tag>`), with
+   the result you expect written down first.
 2. **Fix mechanisms, not symptoms.** Read why losing outcomes lost, find the
    rule that caused it, and change the smallest wording that fixes it.
 3. **Probe cheaply.** Rerun only the affected scenario 3–5 times and check it
@@ -73,6 +76,25 @@ model usage. Run a second round with fresh runs and pool them before deciding:
 | `s10-acme-platform` | Package in a pnpm monorepo | Create | Subfolder README, workspace install, license conflict, generated docs, lint style |
 | `s11-csvdelta` | Python CLI | Improve | Vietnamese request for an English README, stale translation, renamed flags, broken links |
 | `s12-slugkit` | Python library | Narrow edit | Requested badges without a source, unescaped static badges, scope, a stale line |
+| `s13-plantware` | PyPI package in an internal uv monorepo | Create | Subfolder README for outside readers: standalone intro, registry install, absolute links for PyPI, no internal leaks |
+| `s14-hookshelf` | Git hook collection | Create | Catalog: every hook with stage and status, deprecated and experimental items, links instead of copied hook READMEs, clone-and-run install with no package |
+| `s15-wattlog` | Python CLI | Create | Draft saved in `drafts/` beside the README: links written for the repository root, existing README untouched, its stale flag and Python minimum not copied |
+| `s16-linegate` | Internal deployment repository | Create | Operations guide at a repository root: dry-run deploy, rollback that loses buffered messages, a frozen environment, runbooks linked, a committed secret, no product pitch |
+
+Every fact sheet names the README's role, and the rubric judges an outcome
+for that role's reader:
+
+| Role | Scenarios |
+| --- | --- |
+| Project overview | `s1`, `s6`, `s15` (create), `s2`, `s11`, `s12` (improve), `s7` (review), `s3` and `s9` (data and material), `s13` (a published package in a subfolder) |
+| Component guide | `s10` |
+| Development or operations guide | `s4` (with an overview), `s5`, `s16` (at a repository root) |
+| Collection or catalog | `s14` (create), `s8` (polish) |
+
+`s13` to `s16` were written and fact-checked by agents that did not read the
+skill, so they are the evidence for role guidance; the outlines for
+operations, catalogs, and components were written with the `s5`, `s8`, and
+`s10` fact sheets known, so those three count as regression checks only.
 
 `s4` has stub implementations; its judge notes tell judges not to penalize
 honest reports of stubs. `s8` clones this repository at `repo_ref` in
@@ -91,7 +113,13 @@ and are skipped when the README is absent or unchanged.
 Some checks read the session rather than the files: `no_script_run` (s3)
 reads the command log, because the aggregation script rewrites its output
 byte for byte. `example_output` (s11) requires all three verified rows, so a
-hand-traced output with a wrong row fails.
+hand-traced output with a wrong row fails. `links_for_root` (s15) resolves
+the draft's links as if the file were the root `README.md`, where it will be
+moved, and `no_relative_links` (s13) accepts only absolute URLs and in-page
+anchors, because PyPI renders that README. `project_hooks_untouched` (s14)
+compares the version-control state, hooks included, with the pristine
+scenario, and `no_live_run` (s16) reads the command log for a deploy or
+rollback run with `--yes`.
 
 ## Results and archive
 
@@ -112,9 +140,11 @@ pooled means only between rounds with the same scenario set and harness.
 1. Add a builder module in `scenarios/` with `ROOT` and `build(base)`, and
    register it in `BUILDERS` in `scenarios/suite_build.py`. Build twice and
    confirm the files and commits are identical.
-2. Add the request to `requests.json` and a fact sheet in `facts/` with ground
-   truth, core points, traps with severities, and judge notes. Verify every
-   fact against the built scenario, running the code on a copy.
+2. Add the request to `requests.json` and a fact sheet in `facts/` with the
+   README's role, ground truth, core points, traps with severities, and judge
+   notes. Write it from what the README's readers need, without the skill in
+   view, and verify every fact against the built scenario, running the code
+   on a copy.
 3. Add a check function to `CHECKS` in `suite_checks.py` for the traps that can
    be checked mechanically, merged with `markdown(ctx)`, and a row to the
    scenario table above.
