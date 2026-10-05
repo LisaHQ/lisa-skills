@@ -10,22 +10,19 @@ Built for personal use, shared with the community.
 [![Install with npx skills](https://img.shields.io/badge/install-npx%20skills%20add-cb3837?style=flat-square&logo=npm&logoColor=white)](#quick-start)
 [![Last commit](https://img.shields.io/github/last-commit/LisaHQ/lisa-skills?style=flat-square&color=0969da)](https://github.com/LisaHQ/lisa-skills/commits/main)
 
-[Quick start](#quick-start) ·
-[Skill catalog](#skill-catalog) ·
-[Usage](#usage) ·
-[Create a skill](#create-a-skill) ·
-[Contributing](#contributing)
+[Quick start](#quick-start) · [Skill catalog](#skill-catalog) · [Usage](#usage) ·
+[Create a skill](#create-a-skill) · [Contributing](#contributing)
 
 </div>
 
 **lisa-skills** is a curated collection of skills that teach AI agents to handle
 everyday tasks consistently. Each skill is a small folder of readable Markdown
 instructions: install it once, and your agent applies it whenever a task calls
-for it — no copy-pasting prompts.
+for it, with no copy-pasting prompts. Install them all:
 
-Skills follow the open [Agent Skills](https://agentskills.io) format, supported
-by Claude Code, Codex, Cursor, GitHub Copilot, Gemini CLI, OpenCode, and many
-other agents.
+```bash
+npx skills add LisaHQ/lisa-skills
+```
 
 ## Highlights
 
@@ -36,6 +33,8 @@ other agents.
   project.
 - 🪶 **Lightweight** — Plain Markdown you can review before installing, loaded
   only when a task needs it.
+- 🧪 **Tested** — Behavior changes are compared before and after on blind A/B
+  suites (see [`evals/`](evals/README.md)).
 
 ## Skill catalog
 
@@ -69,17 +68,14 @@ Start a new session and describe the task in plain language — for example,
 *"Write a commit message for my changes."* Your agent loads the matching skill
 automatically.
 
-**3. Stay up to date**
-
-```bash
-npx skills update
-```
+Skills use the open [Agent Skills](https://agentskills.io) format, which the
+`skills` CLI can install for many agents. This repository tests them only with
+Claude Code.
 
 ### Common commands
 
 | Task | Command |
 | --- | --- |
-| Preview skills without installing | `npx skills add LisaHQ/lisa-skills --list` |
 | Install a specific skill | `npx skills add LisaHQ/lisa-skills --skill commit-message` |
 | Install for all your projects | `npx skills add LisaHQ/lisa-skills --global` |
 | Install for specific agents | `npx skills add LisaHQ/lisa-skills --agent claude-code codex` |
@@ -90,7 +86,8 @@ npx skills update
 > [!NOTE]
 > By default, skills install into the current project (for example,
 > `.claude/skills/` for Claude Code), so you can commit them and share them
-> with your team. Add `--global` to install them in your user directory (for
+> with your team.\
+> Add `--global` to install them in your user directory (for
 > example, `~/.claude/skills/`) and use them in every project.
 
 ### Manual installation
@@ -125,7 +122,7 @@ For example, with the `commit-message` skill:
 
 > **You:** Write a commit message for my staged changes.
 >
-> **Agent:** Scope: staged (HEAD → index) — 3 files selected.
+> **Agent:** Reports which changes it read, then replies in this shape:
 >
 > Commit description:
 >
@@ -196,7 +193,9 @@ lisa-skills/
    ```
 
 4. Test it with realistic requests, including incomplete, out-of-scope, and
-   failure cases — not just the happy path.
+   failure cases — not just the happy path. To compare a change with the
+   previous version, use the [eval suites](evals/README.md); their runs spend
+   model usage, so get approval before you start one.
 5. Add the skill to the [skill catalog](#skill-catalog) with a one-line
    description.
 
