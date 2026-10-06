@@ -40,8 +40,10 @@ npx skills add LisaHQ/lisa-skills
 
 | Skill | What it does |
 | --- | --- |
-| 📝 [**commit-message**](skills/commit-message/SKILL.md) | Writes accurate, concise commit messages from your actual Git or SVN changes. |
-| 📖 [**readme-md**](skills/readme-md/SKILL.md) | Writes, improves, or reviews READMEs for projects, folders, datasets, and other materials, grounded in your actual files. |
+| 📝 [**`commit-message`**](skills/commit-message/SKILL.md) | Writes accurate, concise commit messages from your actual Git or SVN changes. |
+| 📖 [**`readme-md`**](skills/readme-md/SKILL.md) | Writes, improves, or reviews READMEs for projects, folders, datasets, and other materials, grounded in your actual files. |
+
+Each skill's example requests, options, and limits are under [Usage](#usage).
 
 > [!TIP]
 > Run `npx skills add LisaHQ/lisa-skills --list` to see the current catalog
@@ -49,9 +51,9 @@ npx skills add LisaHQ/lisa-skills
 
 ## Quick start
 
-You need [Node.js](https://nodejs.org) (current LTS recommended) to run the
-[`skills`](https://github.com/vercel-labs/skills) CLI through `npx`. No
-Node.js? See [Manual installation](#manual-installation).
+You need [Node.js](https://nodejs.org) 22.20 or later to run the
+[`skills`](https://github.com/vercel-labs/skills) CLI (version 1.7.0) through
+`npx`. No Node.js? See [Manual installation](#manual-installation).
 
 **1. Install the skills**
 
@@ -79,6 +81,7 @@ Claude Code.
 | Install a specific skill | `npx skills add LisaHQ/lisa-skills --skill commit-message` |
 | Install for all your projects | `npx skills add LisaHQ/lisa-skills --global` |
 | Install for specific agents | `npx skills add LisaHQ/lisa-skills --agent claude-code codex` |
+| Try a skill without installing | `npx skills use LisaHQ/lisa-skills@commit-message \| claude` |
 | List installed skills | `npx skills list` |
 | Update installed skills | `npx skills update` |
 | Remove a skill | `npx skills remove commit-message` |
@@ -86,8 +89,7 @@ Claude Code.
 > [!NOTE]
 > By default, skills install into the current project (for example,
 > `.claude/skills/` for Claude Code), so you can commit them and share them
-> with your team.\
-> Add `--global` to install them in your user directory (for
+> with your team. Add `--global` to install them in your user directory (for
 > example, `~/.claude/skills/`) and use them in every project.
 
 ### Manual installation
@@ -118,7 +120,7 @@ Skills work in the background, so there are no commands to memorize.
   *"only my staged changes"*, or pass arguments like
   `/commit-message scope=staged`.
 
-For example, with the `commit-message` skill:
+### commit-message
 
 > **You:** Write a commit message for my staged changes.
 >
@@ -133,8 +135,40 @@ For example, with the `commit-message` skill:
 >   retries, and use the configured default for null or omitted overrides.
 > ```
 
-The skill only drafts the message. It never stages, commits, or pushes without
-your permission.
+It also takes requests such as *"Write a commit message for my changes in
+src/billing/ only"* or *"Write the commit message for HEAD~3..HEAD."* Two
+options set which changes it reads:
+
+| Option | Values | Default |
+| --- | --- | --- |
+| `scope` | `auto`, `working-tree`, `staged`, `unstaged` | `auto` |
+| `auto-priority` | The three views, highest priority first (with `auto`) | `working-tree,staged,unstaged` |
+
+- **Drafts only** — It never stages, commits, or pushes without your
+  permission.
+- **Its own format** — One plain summary line, then one typed bullet per
+  change, such as `- feat(retries): ...`. The summary has no type prefix, so
+  messages are not Conventional Commits; if a hook requires them, say so.
+- **Git and SVN** — On SVN, which has no staging area, it describes the
+  working copy against `BASE`.
+
+### readme-md
+
+| Try asking | What happens |
+| --- | --- |
+| *"Write a README for this project."* | Writes one from your manifests, code, CI, tests, and license |
+| *"Our README is out of date. Please update it."* | Fixes what is wrong or stale, and keeps your layout, badges, and alerts |
+| *"Review my README, but don't edit anything yet."* | Lists findings by impact and changes no files |
+
+- **Fits the README to its job** — It first decides what the README must do
+  for the person who opens it: introduce a project, guide the use of one
+  component, support the people who run a system, or present a catalog.
+- **Checks before it claims** — It runs only safe local checks, such as
+  `--help` and the project's fast tests when dependencies are installed, and
+  asks before installing, going online, or running commands that change
+  files.
+- **Asks instead of guessing** — What it cannot verify, such as a missing
+  license, comes back to you as a question instead of going into the README.
 
 ## How skills work
 
@@ -197,7 +231,7 @@ lisa-skills/
    previous version, use the [eval suites](evals/README.md); their runs spend
    model usage, so get approval before you start one.
 5. Add the skill to the [skill catalog](#skill-catalog) with a one-line
-   description.
+   description, and give it a short section under [Usage](#usage).
 
 See [AGENTS.md](AGENTS.md) for the complete authoring and verification
 conventions, and the
